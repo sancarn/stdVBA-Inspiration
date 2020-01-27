@@ -1,0 +1,89 @@
+'Original source:
+'https://stackoverflow.com/a/27004994
+'https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createdialogindirectparama
+'https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles
+'https://wiki.winehq.org/List_Of_Windows_Messages
+'https://docs.microsoft.com/en-us/windows/win32/dlgbox/about-dialog-boxes
+'https://docs.microsoft.com/en-us/windows/win32/dlgbox/using-dialog-boxes
+
+Private Type DLGTEMPLATE
+    style As Long
+    dwExtendedStyle As Long
+    cdit As Integer
+    x As Integer
+    y As Integer
+    cx As Integer
+    cy As Integer
+End Type
+
+Private Type DLGITEMTEMPLATE
+    style As Long
+    dwExtendedStyle As Long
+    x As Integer
+    y As Integer
+    cx As Integer
+    cy As Integer
+    id As Integer
+End Type
+
+Private Type DLG
+    dlgtemp As DLGTEMPLATE
+    menu As Long
+    classname As String
+    title As String
+End Type
+
+Private Declare PtrSafe Function CreateDialogIndirectParam Lib "User32.dll" Alias "CreateDialogIndirectParamW" _
+  (ByVal hInstance As Long, _
+  ByRef lpTemplate As DLGTEMPLATE, _
+  ByVal hWndParent As Long, _
+  ByVal lpDialogFunc As LongPtr, _
+  ByVal lParamInit As Long) _
+  As LongPtr
+Private Declare PtrSafe Function DestroyWindow Lib "User32.dll" (ByVal hWnd As LongPtr) As Long
+
+Const WM_INITDIALOG As Long = &H110
+Const DS_CENTER As Long = &H800&
+Const DS_SETFONT As Long = &H40
+Const DS_MODALFRAME As Long = &H80
+Const WS_EX_APPWINDOW As Long = &H40000
+
+Const WS_VISIBLE = &H10000000
+Const WS_CAPTION = &HC00000
+Const WS_POPUP = &H80000000
+Const WS_SYSMENU = &H80000
+
+Const WM_GETDLGCODE = 135
+Const WM_WINDOWPOSCHANGING = 70
+Const WM_WINDOWPOSCHANGED = 71
+Const WM_NCACTIVATE = 134
+Const WM_ACTIVATE = 6
+Const WM_CHANGEUISTATE = 295
+
+
+Public Sub TestDialog()
+  Dim d As DLG
+  d.dlgtemp.style = WS_SYSMENU + WS_POPUP + WS_VISIBLE + WS_CAPTION + WS_SYSMENU 'DS_MODALFRAME
+  d.dlgtemp.dwExtendedStyle = WS_EX_APPWINDOW
+  d.dlgtemp.cdit = 0
+  d.dlgtemp.x = 100
+  d.dlgtemp.y = 100
+  d.dlgtemp.cx = 200
+  d.dlgtemp.cy = 200
+  d.menu = 0
+  d.title = "Test"
+  d.classname = "Test"
+
+  hWnd = CreateDialogIndirectParam(0, d.dlgtemp, 0, AddressOf DlgFunc, 0)
+End Sub
+
+Public Function DlgFunc(ByVal hwndDlg As LongPtr, ByVal uMsg As LongPtr, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+    'Debug.Print uMsg
+    If uMsg = WM_INITDIALOG Then
+        DlgFunc = True
+    Else
+        DlgFunc = False
+    End If
+End Function
+
+

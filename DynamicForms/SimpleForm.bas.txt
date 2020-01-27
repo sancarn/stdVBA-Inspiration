@@ -1,0 +1,72 @@
+'Original source:
+'https://stackoverflow.com/questions/11519345/creating-form-programmatically-in-the-module-using-vba/11541912#11541912
+
+Sub CreateUserForm()
+  Dim myForm As Object
+  Dim NewFrame As MSForms.Frame
+  Dim NewButton As MSForms.CommandButton
+  Dim NewListBox As MSForms.ListBox
+  Dim X As Integer
+  Dim Line As Integer
+  
+  'This is to stop screen flashing while creating form
+  Application.VBE.MainWindow.Visible = False
+  
+  Set myForm = ThisWorkbook.VBProject.VBComponents.add(3)
+  
+  'Create the User Form
+  With myForm
+    .Properties("Caption") = "New Form"
+    .Properties("Width") = 300
+    .Properties("Height") = 270
+  End With
+  
+  'Create ListBox
+  Set NewListBox = myForm.designer.Controls.add("Forms.listbox.1")
+  With NewListBox
+    .Name = "lst_1"
+    .Top = 10
+    .Left = 10
+    .Width = 150
+    .height = 230
+    .Font.Size = 8
+    .Font.Name = "Tahoma"
+    .BorderStyle = fmBorderStyleOpaque
+    .SpecialEffect = fmSpecialEffectSunken
+  End With
+  
+  'Create CommandButton Create
+  Set NewButton = myForm.designer.Controls.add("Forms.commandbutton.1")
+  With NewButton
+    .Name = "cmd_1"
+    .Caption = "clickMe"
+    .Accelerator = "M"
+    .Top = 10
+    .Left = 200
+    .Width = 66
+    .height = 20
+    .Font.Size = 8
+    .Font.Name = "Tahoma"
+    .BackStyle = fmBackStyleOpaque
+  End With
+  
+  'add code for listBox
+  lstBoxData = "Data 1,Data 2,Data 3,Data 4"
+  myForm.codemodule.insertlines 1, "Private Sub UserForm_Initialize()"
+  myForm.codemodule.insertlines 2, "   me.lst_1.addItem ""Data 1"" "
+  myForm.codemodule.insertlines 3, "   me.lst_1.addItem ""Data 2"" "
+  myForm.codemodule.insertlines 4, "   me.lst_1.addItem ""Data 3"" "
+  myForm.codemodule.insertlines 5, "End Sub"
+  
+  'add code for Comand Button
+  myForm.codemodule.insertlines 6, "Private Sub cmd_1_Click()"
+  myForm.codemodule.insertlines 7, "   If me.lst_1.text <>"""" Then"
+  myForm.codemodule.insertlines 8, "      msgbox (""You selected item: "" & me.lst_1.text )"
+  myForm.codemodule.insertlines 9, "   End If"
+  myForm.codemodule.insertlines 10, "End Sub"
+  'Show the form
+  VBA.UserForms.add(myForm.Name).Show
+  
+  'Delete the form (Optional)
+  ThisWorkbook.VBProject.VBComponents.Remove myForm
+End Sub
