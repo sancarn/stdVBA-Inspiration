@@ -1,0 +1,946 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033\deflangfe1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Arial;}{\f1\froman\fprq2\fcharset0 Times New Roman;}}
+{\colortbl ;\red128\green128\blue128;\red0\green0\blue255;\red255\green0\blue0;}
+{\stylesheet{ Normal;}{\s1 heading 1;}}
+{\*\generator Msftedit 5.41.21.2508;}\viewkind4\uc1\pard\nowidctlpar\ri-1440\cf1\ul\f0\fs20 Tip: Use 1/2" margins, page width of 8.5" for best viewing\ulnone .\par
+\cf0\par
+This file contains these main sections:\par
+I. References and requirements\par
+II. Class Properties and Methods\par
+III.  Frequently asked questions\par
+IV.  Change history\i\par
+\b\i0\par
+RENDERING METHODOLOGY\par
+\ul\b0\par
+\ulnone  \ul Win2K or Better?\ulnone   \ul GDI+ Available?\ulnone   \ul HighQualityInterpolation?\ulnone   \ul Method of Rendering\ulnone\par
+\tab\cf2\b Yes\cf0\b0\tab\cf2\b Yes\cf0\b0\tab No / Yes\tab (+)\b\fs24\tab\b0\fs20 AlphaBlend / GDI+\par
+\tab\cf3 No\cf0\tab\cf2\b Yes\cf0\b0\tab No / Yes\tab   \tab GDI+ / GDI+\par
+\tab\cf2\b Yes\cf0\b0\tab\cf3 No\cf0\tab No / Yes\tab   \tab AlphaBlend / Manually\par
+\tab\cf3 No\cf0\tab\cf3 No\cf0\tab No / Yes\tab (*)\tab Manually / Manually\par
+Win95, NT4, NT3.51\tab n/a\tab No / Yes\tab\tab Manually / Manually \par
+Exception: NT4 SP6 is GDI+ compatible. AlphaBlend API not distributed with Win95, NT4, NT3.51\par
+\par
+The rendering priority, for \ul Win2K and higher\ulnone , will be to use AlphaBlend API if the API can support the requested rendering options, otherwise use GDI+ if available.  If GDI+ is not available, then manual rendering will if AlphaBlend cannot support the requested rendering options.  GDI+ is not the default priority even if it is available, simply because it requires several other steps to perform the same functionality.  The priority can be overridden as described below.\par
+\par
+(+) Priority exception.  If the gdiToken property is set by you, then GDI+ will be used as long as the token is available.  If the gdiToken property is later reset to zero, then AlphaBlend will take priority over GDI+ when possible.  See the gdiToken property below.\par
+\par
+The rendering priority, for \ul WinME/WinNT4 and lower\ulnone , will be to use GDI+ if available, otherwise manually rendering unless the isAlphaBlendFriendly property has been overridden by you.  Read on to understand the risks of overriding this priority.\par
+\par
+(*) Win9x versions of AlphaBlend are buggy when rendering to DIBs.  If GDI+ is not available, AlphaBlend will \ul not\ulnone  be used and manual rendering will take place, otherwise GDI+ will be used instead.  If isAlphaBlendFriendly is set to true, then Rendering will occur using AlphaBlend on Win98 and WinME systems if AlphaBlend can support the requested rendering options. However, overriding this setting is not recommended.  See the isAlphaBlendFriendly property for more.\par
+\par
+\ul Non-Typical Dependencies:  PNG creation requires either GDI+ or ZLib\ulnone\par
+1. GDI+ can be downloaded from Microsoft and is compatible on Win98/NT4 and newer.  Comes installed with WinXP.\par
+http://www.microsoft.com/downloads/details.aspx?FamilyID=6a63ab9c-df12-4d41-933c-be590feaa05a&DisplayLang=en\par
+\par
+2. ZLib or ZLib1 is required to add optional tags to PNG files and can be used to create PNG files on systems that do not have GDI+.  Also, ZLib is compatible with all Windows versions and is 100% free.  Download the latest version from www.zlib.net\par
+\par
+\par
+\pard\nowidctlpar\ri-1440\qc\cf2\ul\b CLASS PROPERTIES AND METHODS\ulnone\b0\par
+\pard\nowidctlpar\ri-1440\cf0\par
+\b Alpha \b0 (Property)[AlphaTypeEnumeration]. Sets/Returns whether or not the image contains levels of transparency. Setting this property yourself may result in unexpected rendering.\par
+\tab Tip: If the DIB ImageType property is imgGIF and Alpha is True, then the image is a transparent GIF.\par
+\tab Return Values can be one of the following\par
+\tab AlphaNone is when no transparency exists in the image\par
+\tab AlphaSimple is when transparency is only 100% transparent (i.e., like in GIFs, normal icons)\par
+\tab AlphaComplex is when image contains per-pixel alphablending (i.e., PNGs, XP icons)\par
+\par
+\b BitsPointer \b0 (Read-Only Property)[Long]. Returns the memory pointer where the image bytes begin\par
+\par
+\b BlendToColor \b0 (Function). Permanently modifies the source image by blending Image over a passed color background.\par
+\tab\ul\i BelndColor\ulnone\i0  [Long]. Valid RGB color that will be blended into the image.\par
+\tab\ul\i BelndOpacity\ulnone  \i0 [Long]. Value between 0 and 100. The level of opacity of the BlendColor\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b CopyImageTo \b0 (Function). Copies a DIB from one DIB class to another, optionally resizing the new DIB.\par
+\tab\ul\i cDIBclass\ulnone\i0  [c32bppDIB class]. The DIB class to copy to. If it is not initialized, the function will initialize the class.\par
+\tab\ul\i NewWidth\ulnone\i0  [Long]. The width of the new copy. Negative value will mirror the image horizontally.\par
+\tab\ul\i NewHeight\ulnone\i0  [Long]. The height of the new copy. Negative value will mirror the image vertically.\par
+\tab\ul\i CopyOriginalFormat\ulnone\i0  [Boolean]. If True, then the source image's bytes in its original format will be copied too\par
+\tab Return value is True if no errors occurred. If no image exists, return value is false.\par
+\par
+\b CreateCheckerBoard \b0 (Function) . Creates a checkerboard pattern in place of the image. This function can be used when no image is assigned to the class, but something should be visibly displayed onto a DC.\par
+\tab\ul\i CheckerSize\ulnone\i0  [Long]. The size of a single checkerboard square. Default value is 16\par
+\tab\ul\i FirstColor\ulnone\i0  [Long]. The color of the top left checkered square. Default value is White\par
+\tab\ul\i SecondColor\ulnone\i0  [Long]. The alternating checker color. Default value is light gray: RGB 192,192,192\par
+\tab Return value is True unless the class was not initialized by a call to InitializeDIB\par
+\par
+\tab Note: When this function is called the ImageType property is set to imgCheckerBoard.\par
+\par
+\b CreateGDItoken \b0 (Function) . Creates a GDI+ token that can be passed to any instance of the class. The class, by default, creates a token each time a GDI+ function must be called. Creating the token once and then caching it until the application terminates can allow multiple renderings to occur up to 3x faster. The GDI+ token must eventually be released. See ReleaseGDItoken method and gdiToken property.\par
+\par
+\b CreateDropShadow \b0 (Function) . Creates a separate c32bppDIB class containing a shadow of the owning DIB class\rquote  image.  The shadow is static. If an image is later modified, call this function again to create a shadow based off of the modiifed image. Render shadow, then render image over the shadow.\par
+\tab\ul\i blurDepth\ulnone\i0  [Long]. Valid values are between zero and ten. Determines fuzziness of the shadow\par
+\tab\ul\i Color\ulnone\i0  [Long]. A valid RGB color of the shadow.\par
+\par
+Tip: When rendering a shadow, generally you offset its X,Y rendering position plus or minus the value of the blurDepth value.\par
+\par
+\b CreateRegion \b0 (Function) . Creates a region object from the bytes of the DIB and returns the region handle if successful\par
+ \tab\ul\i Style\ulnone\i0  [eRegionStyle enumeration]. Must be one of the following styles. Default is regionBounds\par
+\tab regionBounds - region created is the shape/size of a tight rectangle around the image\par
+\tab regionEnclosed - region created contains all pixels between the furthest left and furthest right\par
+\tab\tab non-transparent pixels within each scan line of the image\par
+\tab regionShaped - region created contains only non-transparent pixels\par
+\tab\ul\i xOffset\ulnone\i0  [Long]. Amount of pixels to shift the region horizontally.\par
+\tab\ul\i yOffset\ulnone\i0  [Long]. Amount of pixels to shift the region vertically.\par
+\par
+\tab Return value is the region handle\par
+\tab Note: You are reponsible for destroying the region when no longer needed. Use DeleteObject API\par
+\par
+\b DestroyDIB\b0  (Subroutine). Destroys any existing DIB, managed DC, and any cached original source image bytes.\par
+\tab Note:  The Alpha property is reset to AlphaNone & ImageType property is set to imgError\par
+\par
+\b DestroyGDItoken \b0 (Function) . Releases any passed GDI+ token like the one created by CreateGDItoken. Calling any GDI+ routine that expects a token to exist will crash your application if the token is released beforehand. Therefore, before calling this method, and for every class you assigned the gdiToken property, you should have already reset the gdiToken property to zero; this also includes any shadow classes created by CreateDropShadow function.\par
+\b\par
+DrawText_hFont\b0  (Function). Renders text on top of a DIB. See also DrawText_StdFont.\par
+\tab\ul\i theFontHandle\ulnone\i0  [Long]. A valid memory font handle\par
+\tab\ul\i theText\ulnone\i0  [String]. The text to be rendered. Unicode supported (I think) & can contain carriage returns\par
+\tab\ul\i Alignment\ulnone\i0  [eAlignment Enumeration]. Text alignment options. Default is Left aligned\par
+\tab\ul\i destX\ulnone\i0  [Long]. Left position of the DIB to render text to. Default is zero\par
+\tab\ul\i destY\ulnone\i0  [Long]. Top position of the DIB to render text to. Default is zero\par
+\tab\ul dest\i Width\ulnone\i0  [Long]. Width of text block when rendered. Default is zero - actual size\par
+\tab\ul dest\i Height\ulnone\i0  [Long]. Height of text block when rendered. Default is zero - actual size\par
+\tab\ul ForeColor\ulnone  [Long]. Text color. Default is black\par
+\tab\ul BackColor\ulnone  [Long]. Negative values render text background as transparent. Default is transparent background\par
+\tab\ul\i Opacity\ulnone\i0  [Long]. A value between 0 and 100 where 0 is fully transparent and 100 is fully opaque. Default is 100\par
+\tab\ul\i grayScale\ulnone\i0  [eGrayScaleFormulas enumeration]. Gray scales. See MakeGrayscale function for formula descriptions\par
+\tab\ul\i Angle\ulnone\i0  [Single]. A valid angle between the range of -360.0 to 360.0 degrees. Default is zero degrees\par
+\tab\ul\i CenterOnDestXY\ulnone\i0  [Boolean]. If True then rendering occurs centered around DestX and DestY. Default is False\par
+\tab Return value is True if no errors occur\par
+\b\par
+\b0\tab Notes: \par
+\tab 1. If no DIB exists in the class and function is called, the text becomes the DIB for the class\par
+\tab 2. If no DIB exists in the class, all optional parameters are ignored except: Alignment, ForeColor & BackColor\par
+\tab 3. Passing negative destWidth and/or destHeight creates mirrored text\par
+\tab 4. The DIB is permanently changed to include the newly rendered text\par
+\b\par
+DrawText_StdFont\b0  (Function). Renders text on top of a DIB. See also DrawText_hFont.\par
+\tab\ul\i theFont\ulnone\i0  [stdFont Object]. An initialized VB stdFont object\par
+\tab\ul\i theText\ulnone\i0  [String]. The text to be rendered. Unicode supported (I think) & can contain carriage returns\par
+\tab\ul\i Alignment\ulnone\i0  [eAlignment Enumeration]. Text alignment options. Default is Left aligned\par
+\tab\ul\i destX\ulnone\i0  [Long]. Left position of the DIB to render text to. Default is zero\par
+\tab\ul\i destY\ulnone\i0  [Long]. Top position of the DIB to render text to. Default is zero\par
+\tab\ul dest\i Width\ulnone\i0  [Long]. Width of text block when rendered. Default is zero - actual size\par
+\tab\ul dest\i Height\ulnone\i0  [Long]. Height of text block when rendered. Default is zero - actual size\par
+\tab\ul ForeColor\ulnone  [Long]. Text color. Default is black\par
+\tab\ul BackColor\ulnone  [Long]. Negative values render text background as transparent. Default is transparent background\par
+\tab\ul\i Opacity\ulnone\i0  [Long]. A value between 0 and 100 where 0 is fully transparent and 100 is fully opaque. Default is 100\par
+\tab\ul\i grayScale\ulnone\i0  [eGrayScaleFormulas enumeration]. Gray scales. See MakeGrayscale function for formula descriptions\par
+\tab\ul\i Angle\ulnone\i0  [Single]. A valid angle between the range of -360.0 to 360.0 degrees. Default is zero degrees\par
+\tab\ul\i CenterOnDestXY\ulnone\i0  [Boolean]. If True then rendering occurs centered around DestX and DestY. Default is False\par
+\tab Return value is True if no errors occur\par
+\b\par
+\b0\tab Notes: \par
+\tab 1. If no DIB exists in the class and function is called, the text becomes the DIB for the class\par
+\tab 2. If no DIB exists in the class, all optional parameters are ignored except: Alignment, ForeColor & BackColor\par
+\tab 3. Passing negative destWidth and/or destHeight creates mirrored text\par
+\tab 4. The DIB is permanently changed to include the newly rendered text\par
+\b\par
+EraseDIB\b0  (Subroutine). Sets any existing DIB bytes to zero, in effect making it 100% black and transparent.\par
+\tab Note:  The Alpha property is reset to True and the ImageType property is set to imgNone\par
+\par
+\b gdiToken\b0  (Property)[Long]. Sets/Returns the GDI+ token to be used by the class.  This token is optional as the class will create one on demand if this property is set to zero. However, by calling the CreateGDIplusToken method and setting this property to the value of that function, rendering speed is somewhat improved since the class does not need to create a token every time the image is rendered.  See also CreateGDIplusToken and DestroyGDItoken methods.\par
+\par
+\b GetAlphaMask \b0 (Function). Retrieves just the DIB alpha bytes, as 256 color, grayscale, in various formats.\par
+\tab\ul\i outStream\ulnone\i0  [Byte Array]. An array to hold the retrieved bytes, always returned as zero-bound\par
+\tab\ul\i as2dArray\ulnone\i0  [Boolean]. If True, outStream is 2 dimensional else 1 dimensional\par
+\tab\ul\i asWordAligned\ulnone\i0  [Boolean]. If True, outStream rows are word aligned else byte aligned\par
+\tab\ul\i asBottomUp\ulnone\i0  [Boolean]. If True, outStream is bottom up array else it is top down\par
+\tab\ul\i X\ulnone\i0  [Long]. Left position of the DIB to return\par
+\tab\ul\i Y\ulnone\i0  [Long]. Top position of the DIB to return\par
+\tab\ul\i Width\ulnone\i0  [Long]. Amount of DIB pixels (Scan Line) to return per row\par
+\tab\ul\i Height\ulnone\i0  [Long]. Amount of DIB rows to return\par
+\tab Return value is True if the array was populated\par
+\par
+\b GetOriginalFormat \b0 (Function). Retrieves any cached original source image bytes.\par
+\tab\ul\i outStream\ulnone\i0  [Byte Array]. An array to hold the retrieved bytes. The aarray will be zero-bound on return\par
+\tab Return value is True if the array was populated\par
+\par
+\b GetDIBbits \b0 (Function). Retrieves the DIB bytes in various formats.  See SetDIBbits\par
+\tab\ul\i outStream\ulnone\i0  [Byte Array]. An array to hold the retrieved bytes, always returned as zero-bound\par
+\tab\ul\i as2dArray\ulnone\i0  [Boolean]. If True, outStream is 2 dimensional else 1 dimensional\par
+\tab\ul\i asBGRformat\ulnone\i0  [Boolean]. If True, outStream is formatted as BGR else RGB\par
+\tab\ul\i as32bpp\ulnone\i0  [Boolean]. If True, outStream is 4 bytes per pixel including alpha byte else pixels are 3 bytes\par
+\tab\ul\i asWordAligned\ulnone\i0  [Boolean]. If True, outStream rows are word aligned else byte aligned\par
+\tab\ul\i asBottomUp\ulnone\i0  [Boolean]. If True, outStream is bottom up array else it is top down\par
+\tab\ul\i X\ulnone\i0  [Long]. Left position of the DIB to return\par
+\tab\ul\i Y\ulnone\i0  [Long]. Top position of the DIB to return\par
+\tab\ul\i Width\ulnone\i0  [Long]. Amount of DIB pixels (Scan Line) to return per row\par
+\tab\ul\i Height\ulnone\i0  [Long]. Amount of DIB rows to return\par
+\tab\ul\i asPreMultiplied\ulnone\i0  [Boolean]. If True, outStream is premultiplied pixels else premultiplication is removed\par
+\tab Return value is True if the array was populated\par
+\par
+\b GetDroppedFileNames \b0 (Function). Provides unicode support for file names/paths that contain non-ANSI characters whereas VB does not. This function is designed to be called from your form/control's OLEDragDrop event. The passed Data object is modified so that any of the dropped file names are unicode vs ANSI as needed. See also GetPastedFileNames\par
+\tab\ul\i OLEDragDrop_DataObject\ulnone\i0  [Data Object]. The data object passed as the Data parameter in the OLEDragDrop event \par
+\tab Return value is True if the passed Data object contains any file names\par
+\b\par
+GetPastedFileNames \b0 (Function). Provides unicode support for file names/paths that contain non-ANSI characters whereas VB does not. This function is designed to be called from anywhere in your code where you would like the Clipboard checked to see if it contains files, generally in the KeyDown event checking for Ctrl+V.  See also GetDroppedFileNames\par
+\tab\ul\i ListOfFiles\ulnone\i0  [String Array]. A dynamically declared string array. Array will be one-bound if populated. \par
+\tab Return value is number of files in the Clipboard, if any. If zero is returned the string array should be considered null\par
+\par
+\b GetPixel \b0 (Function). Retrieves the color and alpha value of a DIB pixel. The X,Y coordinates are always 0,0 for the top, left coordinate of the DIB image. See SetPixel\par
+\tab\ul\i X\ulnone\i0  [Long]. The left coordinate of the pixel to retrieve.\par
+\tab\ul\i Y\ulnone\i0  [Long]. The top coordinate of the pixel to retrieve.\par
+\tab\ul\i AlphaValue\ulnone\i0  [Long]. Optional. Will contain the alpha value of the pixel\par
+\tab\ul\i asPreMultiplied\ulnone\i0  [Boolean]. If True the return value will be the premultiplied value else it will not\par
+\tab Return value is the RGB value of the pixel.  A value of -1 indcates invalid X,Y coordinates\par
+\par
+\b Handle\b0  (Read-Only Property)[Long]. Returns the handle of the current image. If no DIB is created, the return value is zero.\par
+\tab Tip: Always reference this property to determine if the class is managing a DIB. \par
+\tab You should never select the DIB handle into your own DC, rather call LoadDIBinDC(True) to retrieve a DC handle that will also contain the DIB.\par
+\par
+\b Height\b0  (Read-Only Property)[Long]. Returns height, in pixels, of the current image. Use Resize or CopyImageTo to change image dimensions\par
+\par
+\b HighQualityInterpolation\b0  (Property)[Boolean]. Sets/Returns whether or not fast interpolation or high quality interpolation will be used when an image is rendered in a different scale  to its original dimensions or if the image is rotated. By default, when GDI+ exists on the system, this value is set to True when a new class is created.\par
+\tab Note: When value is True then if GDI+ is used to render an image, HighQualityInterpolation used is bicubic else bilinear.\tab When value is False, nearest neighbor interpolation is always used\par
+\par
+\b ImageType\b0  (Property)[Enumeration]. Returns the format of the source image. Setting this property yourself may result in unexpected rendering and or some functions failing. The value will be one of the following\par
+\tab imgError - no DIB has been initialized. The Handle property will be zero, all other properties are invalid\par
+\tab imgNone - no image is currently loaded.\par
+\tab imgBitmap - standard bitmap or JPG image\par
+\tab imgIcon - standard icon image\par
+\tab imgWMF - standard windows meta file\par
+\tab imgEMF - enhanced WMF\par
+\tab imgCursor - standard cursor image\par
+\tab imgBmpARGB - 32bpp bitmap where RGB is not pre-multiplied\par
+\tab imgBmpPARGB - 32bpp bitmap where RGB is pre-multiplied\par
+\tab imgIconARGB - XP-type icon that uses 32bpp ARGB\par
+\tab imgGIF - standard GIF. If the Alpha property is True then the GIF is transparent\par
+\tab imgPNG - standard PNG image\par
+\tab imgPNGicon - PNG image encoded in an icon file (Vista)\par
+\tab imgCursorARGB - cursor image the uses 32bpp ARGB\par
+\tab imgCheckerBoard = 64 - image created by calling the CreateCheckerBoard function\par
+\par
+\tab Note: Parsers cannot process all image formats. For example, Tiff files are not processed by the parsers, but if GDI+ is available on the system, then Tiff and other formats recognized by GDI+ can be used.  However, any file processed by GDI+ and not by the parsers will be converted to PNG format internally.\par
+\par
+\b InitializeDIB\b0  (Function). Creates a blank DIB of the specified size. The DIB is 100% transparent.\par
+\tab\ul\i NewWidth\ulnone\i0  [Long]. The width of the image\par
+\tab\ul\i NewHieght\ulnone\i0  [Long]. The height of the image. Negative values will be converted to positive values.\par
+\tab Return value is True if no errors occurred.\par
+\par
+\tab Note: When a DIB is first initialized, its Alpha property is AlphaSimple and its ImageType property is imgNone.\par
+\par
+\b isAlphaBlendFriendly\b0  (Property)[Boolean]. Sets/Returns whether or not the AlphaBlend API may be used for rendering. See Rendering Method table above. The return value is dependent upon operating system version not dll availability.\par
+\par
+Note: You may override this by setting it to True. If so, it will only accept the override if the operating system is Windows 98 or ME.  Do not override this setting unless you are absolutely sure the DC you are rendering too contains a device dependent bitmap (DDB) vs device independent bitmap (DIB).  If you selected, into a DC, a bitmap created with CreateCompatibleBitmap then the bitmap is DDB.  AlphaBlend, when rendering to DIBs and stretching the image can crash the application on Win9x systems.\par
+\par
+\b isGDIplusEnabled\b0  (Property)[Boolean]. Sets/Returns whether or not GDI+ can be used for rendering. See Rendering Method table above.\par
+\par
+\b isZlibEnabled \b0 (Read-Only Property)[Boolean]. Returns whether or not the zLib.dll is available. This is required to apply optional parameters to PNG files when PNG files are saved.  It is also required to save images to PNG format if GDI+ is not available. See PngPropertyGet and PngPropertySet.\par
+\par
+\b KeepGDIplusActive\b0  (Property)[Boolean].  Sets/Returns whether GDI+ objects will be maintained until DIB is destroyed.  This property \ul should NOT\ulnone  be used if you execute END statements in your code and \ul should NOT\ulnone  be used during IDE.  Executing END or terminating your project with END will cause GDI+ crashes.  This setting, when true, can significantly enhance rendering speed of larger images when those images are rendered often.  If the isGDIplusEnabled property returns false, this property cannot be activated.\par
+\par
+Tip. If you want to use this property, create a routine that you can call to test if the project is compiled or not.  Example:\par
+\tab Public Function IsInIDE(bInIde As Boolean) As Boolean\par
+ \tab\tab bInIde = True\par
+\tab\tab IsInIDE = bInIde\par
+\tab End Function\par
+\par
+\tab ' then to use the new function and set the property\par
+\tab Dim bIDE As Boolean\par
+\tab Debug.Assert IsInIDE(bIDE) ' Debug statements are never compiled, so it is executed only in IDE.\par
+\tab class.KeepGDIplusActive = bIDE\par
+\par
+\b LoadDIBinDC\b0  (Function). Loads or removes the DIB from a device context (DC).  \par
+\tab\ul\i bLoad\ulnone\i0  [Boolean].  If True the DIB is loaded into a DC and the DC handle is returned as the function value. If False then the DIB is unloaded from the DC and the DC is destroyed unless ManageOwnDC is True.\par
+\par
+\b LoadPicture_ByHandle\b0  (Function). Creates a DIB based off of the passed image handle.\par
+\tab\ul\i Handle\ulnone\i0  [Long].  A handle to an existing image.\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b LoadPicture_Clipboard \b0 (Function). Creates a DIB based off of the clipboard image, if any.\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b LoadPicture_DroppedFiles\b0  (Function). Creates a DIB based from the passed DataObject. Supports unicode.\par
+\tab\ul\i DragDrop_DataObject\ulnone\i0  [Data Object]. The data object passed as the Data parameter in the OLEDragDrop event \par
+\tab\ul\i FileIndex\ulnone\i0  [Long]. The DataObject File index to be loaded. Default is one.\par
+\tab\ul\i iconCx\ulnone\i0  [Long]. If file is an icon file, desired width of the icon should the file contain multiple icon sizes. Default is 32\par
+\tab\ul\i iconCy\ulnone\i0  [Long]. If file is an icon file, desired height of the icon should the file contain multiple icon sizes. Default is 32\par
+\tab\ul\i SaveFormat\ulnone\i0  [Boolean]. If True, then the file will be cached and can be retrieved by GetOriginalFormat\par
+\tab\ul\i iconBitDepth\ulnone\i0  [Long]. If file is an icon, desired bit depth of the icon should file contain multiple icons. Default is 32\par
+\tab Return value is True if no errors occurred.\par
+\b\par
+LoadPicture_File\b0  (Function). Creates a DIB based off of the passed file. Supports unicode.\par
+\tab\ul\i FileName\ulnone\i0  [String]. The full path and file name of the image to be used.\par
+\tab\ul\i iconCx\ulnone\i0  [Long]. If file is an icon file, desired width of the icon should the file contain multiple icon sizes. Default is 32\par
+\tab\ul\i iconCy\ulnone\i0  [Long]. If file is an icon file, desired height of the icon should the file contain multiple icon sizes. Default is 32\par
+\tab\ul\i SaveFormat\ulnone\i0  [Boolean]. If True, then the file will be cached and can be retrieved by GetOriginalFormat\par
+\tab\ul\i iconBitDepth\ulnone\i0  [Long]. If file is an icon, desired bit depth of the icon should file contain multiple icons. Default is 32\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b LoadPicture_FromOriginalBytes\b0  (Function).  Recreates the DIB using the locally cached bytes. See LoadPicture_File and  LoadPicture_Stream functions\rquote  SaveFormat parameter.\par
+\tab\ul\i iconCx\ulnone\i0  [Long]. If source is an icon, desired width of the icon should source contain multiple icon sizes. Default is 32\par
+\tab\ul\i iconCy\ulnone\i0  [Long]. If source is an icon, desired height of the icon should source contain multiple icon sizes. Default is 32\par
+\tab\ul\i iconBitDepth\ulnone\i0  [Long]. If source is an icon, desired bit depth of icon should source contain multiple icons. Default is 32\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b LoadPicture_PastedFiles\b0  (Function). Creates a DIB based on one or more pasted files. Supports unicode.\par
+\tab\ul\i FileIndex\ulnone\i0  [Long]. The DataObject File index to be loaded. Default is one. If zero is passed, then only the FileCount parameter is filled in.\par
+\tab\ul\i iconCx\ulnone\i0  [Long]. If file is an icon file, desired width of the icon should the file contain multiple icon sizes. Default is 32\par
+\tab\ul\i iconCy\ulnone\i0  [Long]. If file is an icon file, desired height of the icon should the file contain multiple icon sizes. Default is 32\par
+\tab\ul\i SaveFormat\ulnone\i0  [Boolean]. If True, then the file will be cached and can be retrieved by GetOriginalFormat\par
+\tab\ul\i iconBitDepth\ulnone\i0  [Long]. If file is an icon, desired bit depth of the icon should file contain multiple icons. Default is 32\par
+\tab\i FileCount\i0  [Out Long]. Returns the number of files that were pasted.\par
+\tab Return value is True if no errors occurred.\par
+\b\par
+LoadPicture_Resource\b0  (Function). Creates a DIB using the passed resource file section and identifier.\par
+\tab\ul\i ResIndex\ulnone\i0  [Variant]. Either a numerical or string identifier of the resource item to be used, i.e., 101\par
+\tab\ul\i ResSection\ulnone\i0  [Variant]. Either a numerical or string section name, i.e., vbResBitmap, "Custom", etc\par
+\tab\ul\i VbGlobal\ulnone\i0  [IUknown]. Pass as VB.GLOBAL. Must be used if class exists in a DLL/OCX not compiled into your project\par
+\tab\ul\i iconCx\ulnone\i0  [Long]. If source is an icon, desired width of the icon should source contain multiple icon sizes. Default is 32\par
+\tab\ul\i iconCy\ulnone\i0  [Long]. If source is an icon, desired height of the icon should source contain multiple icon sizes. Default is 32\par
+\tab\ul\i streamStart\ulnone\i0  [Long]. If the resource is "Custom", the position in the array where the image begins. Default is zero\par
+\tab\ul\i streamLength\ulnone\i0  [Long]. If the resource is "Custom", the number of bytes containing the image. Default is entire array.\par
+\tab\ul\i iconBitDepth\ulnone\i0  [Long]. If source is an icon, desired bit depth of icon should source have multiple icons. Default is 32\par
+\tab Return value is True if no errors occurred.\par
+\tab\par
+\b LoadPicture_StdPicture \b0 (Function). Creates a DIB using the passed stdPicture object. Recommend storing 32bpp stdPicture data in the Custom section of a Resource file and using LoadPicture_Resource function instead.\par
+\tab\ul\i Picture\ulnone\i0  [stdPicture]. A valid stdPicture containing the image to be used\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b LoadPicture_Stream\b0  (Function). Creates a DIB based on the passed byte array (stream)\par
+\tab\ul\i iconCx\ulnone\i0  [Long]. If array is an icon, desired width of the icon should array contain multiple icon sizes. Default is 32\par
+\tab\ul\i iconCy\ulnone\i0  [Long]. If array is an icon, desired height of the icon should array contain multiple icon sizes. Default is 32\par
+\tab\ul\i streamStart\ulnone\i0  [Long]. The position in the array where the image begins. Default is zero\par
+\tab\ul\i streamLength\ulnone\i0  [Long]. The number of bytes containing the image. Default is entire array.\par
+\tab\ul\i SaveFormat\ulnone\i0  [Boolean]. If True, then the file will be cached and can be retrieved by GetOriginalFormat\par
+\tab\ul\i iconBitDepth\ulnone\i0  [Long]. If array is an icon, desired bit depth of the icon should array contain multiple icons. Default is 32\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b MakeGrayScale\b0  (Function). Permanently converts the image to grayscale using one of several formulas. To retrieve the full color image, you must reload the DIB or call LoadPicture_FromOriginalBytes if appropriate. See Render, for simultaneous gray scaling while rendering, not modifying the source image.\par
+\tab\ul\i Formula\ulnone\i0  [eGrayScaleFormulas enumeration]. Must be one of the following:\par
+\tab gsclNTSCPAL - uses NTSC/PAL ratios. R=R*.299, G=G*.587, B=B*.114. This is the Default\par
+\tab gsclCCIR709 - uses CCIR 709 ratios. R=R*.213, G=G*.715, B=B*.072\par
+\tab gsclSimpleAvg - uses simple averaging. RGB = (R + G + B) / 3\par
+\tab gsclRedMask - uses only the Red sample value: RGB = R*0.8, G=G*0.1, B=B*0.1\par
+\tab gsclGreenMask - uses only the Green sample value: RGB = R*0.1, G=G*0.8, B=B*0.1\par
+\tab gsclBlueMask - uses only the Blue sample value: RGB = R*0.1, G=G*0.1, B=B*0.8\par
+\tab gsclRedGreenMask - uses Red & Green samples: RGB = R*0.45, G=G*0.45, B=B*0.1\par
+\tab gsclBlueGreenMask - uses Blue & Green samples : RGB = R*0.1, G=G*0.45, B=B*0.45\par
+\tab gsclNone - has no effect on the image colors\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b MakeImageInverse\b0  (Function). Changes all RGB values to their complimentary value, creating a color negative of the original image.  Calling the function again restores the original RGB values.\par
+\tab Return value is True if no errors occur\par
+\par
+\b MakeLighterDarker\b0  (Function). Will add percentage of lightness or darkenss through the entire image.  \par
+\tab\ul\i Percent\ulnone\i0  [Single]. Values between -100 and 100 inclusively. Negative values darken the image.\par
+\par
+\tab Return value is True if image was modified.  Passing zero Percent does not modify the image.\par
+\tab Note: To modify lightness without modifying the image, pass the optional LightAdjustment parameter to the various drawing routines.\par
+\par
+\b MakeTransparent \b0 (Function). Permanently modifies DIB to replace all pixels of the passed color to 100% transparent. The destination pixel not only must match the color but it also must be fully opaque. This function can be called as often as needed to convert multiple colors to transparent. It can also be called to reverse the action\par
+\tab\ul\i TransparentColor\ulnone\i0  [Long]. An RGB color to make transparent throughout the image\par
+\tab\ul\i Revert\ulnone\i0  [Boolean]. If True then all transparent pixels are made opaque as TransparentColor. Default is False\par
+\tab Return value is True if no errors occured \par
+\par
+\b ManageOwnDC\b0  (Property)[Boolean]. Sets/Returns whether or not the class will create and maintain a device context (DC) for its own use. If False, then a DC will be created/destroyed every time the DIB is rendered.\par
+\par
+\b MirrorImage \b0 (Function).  Permanently mirrors an image horizontally, vertically or in both directions. Mirroring an image can be easily unmirrored without any loss to color information.  Mirroring an image also results in faster rendering vs mirroring an image during rendering (see Render's destWidth and/or destHeight description)\par
+\tab\ul\i MirrorAxisX\ulnone\i0  [Boolean]. If True, then the image will be mirrored horizontally\par
+\tab\ul\i MirrorAxisY\ulnone\i0  [Boolean]. If True, then the image will be mirrored vertically \par
+\tab Return value is True if no errors encountered\par
+\par
+\b PngPropertyGet\b0  (Function). Returns the value of PNG options that were created with PngPropertySet. This function requires that the operating system have zLIB.dll, otherwise, properties are ignored. See isZlibEnabled property\par
+\tab\ul\i PropertyID\ulnone  \i0 [ePngProperties enumeration]. Must be one of the following:\par
+\tab     \tab pngProp_Title - Short (one line) title or caption for image. Return is null if property not set\par
+\tab     \tab pngProp_Author - Name of image's creator. Return is null if property not set\par
+    \tab\tab pngProp_Description - Description of image. Return is null if property not set\par
+\tab     \tab pngProp_Copyright - Copyright notice. Return is null if property not set\par
+    \tab\tab pngProp_CreationTime - Creation Time of original image creation. Return is null if property not set\par
+\tab     \tab pngProp_Software - Software used to create the image. Return is null if property not set\par
+    \tab\tab pngProp_Disclaimer - Legal disclaimer. Return is null if property not set\par
+\tab     \tab pngProp_Warning - Warning or nature of content. Return is null if property not set\par
+    \tab\tab pngProp_Source - Device used to create the image. Return is null if property not set\par
+\tab     \tab pngProp_Comment - Comment. Return is null if property not set\par
+    \tab\tab pngProp_Miscellaneous - miscellaneous, can contain most any text and size.. Return is null if property not set\par
+\tab     \tab pngProp_DefaultBkgColor - color a viewer can opt to render against when the viewer only supports rendering against solid backgrounds. Return is -1 if not set\par
+    \tab\tab pngProp_dateTimeModified - date/time when the PNG was last modified. Return is CDate(0) if not set\par
+\tab     \tab pngProp_filterMethod - one of 5 PNG precompression filtering methods. Return is filterDefault if not set\par
+\tab\tab pngProp_ClearProps - ignored\par
+\tab\ul\i LargeBlockCaption\ulnone\i0  [String]. When PropertyID is pngProp_Miscellaneous, then this is the user-supplied caption for that property, otherwise the parameter is not used.\par
+\tab Return value depends on the PropertyID.\par
+\par
+\b PngPropertySet\b0  (Function). Sets/Removes one of several PNG options that can be added to a PNG file or effect how the PNG is compressed. By not passing the optional PropertyValue parameter, any existing property is removed.  This function requires that the operating system have zLIB.dll, otherwise, properties are ignored. See isZlibEnabled property\par
+\tab\ul\i PropertyID\ulnone  \i0 [ePngProperties enumeration]. Must be one of the following:\par
+\tab     \tab pngProp_Title - Short (one line) title or caption for image. Caption is always Title\par
+\tab     \tab pngProp_Author - Name of image's creator. Caption is always Author\par
+    \tab\tab pngProp_Description - Description of image. Caption is always Description\par
+\tab     \tab pngProp_Copyright - Copyright notice. Caption is always Copyright\par
+    \tab\tab pngProp_CreationTime - Creation Time of original image creation.  Caption is always Creation Time\par
+\tab     \tab pngProp_Software - Software used to create the image. Caption is always Software\par
+    \tab\tab pngProp_Disclaimer - Legal disclaimer. Caption is always Disclaimer\par
+\tab     \tab pngProp_Warning - Warning or nature of content. Caption is always Warning\par
+    \tab\tab pngProp_Source - Device used to create the image. Caption is always Source\par
+\tab     \tab pngProp_Comment - Comment. Caption is always Comment\par
+    \tab\tab pngProp_Miscellaneous- miscellaneous, can contain most any text and size. See pngProp_Miscellaneous parameter\par
+\tab     \tab pngProp_DefaultBkgColor - color a viewer can opt to render against when the viewer only supports rendering against solid backgrounds. Return is -1 if not set\par
+    \tab\tab pngProp_dateTimeModified - date/time when the PNG was last modified. Must return True from IsDate() function.\par
+\tab     \tab pngProp_FilterMethod- one of 5 PNG precompression filtering methods. \par
+\tab\tab\tab\ul Must be one of the following [\i eFilterMethod enumerations\i0 ]\ulnone\par
+    \tab\tab\tab filterDefault. Paeth filter will be applied for non-paletted image, filterNone for paletted. \par
+\tab\tab     \tab filterNone. No filtering will be done on the bytes before they are compressed. Fastest & rivals GDI+\par
+    \tab\tab\tab filterAdjLeft. Bytes are compared with their adjacent neighbors to the left\par
+    \tab\tab\tab filterAdjTop. Bytes are compared with their adjacent neighbors above\par
+    \tab\tab\tab filterAdjAvg. A combination of filterAdjLeft and filterAdjTop\par
+    \tab\tab\tab filterPaeth. Uses the Paeth algorithm for predicting the next byte in the image\par
+    \tab\tab\tab filterAdaptive. A best guess method that can combine all filter methods. Slowest\par
+\tab\tab pngProp_ClearProps. Removes/resets all properties. No other parameters are required or used.\par
+\tab\ul\i PropertyValue\ulnone\i0  [Variant]. Do not pass this parameter if you want the property removed, otherwise, pass desired value \par
+\tab\ul\i LargeBlockCaption\ulnone\i0  [String].  When PropertyID is pngProp_Miscellaneous, then this is the user-supplied, non-null, caption for that property. The caption is restricted to 79 characters and can only contain ASCII characters 32 to 126 and 161 to 255. \par
+\tab Return value is True if the property was set or removed.\par
+\par
+\tab Notes: \par
+\tab 1. The first 10 ePngProperty enumerations are PNG reserved. The captions of these cannot be altered.\par
+\tab 2. The txtLargeBlockText property has a limit of 32700 characters. Multiple txtLargeBlock properties can be set\par
+\tab 3. The dateTimeModified property should be provided as Greenwich Mean Time (GMT/Zulu), but is not enforced\par
+\tab 4. The txtCreationTime should also be GMT format, but also is not enforced. This property is text not a date variable\par
+\tab 5. Once these class properties are set, they are forever applied until function is called again with ClearAllProperties\par
+\tab\par
+\b Render\b0  (Function). Renders/draws the DIB to the passed device context (DC).\par
+\tab\ul\i destinationDC\ulnone\i0  [Long]. A valid DC handle where rendering will be performed. Ignored if destHostDIB is not nothing\par
+\tab\ul\i destX\ulnone\i0  [Long]. The left edge of the DC where rendering will occur. Default is zero\par
+\tab\ul\i destY\ulnone\i0  [Long]. The top edge of the DC where rendering will occur. Default is zero\par
+\tab\ul\i destWidth\ulnone\i0  [Long]. The width of the DC that will be rendered to. Default is image width\par
+\tab\ul\i destHeight\ulnone\i0  [Long]. The height of the DC that will be rendered to. Default is image height\par
+\tab\ul\i srcX\ulnone\i0  [Long]. The left edge of the source image to be rendered. Default is zero\par
+\tab\ul\i srcY\ulnone\i0  [Long]. The top edge of the source image to be rendered. Default is zero\par
+\tab\ul\i srcWidth\ulnone\i0  [Long]. The width of the source image that will be rendered. Default is image width\par
+\tab\ul\i srcHeight\ulnone\i0  [Long]. The height of the source image that will be rendered. Default is image height\par
+\tab\ul\i Opacity\ulnone\i0  [Long]. A value between 0 and 100 where 0 is fully transparent and 100 is fully opaque. Default is 100\par
+\tab\ul\i Blend\ulnone\i0  [Long]. \b Reserved\b0 . No longer used. Remains for backward compatibility.\par
+\tab\ul\i SetHalfTone\ulnone\i0  [Boolean]. Determines it the destination DC stretching ability set to higher quality. Default is True\par
+\tab\ul\i destHostDIB\ulnone\i0  [c32bppDIB class]. When rendering from DIB class to DIB class, include the target DIB class.\par
+\tab\tab This parameter ensures proper rendering when AlphaBlend and GDI+ cannot be used\par
+\tab\ul\i grayScale\ulnone\i0  [eGrayScaleFormulas enumeration]. Gray scales. See MakeGrayscale function for formula descriptions\par
+\tab\ul\i LightAdjustment\ulnone\i0  [Single]. Adds darkness/lightness to the rendered image. Valid values are -100 to 100 percent\par
+\tab\tab Negative values make image darker, positive values add lightness\par
+\tab\ul\i Angle\ulnone\i0  [Single]. A valid angle between the range of -360.0 to 360.0 degrees\par
+\tab\ul\i CenterOnDestXY\ulnone\i0  [Boolean]. If True then rendering occurs centered around DestX and DestY\par
+\tab Return value is True if no errors occurred.\par
+\tab\par
+\tab Notes: \par
+\tab 1. If srcWidth and destWidth have different signs (+,-), then the image will be horizontally mirrored. See MirrorImage\par
+\tab 2. If srcHeight and destHeight have different signs (+,-), then the image will be vertically mirrored. See MirrorImage\par
+\tab 3. If Angle is not zero, rotation is clockwise. For counter-clockwise rotation use negative angles \par
+\par
+\b RenderDropShadow_JIT\b0  (Function) . Creates a \ldblquote Just In Time (JIT)\rdblquote  drop shadow using the current DIB\rquote s image. No scaling, mirroring or rotation options are provided. See CreateDropShadow function for more flexibility.\par
+\tab\ul\i hDC\ulnone\i0  [Long]. The destination DC to render the drop shadow to.  Ignored if destHostDIB is not nothing\par
+\tab\ul\i X\ulnone\i0  [Long]. The left edge of the DC to begin rendering to\par
+\tab\ul\i Y\ulnone\i0  [Long]. The top edge of the DC to begin rendering to\par
+\tab\ul\i blurDepth\ulnone\i0  [Long]. Valid values are between zero and ten. Determines fuzziness of the shadow\par
+\tab\ul\i Color\ulnone\i0  [Long]. A valid RGB color of the shadow.\par
+\tab\ul\i Opacity\ulnone\i0  [Long]. A value between 0 and 100 where 0 is fully transparent and 100 is fully opaque. Default is 50\par
+\tab\ul\i LightAdjustment\ulnone\i0  [Single]. Adds darkness/lightness to the rendered image. Valid values are -100 to 100 percent\par
+\tab\tab Negative values make image darker, positive values add lightness\par
+\tab\ul\i destHostDIB\ulnone\i0  [c32bppDIB class]. When rendering from DIB class to DIB class, include the target DIB class.\par
+\tab\tab This parameter ensures proper rendering when AlphaBlend and GDI+ cannot be used\par
+\tab Return value is True if no errors occurred\par
+\par
+\tab Tip: Not recommended for large images. Recommend using CreateDropShadow for large images\par
+\tab Tip: When rendering, generally you offset its X,Y rendering position plus or minus the value of the blurDepth value.\par
+\par
+\b Resize\b0  (Function). Permanently resizes the DIB to the passed dimensions. The image is scaled/stretched to those dimensions.  See ScaleImage and also LoadPicture_FromOriginalBytes.\par
+\tab\ul\i NewWidth\ulnone\i0  [Long]. The width to be used for the DIB. Negative value will mirror the image horizontally\par
+\tab\ul\i NewHeight\ulnone\i0  [Long]. The height to be used for the DIB. Negative value will mirror the image vertically\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b RotateAtCenterPoint\b0  (Function). Renders a rotated image to the passed device context (DC), centered on the coordinates passed. Rotation is clockwise.  \b SUPERSEDED. See Render\rquote s Angle & CenterOnDestXY parameters\b0\par
+\par
+\b RotateAtTopLeft\b0  (Function). Renders a rotated image to the passed device context (DC), aligning rendered image to coordinates passed. Rotation is clockwise. \b SUPERSEDED. See Render\rquote s Angle & CenterOnDestXY parameters\b0\par
+\par
+\b SaveToFile_Bitmap\b0  (Function). Saves the current DIB to a file as a bitmap in a 32bpp pre-multiplied RGB format. If no transparency is used, the file is saved in 24bpp RGB format.  See also GetOriginalFormat\par
+\tab\ul\i FileName\ulnone\i0  [String]. The full existing path and a file name to save the image to. If not accessible, the function fails\par
+\tab\ul\i KeepPremultipliedPixels\ulnone\i0  [Boolean]. If True, the image will be saved in 32bpp pre-multiplied pixel format, otherwise, image is rendered to 24bpp format over TransparentFillColor\par
+\tab\ul\i TransparentFillColor\ulnone\i0  [Long] The background color to render the image over if the image has transparency.  This color has no meaning if the image is 100% opaque.\par
+\tab\ul\i PromptOverwrite\ulnone\i0  [Boolean]. If True then user will be prompted with overwrite confirmation otherwise any pre-existing file at that path will be overwritten.\par
+\tab Return value is True if no errors occurred.\par
+\par
+\b SaveToFile_GIF\b0  (Function). Saves the current DIB to a file in GIF format.  The resulting GIF can be compressed any where between 2 to 8 bits, depending on color quantity of the image itself.\par
+\tab\ul\i FileName\ulnone\i0  [String]. The full existing path and a file name to save the image to. If not accessible, the function fails\par
+\tab\ul\i UseAdaptivePalette\ulnone\i0  [Boolean]. Is used when the image contains more than 256 individual colors. If True, then a palette is created that contains the most used colors within the image. If False, then a standard web-safe palette will be used. \par
+\tab\ul\i OpaquenessTolerance\ulnone\i0  [Byte]. Value between 1 and 254. Value indicates at what level of opaqueness a pixel must be to be considered fully opaque.  If Value is high then very little blending is returned in the image. If value is low, then most blended pixels will be rendered as opaque. This setting is only applied to per-pixel blended images.\par
+\tab\ul\i PromptOverwrite\ulnone\i0  [Boolean]. If True then user will be prompted with overwrite confirmation otherwise any pre-existing file at that path will be overwritten.\par
+\tab Return value is True if no errors occurred or if no image exists\par
+\par
+\b SaveToFile_JPG\b0  (Function). Saves the current DIB to a file in JPG format. \par
+\tab\ul\i FileName\ulnone\i0  [String]. The full existing path and a file name to save the image to. If not accessible, the function fails\par
+\tab\ul\i Quality\ulnone\i0  [Long] A value between 30 and 100 that determines the JPG's quality. Default is 80\par
+\tab\ul\i TransparentFillColor\ulnone\i0  [Long] The background color to render the image over if the image has transparency.  This color has no meaning if the image is 100% opaque.\par
+\tab\ul\i PromptOverwrite\ulnone\i0  [Boolean]. If True then user will be prompted with overwrite confirmation otherwise any pre-existing file at that path will be overwritten.\par
+\tab Return value is True if no errors occurred \par
+\b\par
+SaveToFile_PNG\b0  (Function). Saves the current DIB to a file in PNG format. Must have GDI+ or zLib on the system. See isGDIplusEnabled and isZlibEnabled.  If PNG properties (PngPropertySet) are applied, then zLib is used vs GDI+\par
+\tab\ul\i FileName\ulnone\i0  [String]. The full existing path and a file name to save the image to. If not accessible, the function fails\par
+\tab\ul\i PromptOverwrite\ulnone\i0  [Boolean]. If True then user will be prompted with overwrite confirmation otherwise any pre-existing file at that path will be overwritten.\par
+\tab Return value is True if no errors occurred. If no image exists or zLib/GDI+ is not available then the function fails\par
+\par
+\b SaveToFile_TGA\b0  (Function). Saves the current DIB to a file in TGA format. \par
+\tab\ul\i FileName\ulnone\i0  [String]. The full existing path and a file name to save the image to. If not accessible, the function fails\par
+\tab\ul\i Compress\ulnone\i0  [Boolean] If True, image is first compressed\par
+\tab\ul\i ReduceBitDepth\ulnone\i0  [Boolean] If True, image will be converted to 256 color 8bpp if possible. Non-alpha images only\par
+\tab\ul\i AllowPreMultipliedPixels\ulnone\i0  [Boolean] If False, pixels are converted to not pre-multiplied. Applies for alpha images only.\par
+\tab\ul\i PromptOverwrite\ulnone\i0  [Boolean]. If True then user will be prompted with overwrite confirmation otherwise any pre-existing file at that path will be overwritten.\par
+\tab Return value is True if no errors occurred.\par
+\b\par
+SaveToStream_Bitmap\b0  (Function). Returns the current DIB to an array in a 32bpp pre-mulitplied RGB format. If no transparency is used, the stream is saved in 24bpp RGB format. The format does include the complete DIB header information, not just the color information.  See also GetOriginalFormat \par
+\tab\ul\i outStream\ulnone\i0  [Byte Array]. The array to hold the retruned bytes\par
+\tab Return value is True if no errors occurred. If no image exists the function fails\par
+\tab\ul\i KeepPremultipliedPixels\ulnone\i0  [Boolean]. If True, the image will be saved in 32bpp pre-multiplied pixel format, otherwise, image is rendered to 24bpp format over TransparentFillColor\par
+\tab\ul\i TransparentFillColor\ulnone\i0  [Long] The background color to render the image over if the image has transparency.  This color has no meaning if the image is 100% opaque.\par
+\par
+\b SaveToStream_GIF\b0  (Function). Returns the current DIB to an array in GIF format.  The resulting GIF may be compressed any where between 2 to 8 bits, depending on color quantity of the image itself.\par
+\tab\ul\i outStream\ulnone\i0  [Byte Array]. The array to hold the retruned bytes\par
+\tab\ul\i UseAdaptivePalette\ulnone\i0  [Boolean]. Is used when the image contains more than 256 individual colors. If True, then a palette is created that contains the most used colors within the image. If False, then a standard web-safe palette will be used. \par
+\tab\ul\i OpaquenessTolerance\ulnone\i0  [Byte]. Value between 1 and 254. Value indicates at what level of opaqueness a pixel must be to be considered fully opaque.  If Value is high then very little blending is returned in the image. If value is low, then most blended pixels will be rendered as opaque. This setting is only applied to per-pixel blended images.\par
+\tab Return value is True if no errors occurred or if no image exists\par
+\par
+\b SaveToStream_JPG\b0  (Function). Returns the current DIB to an array in JPG format. Must have GDI+ on the system. See isGDIplusEnabled.  The format does include the complete JPG header information, not just the color information.\par
+\tab\ul\i outStream\ulnone\i0  [Byte Array]. The array to hold the retruned bytes\par
+\tab\ul\i Quality\ulnone\i0  [Long] A value between 30 and 100 that determines the JPG's quality. Default is 80\par
+\tab\ul\i TransparentFillColor\ulnone\i0  [Long] The background color to render the image over if the image has transparency.  This color has no meaning if the image is 100% opaque.\par
+\tab Return value is True if no errors occurred \par
+ \par
+\b SaveToStream_PNG\b0  (Function). Returns the current DIB to an array in PNG format. Must have GDI+ or zLib on the system. See isGDIplusEnabled and isZlibEnabled.  If PNG properties (PngPropertySet) are applied, then zLib is used vs GDI+. The format does include the complete PNG header information, not just the color information.\par
+\tab\ul\i outStream\ulnone\i0  [Byte Array]. The array to hold the retruned bytes\par
+\tab Return value is True if no errors occurred. If no image exists or zLib/GDI+ is not available then the function fails\par
+ \par
+\b SaveToStream_TGA\b0  (Function). Returns the current DIB to an array in TGA format. The format does include the complete TGA header and footer information, not just the color information.\par
+\tab\ul\i outStream\ulnone\i0  [Byte Array]. The array to hold the retruned bytes\par
+\tab\ul\i Compress\ulnone\i0  [Boolean] If True, image is first compressed\par
+\tab\ul\i ReduceBitDepth\ulnone\i0  [Boolean] If True, image will be converted to 256 color 8bpp if possible. Non-alpha images only\par
+\tab\ul\i AllowPreMultipliedPixels\ulnone\i0  [Boolean] If False, pixels are converted to not pre-multiplied. Applies for alpha images only\par
+\tab Return value is True if no errors occurred.\par
+ \par
+\b ScaleImage\b0  (Subroutine). Returns the scaled width and height to be used in relation to the passed desired width and height. This routine does not modify the image, it only returns values.\par
+\tab\ul\i destWidth\ulnone\i0  [Long]. The desired width of the image\par
+\tab\ul\i destHeight\ulnone\i0  [Long]. The desired height of the image\par
+\tab\ul\i NewWidth\ulnone\i0  [Long]. The scaled width in relation to the desired width\par
+\tab\ul\i NewHeight\ulnone\i0  [Long]. The scaled height in relation to the desired height\par
+\tab\ul\i ScaleMode\ulnone\i0  [eScaleOptions Enumeration]. Must be one of the following:\par
+\tab scaleToSize - NewWidth & NewHeight will be scaled proportionally to destWidth & destHeight respectively. Default\par
+\tab scaleStretch - NewWidth & NewHeight are not proportionally scaled. Image can be distorted\par
+\tab scaleDownAsNeeded - Same as scaleToSize except the NewWidth & NewHeight will never be greater than the DIB's current width and height.\par
+\par
+\b ScanWidth\b0  (Read-Only Property)[Long]. Returns the number of bytes per scan line of the current DIB\par
+\par
+\b SetDIBbits \b0 (Function). Updates DIB pixels with the bytes in the passed array. The pixels may be premultiplied or not. See GetDIBbits\par
+\tab\ul\i inStream\ulnone\i0  [Byte Array]. An array containing the bytes used to update the DIB. Array can be any dimension\par
+\tab\ul\i isBGRformat\ulnone\i0  [Boolean]. If True, inStream is formatted as BGR else RGB\par
+\tab\ul\i is32bpp\ulnone\i0  [Boolean]. If True, inStream is 4 bytes per pixel including alpha byte else pixels are 3 bytes\par
+\tab\ul\i isWordAligned\ulnone\i0  [Boolean]. If True, inStream rows are word aligned else byte aligned\par
+\tab\ul\i isBottomUp\ulnone\i0  [Boolean]. If True, inStream is bottom up array else it is top down\par
+\tab\ul\i dstX\ulnone\i0  [Long]. Left position of the DIB to update\par
+\tab\ul\i dstY\ulnone\i0  [Long]. Top position of the DIB to update\par
+\tab\ul\i dstWidth\ulnone\i0  [Long]. Amount of pixels to update (Scan Line) per row\par
+\tab\ul\i dstHeight\ulnone\i0  [Long]. Amount of DIB rows to update\par
+\tab Return value is True if the DIB was updated\par
+\par
+\tab Note: Premultiplication of pixels against the alpha channel will be validated and premultiplication will be performed if needed, using the following logic.  Passing 24 bit pixels without the alpha channel will result in the pixels being premultiplied against the existing DIB alpha channel, even if the channel is all zeros.  Passing 32 bit pixels will result in the pixels being premultiplied against the alpha channel provided with the stream, if necessary.\par
+\b\par
+SetPixel \b0 (Function). Sets the color and alpha value of a DIB pixel. The X,Y coordinates are always 0,0 for the top, left coordinate of the DIB image. See GetPixel\par
+\tab\ul\i X\ulnone\i0  [Long]. The left coordinate of the pixel to retrieve.\par
+\tab\ul\i Y\ulnone\i0  [Long]. The top coordinate of the pixel to retrieve.\par
+\tab\ul\i Color\ulnone\i0  [Long]. Optional. Will contain the alpha value of the pixel\par
+\tab\ul\i isPreMultiplied\ulnone\i0  [Boolean]. If True the Color has been premultiplied against the AlphaValue else it was not\par
+\tab Return value non-zero if the pixel was set\par
+\par
+\b SourceIconSizes\b0  (Function). Returns the size, color count and bit depth attributes for each icon in an image loaded from an icon or cursor resource.  If the optional SaveFormat parameter was set during a call to LoadPicture_Stream or LoadPicture_File then the resource may contain multiple icons; otherwise, the resource will contain at most one, itself.\par
+\tab\ul\i SizeArray\ulnone\i0  [Long Array]. An array to hold the returned attributes.\par
+\tab Return value is the number of icons contained within the array.  A return of zero indicates the resource is not an icon\par
+\par
+\tab The returned array will be a two-dimensional array where the second dimension is 0 to number of icons minus one.\par
+\tab The first dimension will contain the following information:\par
+\tab Member 0 : the width of the icon\par
+\tab Member 1:  the height of the icon\par
+\tab Member 2:  the bit depth of the icon; 1, 2, 4, 8, 16, 24, 32\par
+\tab Member 3:  the colors count of the icon:  2, 4, 16, 256, HIGH_COLOR, TRUE_COLOR, TRUE_COLOR_ALPHA\par
+\par
+\b SwapDIB\b0  (Subroutine).  Swaps the contents of one DIB class with another DIB class\par
+\tab\ul\i SwapFromDIB\ulnone\i0  [c32bppDIB class] is the class to swap with\par
+\par
+\b Tag\b0  (Property) [Variant]. Gets/Sets the tag value for the class.  This property is never used by the class. It is user-defined only.  To clear the tag property call Tag = vbEmpty or Set Tag = Nothing\par
+\par
+\b TileImage\b0  (Function). Tiles the DIB across a DC with various optional rendering styles\par
+\tab\ul\i destinationDC\ulnone\i0  [Long]. A valid DC handle where rendering will be performed\par
+\tab\ul\i destX\ulnone\i0  [Long]. The left edge of the DC where rendering will occur\par
+\tab\ul\i destY\ulnone\i0  [Long]. The top edge of the DC where rendering will occur\par
+\tab\ul\i destWidth\ulnone\i0  [Long]. The width of the DC that will be rendered to\par
+\tab\ul\i destHeight\ulnone\i0  [Long]. The height of the DC that will be rendered to\par
+\tab\ul tileWidth\ulnone  [Long]. The horizontal size of the rendered tiles. Default is entire image size\par
+\tab\ul tileHeight\ulnone  [Long]. The vertical size of the rendered tiles. Default is entire image size\par
+\tab\ul\i columnGap\ulnone\i0  [Long]. Spacing between each horizontal tile. Default is zero\par
+\tab\ul\i rowGap\ulnone\i0  [Long]. Spacing between each row of tiles. Default is zero\par
+\tab\ul\i StaggerRows\ulnone\i0  [Boolean]. If true, then alternating rows being 1/2 tileWidth to the left of previous row. Default is False\par
+\tab\ul\i FlipAlternateTilesX\ulnone\i0  [Boolean]. If true, even number tiles are mirrored horizontally. Default is False\par
+\tab\ul\i FlipAlternateTilesY\ulnone\i0  [Boolean]. If true, even number tiles are mirrored vertically. Default is False\par
+\tab\ul\i Opacity\ulnone\i0  [Long]. A value between 0 and 100 where 0 is fully transparent and 100 is fully opaque. Default is 100\par
+\tab\ul\i grayScale\ulnone\i0  [eGrayScaleFormulas enumeration]. Gray scales. See MakeGrayscale function for formula descriptions\par
+\tab\ul\i LightAdjustment\ulnone\i0  [Single]. Adds darkness/lightness to the rendered image. Valid values are -100 to 100 percent\par
+\tab\tab Negative values make image darker, positive values add lightness\par
+\par
+\tab Return value is True if no errors occurred.\par
+\par
+\tab Notes \par
+\tab 1. If tileWidth and tileHeight are negative values, then the image will be mirrored horizontally,vertically respectively\par
+\par
+\b TrimImage\b0  (Function). Returns the top, left, width and height to use when an image should be rendered without any existing transparent borders encoded within the image. Optionally modifies the image to remove transparent edges\par
+\tab\ul\i UpdateDIB\ulnone\i0  [Boolean]. If True then the source DIB will be replaced by the trimmed DIB\par
+\tab\ul\i Method\ulnone\i0  [eTrimOptions Enumeration]. Must be one or more of the following:\par
+\tab\tab trimAll - trims the entire image\par
+\tab\tab trimLeft - trims only the left of the image\par
+\tab\tab trimTop - trims only the top of the image\par
+\tab\tab trimRight - trims only the right of the image\par
+\tab\tab trimBottom - trims only the bottomof the image\par
+\tab\ul\i X\ulnone\i0  [Long]. The first column of pixels, from left edge, that does not contain transparency\par
+\tab\ul\i Y\ulnone\i0  [Long]. The first row of pixels, from top edge, that does not contain transparency\par
+\tab\ul\i Width\ulnone\i0  [Long]. The width of the image after subracting any fully transparent left/right columns\par
+\tab\ul\i Height\ulnone\i0  [Long]. The height of the image after subtracting any fully transparent top/bottom rows\par
+\tab Return value is True if no errors occurred. \par
+\tab\par
+\tab Note: If the image is 100% transparent then the returned Width and/or Height parameters will be zero\par
+\par
+\b Width \b0 (Read-Only Property)[Long]. Returns width, in pixels, of the current image. Use Resize or CopyImageTo to change image dimensions\par
+\par
+\tab\par
+\pard\nowidctlpar\ri-1440\qc\cf2\ul\b FREQUENTLY ASKED QUESTIONS\ulnone\par
+\pard\nowidctlpar\ri-1440\cf0\par
+Q\b0 : How do I get the DC for a DIB?  \par
+\tab\b A\b0 : Call LoadDIBinDC(True) to return a DC handle. You should call LoadDIBinDC(False) when the DIB is no longer needed to be contained inside a DC.  Never select the DIB into your own DC, memory leaks may occur.\par
+\par
+\b Q\b0 : What size destination DIB is needed to render a rotated image to?\par
+\tab\b A\b0 : The maximum size needed for any angle is SQR(Width*Width + Height*Height).\par
+\tab\b Tip\b0 : After rendering the rotated image, call TrimImage function to remove excess transparent pixels before saving\par
+\par
+\b Q\b0 : How do I combine two or more images into a single image?  \par
+\tab\b A\b0 : Load each image to be combined into their own DIB class. Keep track of maximum widths and heights.\par
+\tab\tab Then create a new blank DIB and initialize it to the maximum width and height, set its Alpha property to False if all of the source DIBs Alpha properties = False.  \tab\par
+\tab Then Render each DIB into that new DIB, offsetting for centering or positioning as needed.  Get the required DC handle(s) via the LoadDIBinDC function.  If any of the source images were rotated, you will want to change the destination DIB\rquote s Alpha property to True.  \ul When rendering from DIB class to DIB class\ulnone , always set the optional destHostDIB parameter to the destination DIB class. Also see next FAQ question.\par
+\par
+\b Q\b0 : How do I save an image that is rotated, mirrored, gray scaled, or otherwise modified?\par
+\tab\b A\b0 : Create a new DIB class, initialize it appropriately with the new size as needed and simply render the source image to the new DIB, using whatever rendering modifications you require, set its Alpha property, then save that new DIB.  Non-alpha images when rendered as rotated must set the destination DIB\rquote s Alpha property to True otherwise the rotated image will be surrounded by a black background. \ul When rendering from DIB class to DIB class\ulnone , always set the optional destHostDIB parameter to the destination DIB class.\par
+\tab\b Tip\b0 : After rendering a rotated image, call TrimImage function to remove excess transparent pixels before saving\par
+\par
+\b Q\b0 : Can I save an image to another format besides a 32bpp pre-multiplied RGB format?\par
+\tab\b A\b0 : If zLIB or GDI+ is available, you can save the image to PNG format using SaveToFile_PNG or SaveToStream_PNG. Test GDI+ compatibility by calling isGDIplusEnabled, zLIB compatibility by calling isZlibEnabled\par
+\tab If zLIB/GDI+ is not available, then the answer is no; very few image formats support variable levels of transparency. However if the original bytes were cached during a call to LoadPicture_File or LoadPIcture_Stream, then you can call GetOriginalBytes to retrieve and save those bytes instead. The bytes will be the original format of the image, including the file header.\par
+\par
+\tab\ul Note\ulnone : PNG is an ideal image format to save any image to. An exception could be JPGs only because JPGs saved to PNG produce larger files most of the time. PNGs can be compressed, are color lossless, supports variable levels of transparency, and can be read in these DIB classes on any operating system.  The free GDI+ or zLIB dlls are required to write PNG files, not required to read them.  Additionally, having GDI+ allows other image formats to be used by the classes.  For example, with GDI+, TIFF files can be processed and without GDI+ TIFF files cannot be processed.  As mentioned at top of document, zLIB & GDI+ are free.\par
+\par
+\pard\nowidctlpar\ri-1440\qc\cf2\ul\b CHANGE HISTORY\ulnone\par
+\pard\nowidctlpar\ri-1440\cf0\par
+16 Feb 09\par
+     \b0 - cICOparser: had some faulty logic when parsing icon masks; fixed \par
+     - cPNGparser: had some faulty logic when parsing grayscale PNG transparency; fixed\par
+ \b 9 Nov 08\par
+     \b0 - Added LoadPicture_DroppedFiles and LoadPicture_PastedFiles \par
+     - Added cJPGWriter class. This class has VB-only code that encodes images into JPG format. This class is used only if GDI+ is not available; otherwise, GDI+ will be used by default.\par
+        -- Required modifications in multiple classes\par
+     - SaveToFile_JPG and SaveToStream_JPG have extra parameter: TransparentFIllColor.\par
+        -- Color is used as solid background color when saving images with transparency.\par
+      - Added SaveToGIF and SaveToStream_GIF allowing images to be saved in GIF formats\par
+     - Corrected calculation bug in cPNGWriter that prevented images from being saved in palettized formats (paletted images result in overall smaller PNG images)\par
+     - Changed SaveToFile and SaveToStream to the following: SaveToFile_Bitmap and SaveToStream_Bitmap for consistancy only\par
+     - SaveToFile_Bitmap and SaveToStream_Bitmap have extra parameter: TransparentFIllColor.\par
+        -- Color is used as solid background color when saving images with transparency.\par
+     - SaveToFile_Bitmap and SaveToStream_Bitmap have extra parameter: KeepPreMultipliedPixels\par
+        -- When true image is always saved in 32bpp if it uses an transparency else 24bpp\par
+     - cGIFParser has several new functions to support saving to GIF format\par
+     - modParsers has new function iparseBlendImageToColor\par
+     - Alpha property change from Boolean to new AlphaTypeEnumeration\par
+\b 9 Mar 08\b0\par
+     - Added TGA image support. Includes a new cTGAparser class. TGA supports reading/writing alpha images\par
+     - Added new SaveTo functions: SaveToFile_JPG, SaveToFile_TGA, SaveToStream_JPG & SaveToStream_TGA\par
+       -- The option to save to JPG requires GDI+ on the system\par
+     - Added Paul Caton's latest cdecl thunks to read non-stdCall dll functions (zlib which is one)\par
+\tab -- allowed removal of iparseValidateZLibDLL & iparseSafeOffset functions\par
+\tab -- allowed removing redundancy functions for stdCall & cDecl zlib calls in cPNGparser & cPNGwriter classes\par
+     - Updated the sample project to expose new options\par
+\b 16 Feb 08\b0\par
+     - Added DrawText_StdFont & DrawText_hFont to provide simple text support. Can create a text-only alpha-DIB\par
+     - Added TileImage to allow tiling an image using many options\par
+     - Fixed TrimImage which would not always work as intended\par
+     - Tweaked SwapDIBs to properly handle swapping with a class that contains no DIB handle\par
+     - When possible, SwapDIBs used in routines that modify the class' DIB. Previously, the CopyImageTo function\par
+\tab\tab was called to render the updated DIB onto the existing DIB; much slower. Now faster updates in those cases \par
+\b 23 Nov 07\par
+\b0      - Added iparseArrayProps to add better protection for LoadPicture_fromStream\par
+     - Found bug when loading icon/cursor from stdPicture or handle. Could crash IDE; fixed\par
+     - The new KeepGDIplusActive could cause an image saved as PNG to be saved upside down; fixed\b\par
+\pard\keepn\nowidctlpar\s1\ri-1440 10-18 Nov 07\par
+\b0      - Found bug in cBmpParser where a non-zero bound array passed would not render correctly\par
+\b     \b0  - Tweaked several non-GDI+ routines that did not do portion rendering correctly.\par
+\tab -- spt_LightenDarken, spt_RotateImage, spt_Win9xBlend\par
+     - Added KeepGDIplusActive \par
+\tab -- Required modifications to most routines within the cGDIplus class\par
+     - Added SwapDIBs\par
+     - Changed member names of the ePngProperties enumeration to prevent confusion with textbox control names\par
+\tab -- Most of those properties began with a prefix of txt and intellisense displayed them whenever "txt" entered into code\b\par
+25 Sep 07\par
+    \b0  - Tweaked several functions to allow proper processing of 32bpp stdPicture objects.\par
+\tab -- A 32bpp bitmap file can be loaded via VB's LoadPicture and the alpha channel remains in tact. Additionally, \par
+\tab\tab the LoadImage API can easily load 32bpp icons & bitmaps.\par
+\tab -- The LoadPicture_stdPicture routine ignored the alpha channel because it uses the stdPicture's .Render\par
+\tab\tab method to draw to DIB which sometimes incorrectly drew into the alpha channel.  Well, the \par
+\tab\tab LoadPicture_ByHandle routine took shortcuts and created a stdPicture from the passed handle, then\par
+\tab\tab simply passed off the stdPicture to LoadPicture_stdPicture routine. As just mentioned, that routine\par
+\tab\tab failed to honor the alpha channel. \par
+\tab -- The fix was to add special case handling for stdPIctures that contain 32bpp images within the \par
+\tab\tab cBmpParser.ConvertstdPicTo32bpp routine. Additionally, the LoadPicture_ByHandle and\par
+\tab\tab LoadPicture_stdPicture routines will now pass bitmap and icon formats to their respective\par
+\tab\tab parsers' routines by handle vs by stdPicture object. Thus alpha channels are maintained\par
+\tab -- Tweaked routines LoadPicture_ByHandle, LoadPicture_stdPicture, \par
+\tab\tab cBMPparser.ConvertstdPicTo32bpp & cICOparser.ConvertstdPicTo32bpp\par
+     - Added optional Revert parameter to MakeTransparent routine. Allows method to perform opposite action\b\par
+30 Aug 07\b0\par
+    - Added BlendToColor. Function modifies image as if it were blended over the same image of a single color\par
+    - Logic bug located.  Grayscaling without GDI+ was incorrectly blending pixels then grayscaling.  \par
+\tab -- Source pixel must be grayscaled first, then blended onto target. Fixed.  Also tweaked and is faster now.\par
+    - Logic bug located. When drawing DIB to DIB and target DIB was passed, it was not always being updated. Fixed\par
+\tab -- When destHostDIB passed to Render, the destinationDC is ignored. Class will get DC from the destHostDIB\par
+    - DarkenLightenImage function name changed to MakeLighterDarker for consistency with similar functions\par
+    - Clean up. Win9xRender routine was coded to handle mirroring. However, prior revisions were modified to do some\par
+\tab pre-processing in advance (mirroring is one).  Extra calculations to handle mirroring in Win9xRender removed.\par
+    - Clean up. RotateAtCenterPoint & RotateAtTopLeft are removed. Render now has optional parameters for rotation\par
+    - Overall c32bppDIB class reorganization, non-public routines renamed.  Routines grouped in cls file by similarity\par
+    - Sample project updated \par
+\tab -- includes sample code for BlendToColor & MakeDarkerLighter functions\par
+\tab -- includes sample code of using Ctrl+V to paste images to project via copied file name and/or clipboard image\par
+\b 26 Aug 07\par
+\b0     - Logic bug located. Mirroring without stretching would not be performed when GDI+ was not being used. Fixed.\par
+    - Added DarkenLightenImage function (name changed in 30 Aug 07 revision to MakeLighterDarker). \par
+\tab -- Added optional LigthAdjustment parameter to the Render, RotateAtTopLeft, RotateAtCenterPoint \par
+\tab\tab and RenderDropShadow_JIT routines to enable effect without modifying the source image\par
+    - Added Tag property to be set and read solely by the user.  The class will not use that property.\b\par
+11 Aug 07\par
+\b0     - Bug found. When image is rotated at 0 or 360 degrees, grayscale option was not being honored\par
+\tab -- problem was result of not passing the option to a shortcut routine to process non-rotated images\par
+    - Added TIFF and other image format support. Requires GDI+.\par
+\tab -- parsers do not process TIFFs and other newer image formats. However as long as GDI+ is available, it is\par
+\tab\tab now the last parser should the other parsers fail.  Any formats processed at that step are converted to PNG\b\par
+30 Apr 07\par
+\b0    - Added CreateGDIplusToken, DestroyGDItoken methods and gdiToken property. See above\par
+\tab -- Modified several routines to pass/use the gdiToken value when it is provided\par
+   - Regarding noted restriction in 11Apr07 update pertaining to unicode filenames. Discovered a way around the VB limitation\par
+\tab -- Added the following unicode support functions: GetDroppedFileNames and GetPastedFileNames\b\par
+11 Apr 07 \par
+\pard\nowidctlpar\ri-1440\b0\f1 - \f0 Added Unicode file name support to every function. Now 99% compatible with Unicode with following exception:\par
+\f1        --\tab\f0 When a file is draged/dropped onto your project and you respond to the OLEDragDrop event, passing the\par
+\tab LoadPicture_File the DataObject.Files(x) parameter, the file will fail to load if the file or path contains unicode\par
+\tab characters. Will post an update when I find a good workaround. VB does not pass unicode via the DataObject\par
+- Added CreateDropShadow and RenderDropShadow_JIT routines. See those methods above.\par
+\f1 - \f0 Thanx to Roger Gilchrist for pointing out a few routines which did not explicitly declare their return values.\par
+- Found and fixed a critical error in Win9xBlend. One of the CopyMemory statements was coded incorrecly and\par
+\tab could crash on NT4 when in IDE and on all systems when compiled \par
+\pard\keepn\nowidctlpar\s1\ri-1440\b 02 Apr 07 \par
+\pard\nowidctlpar\ri-1440\b0\f1 - \f0 Added MakeImageInverse to create a color negative of the image--function can be toggled; by request\par
+\f1 - \f0 Added SourceIconSizes to return the width, height, bit depth, & color count of icons in a source file/array. \par
+\pard\nowidctlpar\ri-1440\qj\tab -- Useful if you want to offer your user a choice of icons to load when file contains multiple icons\par
+\tab -- Required modifiying the cICOparser class to support this function\par
+\tab -- Tweaked LoadPicture_Array, LoadPicture_Stream, LoadPicture_Resource & LoadFromOriginalFormat \par
+\tab\tab to enable the icon bit depth to be passed as an optional choice\par
+\pard\nowidctlpar\ri-1440    - Found logic error in iparseValidateAlphaChannel. Routine would not identify a 32bpp image with all\par
+\tab alpha values set to 255 as a non-transparent image.\par
+\b 30 Mar 07 - minor bug fixes\b0\par
+   - Modified several cPNGwriter routines that used an unnecessary calculation. Thanx Roger Gilchrist for noticing. \par
+   - Modified SetPixel. Routine may not always write the alpha value after writing the pixel \par
+   - Modified cBMPparser. When processing bitmap via stdPicture object, it did not always update ImageType property \par
+\b 28 Mar 07\par
+\b0    - Added CreateRegion function to return one of 3 regions based off of the DIB image. \par
+       -- These regions can be used for hit testing, clipping, etc\par
+       -- You are responsible for destroying the region when no longer needed: DeleteObject hRgn\par
+   - Added MakeTransparent to force one or more colors to be converted to fully transparent\par
+   - Added GetPixel & SetPixel functions which replicate the API calls but are relative to the DIB not a DC\par
+   - Modified iparseCreateShapedRegion to return 2 more region types\par
+   - Modified calls to cGDIPlus.RenderGDIplus so 2 less parameters are passed \par
+   - c32bppDIB.Render function did not always return a True value when successfully rendered. Now it does \par
+\b 26 Mar 07\b0\par
+   - Modified Render and Rotation functions to accept a gray scale formula for rendering in gray scale on the fly\b\par
+24  Mar 07\par
+\b0    - Modified Win9xBlend yet again. Process of extracting bitmap via GetDIBits API proved faulty in specific cases\par
+       -- Following appears to be O/S or hardware dependent. Experienced on WinXP but not Win2K\par
+       -- When the DC of a windowless usercontrol is passed, GetDIBits returned the entire bitmap vs just the\par
+           clipped portion of the DC. Therefore, blending could be done to wrong portion of the bitmap\par
+       -- Additionally, clipped DCs prevented pvResize from stretching images correctly\par
+       -- The GetDIBits API was also used during pvResize and that routine modified acccordingly too\par
+   - Modified Win9xBlend to allow alpha DIB to alpha DIB rendering when GDI+ or AlphaBlend not available\par
+       -- Modified Render & Rotate routines to accept an optional c32bpp Class parameter. When this\par
+           parameter is set, rendering will occur DIB to DIB, adjusting rendered alpha channel as needed\par
+   - Modified cGDIPlus.SaveToPng. GDI+ would not save non-alpha 32bpp DIBs correctly all the time\par
+   - Modified cBMPparser.ConvertstdPicTo32bpp to always force stdPictures passed to this class as non-Alpha sources\par
+       - LoadPicture_StdPicture should not be called if the stdPicture being passed is a 32bpp PARGB or ARGB image.\par
+           -- Use LoadPicture_File, LoadPicture_Stream, LoadPicture_Resource ('Custom' resource section) instead\par
+           -- When LoadPicture_StdPicture or LoadPicture_ByHandle is called, the image is rendered to the DIB using\par
+               the StdPicture 's .Render method. This method appears to be writing into the alpha channel even though\par
+               the image uses no alpha channel. Any DIB created from LoadPicture_StdPicture now assumes no alpha.\par
+   - Modified isAlphaBlendFriendly as writable too. Can override class settings and force class to use AlphaBlend on Win98/ME\par
+       -- See isAlphaBlendFriendly for warning & potential crashes if overridden\par
+       -- Resize & CopyTo may ignore the override since these routines perform strictly DIB to DIB\par
+   - Modified SaveToFile & SaveToStream to save as 24bpp bitmap vs 32bpp when alpha property is false\par
+   - Added MirrorImage which permanently modifies the DIB. Can be used vs mirroring during each rendering\par
+       -- Mirroring is completely reversible and is color loss-less.\par
+   - Added LoadPicture_ClipBoard to create DIB from clipboard object\par
+   - Added EraseDIB to "blank out" a DIB. Can be useful if this is an offscreen DIB used for composing only\par
+   - Bug found: GetDIBbits routine did not return DIB bytes in proper 24bpp format when requested\par
+\b 3  Mar 07\par
+\b0    - Major bug realized.\par
+       Thru trial and error, I have found that calling iparseIsArrayEmpty can generate\par
+       "Expression Too Complex" errors in the routine that called that function. However, I\par
+       cannot determine why and when this happens. It is an inconsistent error. The same O/S\par
+       different PCs may or may not generate that error, but the iparseIsArrayEmpty is\par
+       definitely involved. Therefore, I have rewritten that function and modified every\par
+       line of code that calls that function.\par
+\b 2  Mar 07\b0 :\par
+   - Bugs recognized & fixed\par
+       - Using some zLib versions, PNG files may be much larger than expected. Fixed;\par
+           -- the variable passed to zLib was not being updated with compressed size; ByVal,ByRef issue\par
+           -- iparseValidateZLIB modified; could incorrectly identify calling convention for latest zLIB VB-version\par
+           -- special thanx to Robert Rayment for helping troubleshooting this -- sorry for crashing your pc ;)\par
+       - DIBs converted to palettized PNGs, without alpha, did not write the palette; fixed\par
+       - WinME only. Manually rendering to WinME produced artifacts from the alpha channel; fixed\par
+           -- modified Win9xBlend to use GetDIBits & SetDIBitsToDevice vs BitBlt; actually improved speed\par
+           -- special thanx to Herman CK for helping troubleshoot this; I don't have WinME\par
+       - This class' Initialize event corrected to positively identify Win2K and above.\par
+   - Added 5 more grayscale options: RedMask, GreenMask, BlueMask, RedGreenMask, BlueGreenMask\par
+       - Changed NTSC/PAL grayscale formula to be the default. See MakeGrayScale\par
+   - Modified GetDIBbits to allow retrieval of non-premultiplied pixels\par
+   - Modified SetDIBbits to accept either premultiplied or non-premultiplied pixels\par
+\b 27  Feb 07\b0 : By request\par
+   - Added 3 supporting functions to extract DIB bytes into a passed array\par
+       - GetDIBbits & SetDIBbits gets/sets DIB pixels\par
+           -- parameters to return bytes in various formats/structures combinations\par
+       - GetAlphaMask gets the DIB alpha values as an 8 byte/256 color, grayscale, array.\par
+\b 20  Feb 07\b0 :\par
+   - PNGparser conversion routines overhauled for speed, minor error found & fixed\par
+       -- PNGparser.InitializePalette did not correctly identify transparency index for Grayscale with simple transparency\par
+   - PNGwriter.FormatCaption & FormatText recognized non-spec text but did not prevent it from being written to PNG\par
+   - Modified PNGwriter to use zLIB compress2 function when available\par
+   - Error on my part, last post had debugging code using zLibVB.dll vs zLib.dll\par
+       -- no serious harm but versions prior to this update probably will not be able to use zlib.net's zLib.DLL\par
+\b 18  Feb 07\b0 :\par
+   - Bugs recognized & fixed\par
+       -- cPNGwriter.OptimizeTrueColor could error when converting to 24bpp images\par
+       -- cPNGwriter.OptimizeTrueColor was not writing the single transparency color for 24bpp converted images\par
+       -- cPNGwriter.Write_tRNS was not always writing the tranpsarency color either\par
+       -- PngPropertySet was not honoring the user-selected filterMethod property\par
+\b 16  Feb 07\b0 :\par
+   - More PNG support....(First non-GDI+ PNG writer in VB open source? Maybe.)\par
+       -- Added cPNGwriter class. Can create PNGs using zLIB.dll versions. See class for more\par
+       -- Added cCDECL class. Allows calling zLIB.dll when zLIB is not VB-friendly\par
+           -- added modParsers.iparseValidateZLIB to determine if zLIB is available & if VB-friendly\par
+           -- required adding some custom zLIB calls to end of cPngWriter & cPngParser classes\par
+       -- added PngPropertySet to allow PNG creation options not possible w/GDI+. Must have zLIB available\par
+       -- added PngPropertyGet to retrieve settings. Over a dozen options\par
+       -- added isZlibEnabled property to inform you if zLIB can be used or not\par
+       -- Modified SaveToStream_PNG & SaveToFile_PNG to use zLIB if GDI+ is not available,\par
+               but zLIB is or vice versa. zLIB is prefered when pngPropertySet is called\par
+       -- Zlib is 100% free and is available directly from source: www.zlib.net\par
+\b 11  Feb 07\b0 :\par
+   - Logic error. When a DIB is first initialized, the Alpha property is False.\par
+       This should have been Alpha=True. Note that if you are creating blank DIBs and rendering other\par
+       DIBs to the blank one, you should change the blank DIB's alpha and image format properties as\par
+       appropriate, dependent upon what you are rendering to that DIB. The Alpha property is used in\par
+       other routines and must be accurate, but the ImageType property is not used\par
+   - Added imgError to the ImageType property enumeration. This can assist when self-rendering\par
+       DIBs. If ImageType=imgError then Handle=0& and no DIB has been loaded into the class.\par
+\b 10  Feb 07\b0 :\par
+   - Added LoadPicture_FromOrignalFormat routine which will recreate the DIB from the bytes\par
+       cached during a call to LoadPicture_File or LoadPicture_Stream\par
+   - Added TrimImage routine which will remove excess transparency from an image\par
+       If a 256x256 image has 20x20 transparency border around it, the image will be reduced to 216x216\par
+   - When calling Resize, class would not save original image bytes if they existed; now it does\par
+   - Minor tweaks in rotation routines. Routines no longer overwrite class' Interpolation setting\par
+   - Logic error fixed: GDI+ when rendering mirrored & rotated used incorred DC X,Y coordinates\par
+\b 4  Feb 07\b0 :\par
+   - Added SaveToFile_PNG & SaveToStream_PNG as main class options, but only supported if isGDIplusEnabled = True\par
+   - Complete revamp of mirroring routines.\par
+       -- Added MirrorDIB routine that mirrors an image as needed & mirrored bytes are later rotated, scaled, rendered\par
+       -- Previous version attempted to calculate mirroring offsets when scaling, rotating, rendering -- failed\par
+       -- Following routines modified: pvResize, CopyImageTo, Resize, RotateAtTopLeft\par
+   - Logic error fixed: pvResize would clip wrong end of image when image is rendered past vertical bounds of DC.\par
+   - Modified startup to always set HighQualityInterpolation if GDI+ is available.\par
+\b 1 Feb 07\b0 : By request...\par
+   - Added mirroring support to following routines. Passing a negative destination width and/or height causes mirroring\par
+       - pvResize, Win9xBlend, CopyImageTo, Resize, RotateAtCenterPoint, RotateAtTopLeft & cGDIPlus.RenderGDIplus\par
+       - The msimg32.dll AlphaBlend API cannot perform mirroring. Therefore...\par
+       - Whenever mirroring is in effect and GDI+ can't be used, mirroring will be done manually\par
+       - GDI+, if available, will only perfrorm the mirroring if also rotating or if HighQualityInterpolation=True\par
+   - Found another minor bug. Broke GDI+ ability to Global blend while rotating. Fixed.\par
+\b 31  Jan 07\b0 :\par
+   - Fixed logic error when rotating negative angles via GDI+ (cGDIPlus.RenderGDIplus routine)\par
+   - Fixed logic error when manually resizing using BiLinear method (pvResize routine)\par
+       - routines were combining current pixel with one above, not below as required\par
+   - Fixed rotation routines (non-GDI+); now rotation while non-proportional scaling compatible\par
+   - Renamed cPNGParser.SaveTo routine to cGDIPlus.SaveToPNG. See Change 4Jan07 below for more\par
+\b 30  Jan 07\b0 :\par
+   - Added rotation options. See RotateAtCenterPoint & RotateAtTopLeft\par
+       - The two routines are identical except for how the destination X,Y coords are determined\par
+   - Added isGDIplusEnabled property to inform you whether or not GDI+ can be used on the system\par
+   - Added HighQualityInterpolation property to produce better renderings\par
+       - When set to True & GDI+ is available, any rendering is done by GDI+\par
+       - When set to True and GDI+ is not available, manual interpolation is done when scaling/rotating\par
+       - Property can be set to False manually to prevent GDI+ usage\par
+   - Added MakeGrayScale routine. Irreversible pixel modifications\par
+       - 3 different grayscale formulas are provided\par
+   - Relocated all GDI+ function calls and related code into a new class: cGDIPlus\par
+   - Relocated cPNGparser.ValidateDLL to modParsers as iparseValidateDLL\par
+\b 25  Jan 07\b0 :\par
+   - Modified Win9xBlend routine. Did not exactly replicate AlphaBlend when stretching; fixed I believe\par
+       -- Added extra checks in Win9xBlend & pvResize when alphablending on Win9x systems.\par
+       -- Prevents user from supplying invalid values that could cause routines to read past allocated memory\par
+       -- Properly handles negative destination DC offsets\par
+   - Changed iswin95Alpha property to isAlphaBlendFriendly to indicate whether or not AlphaBlend will be used\par
+\b 24  Jan 07\b0 :\par
+   - Now compatible with all O/S. Added Win95/NT4 support to the following routines:\par
+       CopyImageTo , Resize, Render\par
+       -- Added Win9xBlend & heavily modified then added Carles P.V.'s pvResize routine\par
+   - Bug found. cPNGparser.vbDecompress, under NT4, was causing crashes when trying to\par
+       resize a passed byte array. Fixed. Array is sized before it is passed to that routine\par
+   - Bug found. The iparseCreateShapedRegion routine was creating shaped regions bottom up\par
+       and this crashed on NT4. Fixed so regions are created top down always\par
+   - Bug found. In Win98 & possibly other O/S. When VB creates a 24bpp stdPicture as used\par
+       in cBMPparser, the stdPicture.Render method can write into the alpha channel of the\par
+       destination 32bpp DIB; 24bpp has no alpha channel. Routine tweaked to handle that.\par
+\b 17  Jan 07\b0 :\par
+   - Added CreateCheckerBoard method. This method will create a checkerboard pattern\par
+       as the DIB image. It will also set the ImageType property to imgCheckerBoard\par
+       so you know whether or not the image is class checkerboard or not.\par
+       This can be useful when the DIB should be displayed, but has no image to display.\par
+       The flag can be used to determine saving the image. If imgCheckerboard then noSave\par
+   - Added Resize method to permanently resize the image within the DIB\par
+   - Added optional resizing parameters to CopyImageTo routine\par
+   - Tweaked cBMPparser & cGIFparser to always modify alpha bytes regardless of transparency\par
+       -- Previously, when image had no transparency, the alpha bytes were not touched, rather\par
+          the class tracked this information via its Alpha property. But if you wanted to pass\par
+          the DIB to some other routine in your project and process/render it, the unmodified\par
+          alpha bytes could prove to fool those processes/routines\par
+   - Tweaked Render method to fully expose all of AlphaBlend's parameters\par
+   - LoadPicture_StdPicture could not process WMFs, fixed\par
+   - LoadDIBinDC fixed - could fail if multiple calls made passing a True parameter\par
+   - Error in LoadPictureEx prevented saving image bytes when PNG file was loaded, fixed\par
+\b 5  Jan 07\b0 :\par
+   - Added SaveFormat parameter to LoadPicture_File & LoadPicture_Stream\par
+       -- option has class cache the original bytes of the image if loaded\par
+       -- the 32bpp DIB will always be larger than the source bytes and for\par
+           usercontrols, saving the original bytes takes less space than\par
+           saving the DIB bytes.\par
+   - Added GetOrginalFormat to retrieve bytes when SaveFormat was passed as True\par
+   - Added SetOriginalFormat used when copying one DIB class to another\par
+\b 4  Jan 07\b0 :\par
+   - Added LoadPicture_ByHandle, LoadPicture_StdPicture, ScaleImage & CopyImageTo\par
+   - Added cGDIPlus.SaveToPNG (testing). Requires GDI+ or zLIB but will save 32bpp to PNG file or stream\par
+       -- not accessible, right now, from c32bppDIB. Must create cGDIPlus class to use it.\par
+   - Modified cICOparser's GetBestMatch algorithm\par
+   - Added imgPNGicon as an image type to distinguish PNG in Vista Icon vs standard .PNG file\par
+   - Bug found: removing overlays in cGIFparser.ConvertGIFto32bpp; forgot ByVal VarPtrArray(...)\par
+       which could cause crash when compiled. Fixed & double checked everywhere else too\par
+\b 1  Jan 07\b0 :\par
+   - Added SaveToFile & SaveToStream methods\par
+   - cBMPparser could possibly try to query unauthorized memory; fixed\par
+   - Methodology changed a bit when parsers return results. If image is definitely one\par
+       that the parser is responsible for & the image is invalid, the parser will return\par
+       True to prevent other parsers from handling the image. The c32bppDIB.Handle is used\par
+       to determine true success or failure.\par
+       -- cGIFparser when recognizing improperly formatted GIF would allow image to continue to\par
+           other parsers which then may cause those parsers to lock up.\par
+\b 26  Dec 06\b0 : First Version\par
+}
+ 
