@@ -1,0 +1,104 @@
+<HTML>
+  <HEAD>
+    <TITLE>Welcome to the world of Gossamer!</TITLE>
+  </HEAD>
+  <BODY>
+<DIV style="BACKGROUND-IMAGE: url(spider.jpg); BACKGROUND-REPEAT: no-repeat">
+  <BR>
+  <BR>
+  <FONT color=royalblue size=7>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gossamer 1.4</FONT>
+  <BR>
+</DIV>
+<H1>Introduction</H1>
+<P>This is the not-so-amazing but very simple <FONT 
+color=royalblue size=4>Gossamer</FONT> web service.&nbsp; There isn't very much 
+going on here, but as you can see it is fairly easy to embed a simple HTTP 
+server within a VB6 application.</P>
+<P>Some of the features of <FONT color=royalblue size=4>Gossamer</FONT> 
+include:</P>
+<UL>
+  <LI>Multiple client support. 
+  <LI>Static content. 
+  <LI>Dynamic content. 
+  <LI>Activity logging.</LI>
+</UL>
+<P>Static content is served from a predefined single&nbsp; <EM>VDir</EM> directory.&nbsp; Dynamic
+content is handled by raising an event back to the parent application for
+processing.&nbsp; Activity logging is handled through another event.</P>
+<H1>Using Gossamer</H1>
+<P>Just drop a <FONT color=royalblue size=4>Gossamer</FONT> control onto 
+your main VB Form, set a few properties, wire up the events, call
+<FONT face="Courier New">StartListening</FONT>,
+and you're on your way.&nbsp; You may not even need those events!</P>
+<H2>Properties</H2>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+<P><FONT face="Courier New" size=4><STRONG>DefaultPage</STRONG></FONT>
+- Page fetched when directory requests are made (design-time default:
+<FONT face="Courier New">"index.htm"</FONT>).</P>
+<P><FONT face="Courier New" size=4><STRONG>MaxConnections</STRONG></FONT>
+- Maximum number of open client connections, beyond which more will be refused
+(design-time default: <FONT face="Courier New">32</FONT>).</P>
+<P><FONT face="Courier New" size=4><STRONG>Port</STRONG></FONT>
+- TCP port to listen on for HTTP client connections (design-time default:
+<FONT face="Courier New">8080</FONT>).&nbsp; Can be overridden by passing a value to 
+<FONT face="Courier New">StartListening</FONT>.</P>
+<P><FONT face="Courier New" size=4><STRONG>State</STRONG></FONT>
+- State property of the listener Winsock control.</P>
+<P><FONT face="Courier New" size=4><STRONG>VDir</STRONG></FONT>
+- Directory containing your static content (design-time default:
+<FONT face="Courier New">""</FONT>).&nbsp; This can be an absolute path or
+relative path, which will be relative to your application's current
+directory.&nbsp; Can't be changed while listening for client connections.</P>
+<P><FONT face="Courier New" size=4><STRONG>VDirPath</STRONG></FONT>       
+- Read-only value returning the fully qualified path to the current VDir setting.</P>
+</BLOCKQUOTE>
+<H2>Methods</H2>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+<P><FONT face="Courier New" size=4><STRONG>EntityEncode</STRONG></FONT>
+- Encode a text string to be inserted into HTML as text with HTML entity encoding for
+characters that might break your HTML.&nbsp; Useful when building an HTML response
+dynamically.</P>
+<P><FONT face="Courier New" size=4><STRONG>ExtensionToMIME</STRONG></FONT>
+- Converts a file extension (without the ".") to the corresponding content MIME type
+string.&nbsp; You can easily expand this beyond the basic extentions already included.</P>
+<P><FONT face="Courier New" size=4><STRONG>GetFreeFile</STRONG></FONT>
+- VB6 <FONT face="Courier New">FreeFile()</FONT> call that tries for the lower
+255 file slots first and moves to the exclusive access slots 
+if these are exhausted.&nbsp; Helpful when a server is busy and may 
+have many files open.&nbsp; Fails if no file numbers are available at all.</P>
+<P><FONT face="Courier New" size=4><STRONG>StartListening</STRONG></FONT> - Optionally
+specify a <FONT face="Courier New">Port</FONT> and
+<FONT face="Courier New">IP</FONT> address of the adapter to bind to, to start the 
+HTTP service.</P>
+<P><FONT face="Courier New" size=4><STRONG>StopListening</STRONG></FONT>
+- Halt the HTTP service.</P>
+<P><FONT face="Courier New" size=4><STRONG>URLDecode</STRONG></FONT>
+- Converts HTTP URI parameter text from URL-encoded to plaintext.</P>
+<P><FONT face="Courier New" size=4><STRONG>UTCDateTime</STRONG></FONT>
+- Converts local timezone VB6 Date type values from local time to
+UTC Date values.</P>
+<P><FONT face="Courier New" size=4><STRONG>UTCParseString</STRONG></FONT>
+- Converts HTTP-compliant timestamp strings to Date values, if not valid returns Now()
+in UTC time.</P>
+<P><FONT face="Courier New" size=4><STRONG>UTCString</STRONG></FONT>
+- Converts local timezone VB6 Date type values to UTC time strings in HTTP-compliant
+format for headers.</P>
+</BLOCKQUOTE>
+<H2>Events</H2>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+<P><FONT face="Courier New" size=4><STRONG>DynamicRequest</STRONG></FONT>
+- Passes a set of&nbsp;arguments describing the request including the request method, 
+headers, URI, request parameters, and request content if any.</P>
+<P><FONT face="Courier New" size=4><STRONG>LogEvent</STRONG></FONT>
+- Passes a <FONT face="Courier New">GossEvent</FONT> object detailing the event to
+be examined and/or logged.</P></BLOCKQUOTE>
+<H1>It's That Easy!</H1>
+<P>Remember that in the simplest case you do not need to 
+handle the events.&nbsp; Just set the properties and start the service.</P>
+<H1>Further Demonstration</H1>
+<P><A href="formget.htm">Dynamic page example with HTML GET Form Submit for use with 
+GossDemo1.</A></P>
+<P><A href="formpost.htm">Dynamic page example with HTML POST Form Submit for use with 
+GossDemo1.</A></P>
+  </BODY>
+</HTML>
