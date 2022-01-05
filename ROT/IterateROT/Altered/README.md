@@ -1,0 +1,3 @@
+Sancarn's altered version. This is mostly the same as the original, however it strips a few things, and provides a different function.
+
+The aim of this file is simply to print the names of all ROT objects. Excel application objects will appear as file names; The hope is to turn this into a `GetActiveObjects()` function akin to [Lexikos' version for ahk](https://www.autohotkey.com/boards/viewtopic.php?t=6494).
