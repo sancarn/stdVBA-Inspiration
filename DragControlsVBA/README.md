@@ -1,3 +1,5 @@
+SOURCE: https://www.vbforums.com/showthread.php?888843-Load-image-into-STATIC-control-Win32&p=5496575&viewfull=1#post5496575
+
 @Steve Grant @sancarn
 
 File Demo
