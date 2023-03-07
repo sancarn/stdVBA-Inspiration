@@ -1,0 +1,311 @@
+diff 2021-08/clsEdge.cls 2021-11/clsEdge.cls
+30a31,54
+> Public Function serialize() As String
+> 
+>     Dim objSerialize As Dictionary
+>     Set objSerialize = New Dictionary
+>     Call objSerialize.Add("objBrowser", objBrowser.serialize())
+>     Call objSerialize.Add("lngLastID", lngLastID)
+>     Call objSerialize.Add("strSessionId", strSessionId)
+>     serialize = ConvertToJson(objSerialize)
+> 
+> 
+> End Function
+> 
+> Public Sub deserialize(strSerialized As String)
+>     Dim objSerialize As Dictionary
+>     Set objSerialize = ParseJson(strSerialized)
+>     
+>     Set objBrowser = New clsExec
+>     Call objBrowser.deserialize(objSerialize.Item("objBrowser"))
+>     
+>     lngLastID = objSerialize.Item("lngLastID")
+>     strSessionId = objSerialize.Item("strSessionId")
+> 
+> End Sub
+> 
+182a207,208
+>     
+>     Call err.Raise(-900, , "timeout")
+304c330
+< Public Sub start()
+---
+> Public Sub start(Optional boolSerializable As Boolean = False)
+312c338
+<     intRes = objBrowser.init(strCall)
+---
+>     intRes = objBrowser.init(strCall, boolSerializable)
+315c341
+<        Call Err.Raise(-99, , "error start browser")
+---
+>        Call err.Raise(-99, , "error start browser")
+336a363,398
+> Public Sub closeBrowser()
+> 
+>     Dim objRes As Dictionary
+>     
+>     On Error Resume Next
+>     Set objRes = sendMessage("{""method"":""Browser.close"",""params"":{}}")
+>     
+>     'it seems without waitng a bit the browser crashes and the next time wants ro recover from a crash
+>     Call Sleep(5)
+> 
+> End Sub
+> 
+> Public Function connectionAlive() As Boolean
+>     On Error GoTo err
+>     Dim strLoc As String
+>     strLoc = jsEval("window.location.href")
+>     
+>     connectionAlive = True
+>     Exit Function
+>     
+> err:
+> 
+>     connectionAlive = False
+>     
+> End Function
+> 
+> Public Sub waitCompletion()
+>     Dim strState As String
+>     strState = "x"
+>     Call Sleep(1)
+>     Do Until strState = "complete"
+>         strState = Me.jsEval("document.readyState")
+>         Call Sleep(1)
+>     Loop
+>     
+> End Sub
+diff 2021-08/clsExec.cls 2021-11/clsExec.cls
+23a24
+> Private boolSerializable As Boolean
+25c26,56
+< Public Function init(strExec As String) As Integer
+---
+> Private hProcess As LongPtr
+> 
+> Public Function serialize() As String
+> 
+>     If Not boolSerializable Then
+>         Call err.Raise(-904, , "this instance is not serializable")
+>     End If
+> 
+>     Dim objSerialize As Dictionary
+>     Set objSerialize = New Dictionary
+>     Call objSerialize.Add("hStdOutRd", hStdOutRd)
+>     Call objSerialize.Add("hStdInWr", hStdInWr)
+>     Call objSerialize.Add("hCDPOutRd", hCDPOutRd)
+>     Call objSerialize.Add("hCDPInWr", hCDPInWr)
+>     serialize = ConvertToJson(objSerialize)
+> 
+> 
+> End Function
+> 
+> Public Sub deserialize(strSerialized As String)
+>     Dim objSerialize As Dictionary
+>     Set objSerialize = ParseJson(strSerialized)
+>     
+>     hStdOutRd = objSerialize.Item("hStdOutRd")
+>     hStdInWr = objSerialize.Item("hStdInWr")
+>     hCDPOutRd = objSerialize.Item("hCDPOutRd")
+>     hCDPInWr = objSerialize.Item("hCDPInWr")
+> 
+> End Sub
+> 
+> Public Function init(strExec As String, Optional aboolSerializable As Boolean = False) As Integer
+35a67,68
+>     
+>     boolSerializable = aboolSerializable
+121c154
+<     NORMAL_PRIORITY_CLASS, 0&, 0&, start, proc)
+---
+>         NORMAL_PRIORITY_CLASS, 0&, 0&, start, proc)
+133a167,172
+> '    Call Sleep(10)
+> '
+> '    EnumThreadWindows proc.dwThreadId, AddressOf EnumThreadWndProc, 0
+> 
+>     hProcess = proc.hProcess
+>     
+144,145c183,190
+<     Call PeekNamedPipe(hCDPOutRd, ByVal 0&, 0&, ByVal 0&, _
+<     lPeekData, ByVal 0&)
+---
+>     Dim lngRes As Long
+>     
+>     lngRes = PeekNamedPipe(hCDPOutRd, ByVal 0&, 0&, ByVal 0&, _
+>         lPeekData, ByVal 0&)
+>         
+>     If lngRes = 0 Then
+>         Call err.Raise(901, , "Error PeekNamedPipe in readProcCDP")
+>     End If
+203a249,250
+>     If boolSerializable Then Exit Sub
+> 
+208c255
+<     
+---
+> 
+212a260
+>     
+Nur in 2021-11: diff.
+diff 2021-08/JsonConverter.bas 2021-11/JsonConverter.bas
+191c191
+<         Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(JsonString, json_Index, "Expecting '{' or '['")
+---
+>         err.Raise 10001, "JSONConverter", json_ParseErrorMessage(JsonString, json_Index, "Expecting '{' or '['")
+472c472
+<         Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '{'")
+---
+>         err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '{'")
+502c502
+<         Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '['")
+---
+>         err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '['")
+543c543
+<             Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting 'STRING', 'NUMBER', null, true, false, '{', or '['")
+---
+>             err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting 'STRING', 'NUMBER', null, true, false, '{', or '['")
+657c657
+<         Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '""' or '''")
+---
+>         err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '""' or '''")
+663c663
+<         Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting ':'")
+---
+>         err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting ':'")
+915c915
+<     Err.Raise 10011, "UtcConverter.ParseUtc", "UTC parsing error: " & Err.Number & " - " & Err.Description
+---
+>     err.Raise 10011, "UtcConverter.ParseUtc", "UTC parsing error: " & err.Number & " - " & err.Description
+944c944
+<     Err.Raise 10012, "UtcConverter.ConvertToUtc", "UTC conversion error: " & Err.Number & " - " & Err.Description
+---
+>     err.Raise 10012, "UtcConverter.ConvertToUtc", "UTC conversion error: " & err.Number & " - " & err.Description
+1022c1022
+<     Err.Raise 10013, "UtcConverter.ParseIso", "ISO 8601 parsing error for " & utc_IsoString & ": " & Err.Number & " - " & Err.Description
+---
+>     err.Raise 10013, "UtcConverter.ParseIso", "ISO 8601 parsing error for " & utc_IsoString & ": " & err.Number & " - " & err.Description
+1041c1041
+<     Err.Raise 10014, "UtcConverter.ConvertToIso", "ISO 8601 conversion error: " & Err.Number & " - " & Err.Description
+---
+>     err.Raise 10014, "UtcConverter.ConvertToIso", "ISO 8601 conversion error: " & err.Number & " - " & err.Description
+diff 2021-08/modEdge.bas 2021-11/modEdge.bas
+17a18,19
+>     Call objBrowser.waitCompletion
+>     
+21c23,86
+<     MsgBox ("finish!")
+---
+>     'fill search form (textbox is named q)
+>     Call objBrowser.jsEval("document.getElementsByName(""q"")[0].value=""automate edge vba""")
+>     
+>     'run search
+>     Call objBrowser.jsEval("document.getElementsByName(""q"")[0].form.submit()")
+>     
+>     'wait till search has finished
+>     Call objBrowser.waitCompletion
+>     
+> 
+>     'click on codeproject link
+>     Call objBrowser.jsEval("document.evaluate("".//h3[text()='Automate Chrome / Edge using VBA - CodeProject']"", document).iterateNext().click()")
+>     
+>     Call objBrowser.waitCompletion
+>     
+>     Dim strVotes As String
+>     strVotes = objBrowser.jsEval("ctl00_RateArticle_VountCountHist.innerText")
+>     
+>     MsgBox ("finish! Vote count is " & strVotes)
+>     
+>     objBrowser.closeBrowser
+>     
+>     
+> End Sub
+> 
+> 
+> 'the following two snippets show the serialization of the object
+> Sub runedge2()
+> 
+>     'Start Browser
+>     Dim objBrowser As clsEdge
+>     Set objBrowser = New clsEdge
+>     Call objBrowser.start(True)
+>     
+>     'Attach to any ("") or a specific page
+>     Call objBrowser.attach("")
+>     
+>     'navigate
+>     Call objBrowser.navigate("https://google.de")
+>     
+>     'evaluate javascript
+>     Call objBrowser.jsEval("alert(""hi"")")
+>     
+>     MsgBox ("finish1!")
+>     
+>     Dim strSerialized As String
+>     strSerialized = objBrowser.serialize()
+>     Tabelle1.Cells(1, 1) = strSerialized
+> End Sub
+> 
+> Sub runedge3()
+>     
+>     Dim objBrowser2 As clsEdge
+>     Set objBrowser2 = New clsEdge
+>     
+>     
+>     Call objBrowser2.deserialize(Tabelle1.Cells(1, 1))
+>     
+>     If Not objBrowser2.connectionAlive Then Stop
+>     
+>     Call objBrowser2.jsEval("alert(""hi again"")")
+>    
+>     MsgBox ("finish2!")
+>     
+23a89
+> 
+diff 2021-08/modExec.bas 2021-11/modExec.bas
+49a50,51
+>     
+> Declare PtrSafe Function EnumThreadWindows Lib "user32" (ByVal dwThreadId As Long, ByVal lpfn As LongPtr, ByVal lParam As LongPtr) As Long
+114a117
+> 'Public Const STARTF_CREATE_NO_WINDOW As Long = &H8000000
+117,118d119
+< 'Public Declare PtrSafe Function GetAddrOf Lib "kernel32" Alias "MulDiv" (ByVal nNumber As Any, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
+<    ' This is the dummy function used to get the addres of a VB variable.
+120a122,157
+> 
+> ' Using the following defintions I tried to hide the console windows
+> ' This does not yet work, so it is commented out
+> '
+> 'Public Declare PtrSafe Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
+> 'Public Declare PtrSafe Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hWnd As Long) As Long
+> '
+> ' Public Declare PtrSafe Function ShowWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal nCmdShow As Long) As Boolean
+> '
+> 'Public Function getNameFromHwnd(hWnd As Long) As String
+> 'Dim title As String * 255
+> 'Dim tLen As Long
+> 'tLen = GetWindowTextLength(hWnd)
+> 'GetWindowText hWnd, title, 255
+> 'getNameFromHwnd = Left(title, tLen)
+> 'End Function
+> '
+> '
+> '
+> '
+> 'Public Function EnumThreadWndProc(ByVal hWnd As Long, ByVal lParam As Long) As Long
+> '    Dim Ret As Long, sText As String
+> '
+> '    'CloseWindow hwnd ' This is the handle to your process window which you created.
+> '
+> '    sText = getNameFromHwnd(hWnd)
+> '
+> '    If sText = "" Then
+> '        Call ShowWindow(hWnd, 0)
+> '    End If
+> '
+> '    EnumThreadWndProc = 1
+> '
+> 'End Function
+> 
+> 
