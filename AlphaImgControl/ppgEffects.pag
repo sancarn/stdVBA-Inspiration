@@ -1,0 +1,540 @@
+VERSION 5.00
+Begin VB.PropertyPage ppgEffects 
+   Caption         =   "GDI+ v1.1 Effects"
+   ClientHeight    =   3600
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   4800
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   3600
+   ScaleWidth      =   4800
+   Begin VB.HScrollBar HScrollParam 
+      Height          =   255
+      Index           =   2
+      LargeChange     =   10
+      Left            =   2445
+      Max             =   255
+      TabIndex        =   6
+      Top             =   2250
+      Width           =   1815
+   End
+   Begin VB.HScrollBar HScrollParam 
+      Height          =   255
+      Index           =   1
+      LargeChange     =   10
+      Left            =   2445
+      Max             =   255
+      TabIndex        =   5
+      Top             =   1650
+      Width           =   1815
+   End
+   Begin VB.HScrollBar HScrollParam 
+      Height          =   255
+      Index           =   0
+      LargeChange     =   10
+      Left            =   2445
+      Max             =   255
+      TabIndex        =   3
+      Top             =   960
+      Width           =   1815
+   End
+   Begin VB.ComboBox cboBoolean 
+      Height          =   315
+      Left            =   3795
+      Style           =   2  'Dropdown List
+      TabIndex        =   4
+      Top             =   1365
+      Visible         =   0   'False
+      Width           =   960
+   End
+   Begin VB.TextBox txtParam 
+      Alignment       =   2  'Center
+      Height          =   330
+      Index           =   1
+      Left            =   4305
+      Locked          =   -1  'True
+      MaxLength       =   5
+      TabIndex        =   10
+      TabStop         =   0   'False
+      ToolTipText     =   "Double Click to Reset"
+      Top             =   1605
+      Width           =   480
+   End
+   Begin VB.TextBox txtParam 
+      Alignment       =   2  'Center
+      Height          =   330
+      Index           =   2
+      Left            =   4305
+      Locked          =   -1  'True
+      MaxLength       =   5
+      TabIndex        =   11
+      TabStop         =   0   'False
+      ToolTipText     =   "Double Click to Reset"
+      Top             =   2205
+      Width           =   480
+   End
+   Begin VB.TextBox txtParam 
+      Alignment       =   2  'Center
+      Height          =   330
+      Index           =   0
+      Left            =   4305
+      Locked          =   -1  'True
+      MaxLength       =   5
+      TabIndex        =   9
+      TabStop         =   0   'False
+      ToolTipText     =   "Double Click to Reset"
+      Top             =   930
+      Width           =   480
+   End
+   Begin VB.PictureBox imgPlaceHolder 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      ForeColor       =   &H80000008&
+      Height          =   2340
+      Left            =   150
+      ScaleHeight     =   154
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   140
+      TabIndex        =   14
+      TabStop         =   0   'False
+      Top             =   705
+      Width           =   2130
+   End
+   Begin VB.ComboBox cboCurveChnl 
+      Height          =   315
+      Left            =   2445
+      Style           =   2  'Dropdown List
+      TabIndex        =   2
+      Top             =   1620
+      Visible         =   0   'False
+      Width           =   2310
+   End
+   Begin VB.CommandButton cmdCreate 
+      Caption         =   "Create/Update Effect"
+      Height          =   435
+      Left            =   2880
+      TabIndex        =   8
+      Top             =   2625
+      Width           =   1875
+   End
+   Begin VB.CommandButton cmdDelete 
+      Caption         =   "X"
+      Height          =   435
+      Left            =   2430
+      TabIndex        =   7
+      ToolTipText     =   "Delete Effect"
+      Top             =   2625
+      Width           =   450
+   End
+   Begin VB.ComboBox cboEffect 
+      Height          =   315
+      Left            =   1425
+      Style           =   2  'Dropdown List
+      TabIndex        =   0
+      Top             =   225
+      Width           =   3330
+   End
+   Begin VB.TextBox txtURL 
+      BackColor       =   &H8000000F&
+      BorderStyle     =   0  'None
+      Height          =   345
+      Left            =   195
+      Locked          =   -1  'True
+      TabIndex        =   12
+      TabStop         =   0   'False
+      Top             =   3195
+      Width           =   4440
+   End
+   Begin VB.ComboBox cboCurveAdj 
+      Height          =   315
+      Left            =   2430
+      Style           =   2  'Dropdown List
+      TabIndex        =   1
+      Top             =   930
+      Visible         =   0   'False
+      Width           =   2325
+   End
+   Begin VB.Label lblHdr 
+      Caption         =   "Radius"
+      Height          =   345
+      Index           =   2
+      Left            =   2445
+      TabIndex        =   17
+      Top             =   2010
+      Width           =   2295
+   End
+   Begin VB.Label lblHdr 
+      Caption         =   "Radius"
+      Height          =   345
+      Index           =   1
+      Left            =   2430
+      TabIndex        =   16
+      Top             =   1380
+      Width           =   2325
+   End
+   Begin VB.Label lblHdr 
+      Caption         =   "Radius"
+      Height          =   345
+      Index           =   0
+      Left            =   2430
+      TabIndex        =   15
+      Top             =   690
+      Width           =   2325
+   End
+   Begin VB.Label Label1 
+      Caption         =   "Effect Type"
+      Height          =   300
+      Left            =   195
+      TabIndex        =   13
+      Top             =   285
+      Width           =   1965
+   End
+End
+Attribute VB_Name = "ppgEffects"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+' allow menus on the property page
+Private Declare Function CreatePopupMenu Lib "user32.dll" () As Long
+Private Declare Function AppendMenu Lib "user32.dll" Alias "AppendMenuA" (ByVal hMenu As Long, ByVal wFlags As Long, ByVal wIDNewItem As Long, ByVal lpNewItem As Any) As Long
+Private Declare Function DestroyMenu Lib "user32.dll" (ByVal hMenu As Long) As Long
+Private Declare Function TrackPopupMenu Lib "user32.dll" (ByVal hMenu As Long, ByVal wFlags As Long, ByVal X As Long, ByVal Y As Long, ByVal nReserved As Long, ByVal hWnd As Long, ByRef lprc As RECTI) As Long
+Private Const TPM_LEFTALIGN As Long = &H0&
+Private Const TPM_NOANIMATION As Long = &H4000&
+Private Const TPM_RETURNCMD As Long = &H100&
+Private Const TPM_TOPALIGN As Long = &H0&
+Private Const MF_STRING As Long = &H0&
+Private Const MF_SEPARATOR As Long = &H800&
+Private Const MF_CHECKED As Long = &H8&
+Private Const MF_GRAYED As Long = &H1&
+Private Const MF_DISABLED As Long = &H2& Or MF_GRAYED
+Private Declare Function GetCursorPos Lib "user32.dll" (ByRef lpPoint As POINTAPI) As Long
+
+Private cFX As GDIpEffects
+Private cAttr As GDIpEffects
+Private cImage As GDIpImage
+Private cToken As cGDIpToken
+Private mAngle As Long
+Private mMirror As Long
+
+Private Sub cboEffect_Click()
+
+    Dim tParams(0 To 2) As Variant, nrParams As Long
+    Dim sURL As String
+    
+    HScrollParam(0).Visible = True: txtParam(0).Visible = True
+    HScrollParam(1).Visible = True: txtParam(1).Visible = True
+    cboCurveAdj.Visible = False
+    cboCurveChnl.Visible = False
+    cboBoolean.Visible = False
+    HScrollParam(0).Value = 0: HScrollParam(1).Value = 0: HScrollParam(2).Value = 0
+    
+    Select Case cboEffect.ListIndex
+        Case 0: sURL = "http://msdn.microsoft.com/en-us/library/ms534057(v=VS.85).aspx"
+            lblHdr(0).Caption = "Radius: 0 to 255": lblHdr(1).Caption = "Expand Edges": lblHdr(2).Caption = vbNullString
+            txtParam(1).Visible = False: txtParam(2).Visible = False: cboBoolean.Visible = True
+            HScrollParam(1).Visible = False: HScrollParam(2).Visible = False
+            HScrollParam(0).Min = 0: HScrollParam(0).Max = 255
+        Case 1: sURL = "http://msdn.microsoft.com/en-us/library/ms534073(v=VS.85).aspx"
+            lblHdr(0).Caption = "Radius: 0 to 255"
+            lblHdr(1).Caption = "Percent: 0 to 100": lblHdr(2).Caption = vbNullString
+            txtParam(2).Visible = False: HScrollParam(2).Visible = False
+            HScrollParam(0).Min = 0: HScrollParam(0).Max = 255
+            HScrollParam(1).Min = 0: HScrollParam(1).Max = 255
+        Case 2: sURL = "http://msdn.microsoft.com/en-us/library/ms534074(v=VS.85).aspx"
+            lblHdr(0).Caption = "Hue: -180 to 180"
+            lblHdr(1).Caption = "Percent: -100 to 100": lblHdr(2).Caption = vbNullString
+            txtParam(2).Visible = False: HScrollParam(2).Visible = False
+            HScrollParam(0).Min = -180: HScrollParam(0).Max = 180
+            HScrollParam(1).Min = -100: HScrollParam(1).Max = 100
+        Case 3: sURL = "http://msdn.microsoft.com/en-us/library/ms534058(v=VS.85).aspx"
+            lblHdr(0).Caption = "Brightness: -255 to 255"
+            lblHdr(1).Caption = "Contrast: -100 to 100": lblHdr(2).Caption = vbNullString
+            txtParam(2).Visible = False: HScrollParam(2).Visible = False
+            HScrollParam(0).Min = -255: HScrollParam(0).Max = 255
+            HScrollParam(1).Min = -100: HScrollParam(1).Max = 100
+        Case 4: sURL = "http://msdn.microsoft.com/en-us/library/ms534069(v=VS.85).aspx"
+            lblHdr(0).Caption = "Hue: -180 to 180"
+            lblHdr(1).Caption = "Saturation: -100 to 100"
+            lblHdr(2).Caption = "Lightness: -100 to 100"
+            txtParam(2).Visible = True: HScrollParam(2).Visible = True
+            HScrollParam(0).Min = -180: HScrollParam(0).Max = 180
+            HScrollParam(1).Min = -100: HScrollParam(1).Max = 100
+            HScrollParam(2).Min = -100: HScrollParam(2).Max = 100
+        Case 5: sURL = "http://msdn.microsoft.com/en-us/library/ms534059(v=VS.85).aspx"
+            lblHdr(0).Caption = "Cyan: -100 to 100"
+            lblHdr(1).Caption = "Magenta: -100 to 100"
+            lblHdr(2).Caption = "Yellow: -100 to 100"
+            txtParam(2).Visible = True: HScrollParam(2).Visible = True
+            HScrollParam(0).Min = -100: HScrollParam(0).Max = 100
+            HScrollParam(1).Min = -100: HScrollParam(1).Max = 100
+            HScrollParam(2).Min = -100: HScrollParam(2).Max = 100
+        Case 6: sURL = "http://msdn.microsoft.com/en-us/library/ms534070(v=VS.85).aspx"
+            lblHdr(0).Caption = "Hightlight: 0 to 100"
+            lblHdr(1).Caption = "Midtone: -100 to 100"
+            lblHdr(2).Caption = "Shadow: -100 to 100"
+            txtParam(2).Visible = True: HScrollParam(2).Visible = True
+            HScrollParam(0).Min = 0: HScrollParam(0).Max = 100
+            HScrollParam(1).Min = -100: HScrollParam(1).Max = 100
+            HScrollParam(2).Min = -100: HScrollParam(2).Max = 100
+        Case 7: sURL = "http://msdn.microsoft.com/en-us/library/ms534060(v=VS.85).aspx"
+            cboCurveAdj.Visible = True: txtParam(0).Visible = False: HScrollParam(0).Visible = False
+            cboCurveChnl.Visible = True: txtParam(1).Visible = False: HScrollParam(1).Visible = False
+            lblHdr(0).Caption = "Adjustment Type": lblHdr(1).Caption = "Adjustment Channel"
+            txtParam(2).Visible = True: Call cboCurveAdj_Click
+            HScrollParam(2).Visible = True: txtParam(2).Visible = True
+    End Select
+    
+    If cToken.Version > 1! Then
+        txtURL.Text = sURL
+        If Not cFX Is Nothing Then
+            If cFX.EffectsHandle(cboEffect.ListIndex + 1) Then
+                tParams(0) = vbNullString: tParams(1) = tParams(0): tParams(2) = tParams(0)
+                nrParams = cFX.GetEffectParameterValues(cboEffect.ListIndex + 1, tParams(0), tParams(1), tParams(2))
+                If cboEffect.ListIndex = 7 Then
+                    cboCurveAdj.ListIndex = tParams(0)
+                    cboCurveChnl.ListIndex = tParams(1)
+                    HScrollParam(2).Value = Val(tParams(2))
+                ElseIf cboEffect.ListIndex = 0& Then
+                    HScrollParam(0).Value = Val(tParams(0))
+                    cboBoolean.ListIndex = Abs(CBool(tParams(1)))
+                Else
+                    For nrParams = 0 To nrParams - 1
+                        HScrollParam(nrParams) = Val(tParams(nrParams))
+                    Next
+                End If
+                cmdDelete.Enabled = True
+            Else
+                cmdDelete.Enabled = False
+            End If
+            RefreshImage
+        End If
+    End If
+    
+End Sub
+
+Private Sub cboCurveAdj_Click()
+    Select Case cboCurveAdj.ListIndex
+    Case 0, 1:
+        lblHdr(2).Caption = "Value: -255 to 255"
+        HScrollParam(2).Min = -255: HScrollParam(2).Max = 255
+    Case 2, 3, 4, 5
+        lblHdr(2).Caption = "Value: -100 to 100"
+        HScrollParam(2).Min = -100: HScrollParam(2).Max = 100
+    Case Else:
+        lblHdr(2).Caption = "Value: 0 to 255"
+        HScrollParam(2).Min = 0: HScrollParam(2).Max = 255
+    End Select
+End Sub
+
+Private Sub cmdCreate_Click()
+
+    Select Case cboEffect.ListIndex
+    Case 0: cFX.CreateBlurEffect HScrollParam(0).Value, cboBoolean.ListIndex
+    Case 1: cFX.CreateSharpenEffect HScrollParam(0).Value, HScrollParam(1).Value
+    Case 2: cFX.CreateTintEffect HScrollParam(0).Value, HScrollParam(1).Value
+    Case 3: cFX.CreateBrightnessContrastEffect HScrollParam(0), HScrollParam(1)
+    Case 4: cFX.CreateHueSaturationLightnessEffect HScrollParam(0).Value, HScrollParam(1).Value, HScrollParam(2).Value
+    Case 5: cFX.CreateColorBalanceEffect HScrollParam(0).Value, HScrollParam(1).Value, HScrollParam(2).Value
+    Case 6: cFX.CreateToneLevelEffect HScrollParam(0).Value, HScrollParam(1).Value, HScrollParam(2).Value
+    Case 7: cFX.CreateColorCurveEffect cboCurveAdj.ListIndex, cboCurveChnl.ListIndex, HScrollParam(2).Value
+    End Select
+    Changed = True
+    RefreshImage
+    cmdDelete.Enabled = Not (cFX.EffectsHandle(cboEffect.ListIndex + 1) = 0&)
+
+End Sub
+
+Private Sub cmdDelete_Click()
+    If cFX.EffectsHandle(cboEffect.ListIndex + 1) Then
+        cFX.DestroyEffectsHandle cboEffect.ListIndex + 1
+        HScrollParam(0).Value = 0: HScrollParam(1).Value = 0: HScrollParam(2).Value = 0
+        RefreshImage
+        cmdDelete.Enabled = False
+        Changed = True
+    End If
+End Sub
+
+Private Sub HScrollParam_Change(Index As Integer)
+    txtParam(Index).Text = HScrollParam(Index).Value
+End Sub
+
+Private Sub HScrollParam_Scroll(Index As Integer)
+    txtParam(Index).Text = HScrollParam(Index).Value
+End Sub
+
+Private Sub imgPlaceHolder_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If Button = vbRightButton Then
+            
+        Dim mPt As POINTAPI, mRect As RECTI, hMenu As Long, m_Flags As Long
+        Dim lColorGray As Long
+        ' setup the popup menu
+        GetCursorPos mPt
+        hMenu = CreatePopupMenu
+        lColorGray = RGB(210, 210, 210)
+        If imgPlaceHolder.BackColor = vbButtonFace Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, 90&, ByVal "Checkboard BackStyle"
+        If imgPlaceHolder.BackColor = vbWhite Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, 355&, ByVal "White Background"
+        If imgPlaceHolder.BackColor = vbBlack Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, 100&, ByVal "Black Background"
+        If imgPlaceHolder.BackColor = lColorGray Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, (lColorGray And &HFF&) + 100&, ByVal "Gray Background"
+        
+        ' show menu & get return
+        m_Flags = TrackPopupMenu(hMenu, TPM_LEFTALIGN Or TPM_NOANIMATION Or TPM_RETURNCMD Or TPM_TOPALIGN, mPt.X, mPt.Y, vbDefault, PropertyPage.hWnd, mRect)
+        DestroyMenu hMenu
+        DoEvents
+        If m_Flags = 90& Then
+            CreateCheckerBoard
+        ElseIf m_Flags <> 0& Then
+            m_Flags = m_Flags - 100&
+            imgPlaceHolder.BackColor = RGB(m_Flags, m_Flags, m_Flags)
+            Set imgPlaceHolder.Picture = Nothing
+            RefreshImage
+        End If
+    End If
+
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+    
+    Dim tData() As Byte
+    
+    With SelectedControls(0)
+        .SetRedraw = False
+        .Effects.DestroyEffectsHandle
+        If cFX.ExportEffectsParameters(tData) Then
+            .Effects.ImportEffectsParameters tData
+            .Effect = cboEffect.ListIndex + 1
+        End If
+        .SetRedraw = True
+    End With
+    Changed = False
+
+End Sub
+
+Private Sub PropertyPage_Initialize()
+    
+    Dim X As Long
+    If g_TokenClass Is Nothing Then Set g_TokenClass = New cGDIpToken
+    Set cToken = g_TokenClass
+    cToken.AddRef
+    
+    cboCurveAdj.AddItem "Exposure"
+    cboCurveAdj.AddItem "Density"
+    cboCurveAdj.AddItem "Contrast"
+    cboCurveAdj.AddItem "Highlight"
+    cboCurveAdj.AddItem "Shadow"
+    cboCurveAdj.AddItem "Midtone"
+    cboCurveAdj.AddItem "WhiteSaturation"
+    cboCurveAdj.AddItem "BlackSaturation"
+    cboCurveAdj.ListIndex = 0
+    
+    cboBoolean.AddItem "False"
+    cboBoolean.AddItem "True"
+    cboBoolean.ListIndex = 0
+    
+    cboCurveChnl.AddItem "All"
+    cboCurveChnl.AddItem "Red"
+    cboCurveChnl.AddItem "Green"
+    cboCurveChnl.AddItem "Blue"
+    cboCurveChnl.ListIndex = 0
+
+    cboEffect.AddItem "BlurFX"
+    cboEffect.AddItem "SharpenFX"
+    cboEffect.AddItem "TintFX"
+    cboEffect.AddItem "BrightnessContrastFX"
+    cboEffect.AddItem "HueSaturationLightnessFX"
+    cboEffect.AddItem "ColorBalanceFX"
+    cboEffect.AddItem "ToneLevelsFX"
+    cboEffect.AddItem "ColorCurveFX"
+    cboEffect.ListIndex = 0
+        
+    Set txtURL.Font = PropertyPage.Font
+    If cToken.Version <= 1! Then
+        txtURL.Text = "Requires v1.1 or greater of GDI+ dll"
+        txtURL.BackColor = vbRed
+        txtURL.ForeColor = vbWhite
+        txtURL.FontBold = True
+        txtURL.Alignment = vbCenter
+        cmdDelete.Enabled = False
+        cmdCreate.Enabled = False
+    End If
+    txtURL.Height = PropertyPage.TextHeight("Xyz")
+    
+    imgPlaceHolder.BackColor = vbWhite
+    
+End Sub
+
+Private Sub PropertyPage_SelectionChanged()
+
+    Dim tData() As Byte
+    
+    Set cImage = modCommon.LoadImage(SelectedControls(0).Picture, , , True)
+    Set cFX = New GDIpEffects
+    With SelectedControls(0)
+        Set cAttr = .Effects
+        If cAttr.ExportEffectsParameters(tData) Then
+            cFX.ImportEffectsParameters tData
+        End If
+        mAngle = .Rotation
+        mMirror = .Mirror
+    End With
+    DoEvents
+    Call cboEffect_Click
+    RefreshImage
+    
+End Sub
+
+Private Sub RefreshImage()
+
+    Dim Cx As Long, Cy As Long
+    
+    imgPlaceHolder.Cls
+    If modCommon.GetScaledImageSizes(cImage.Width, cImage.Height, imgPlaceHolder.ScaleWidth - 2&, imgPlaceHolder.ScaleHeight - 2&, Cx, Cy, mAngle, False, False) Then
+        Select Case mMirror
+            Case lvicMirrorBoth: Cx = -Cx: Cy = -Cy
+            Case lvicMirrorHorizontal: Cx = -Cx
+            Case lvicMirrorVertical: Cy = -Cy
+        End Select
+        cImage.Render imgPlaceHolder.hDC, (imgPlaceHolder.ScaleWidth - Abs(Cx)) \ 2, (imgPlaceHolder.ScaleHeight - Abs(Cy)) \ 2, Cx, Cy, , , , , mAngle, _
+            cAttr.AttributesHandle, , cFX.EffectsHandle(cboEffect.ListIndex + 1)
+    End If
+    imgPlaceHolder.Refresh
+        
+End Sub
+
+Private Sub PropertyPage_Terminate()
+    Set cAttr = Nothing
+    Set cFX = Nothing
+    Set cImage = Nothing
+    cToken.RemoveRef
+    Set cToken = Nothing
+End Sub
+
+Private Sub txtParam_DblClick(Index As Integer)
+    HScrollParam(Index).Value = 0
+End Sub
+
+Private Sub CreateCheckerBoard()
+
+    Dim X As Long, Y As Long, lColor As Long, lMask As Long
+    
+    imgPlaceHolder.BackColor = vbButtonFace
+    lColor = vbWhite: lMask = RGB(240, 240, 240) Xor lColor
+    For Y = 0& To imgPlaceHolder.ScaleHeight - 1& Step 14&
+        For X = 0& To imgPlaceHolder.ScaleWidth - 1& Step 14&
+            imgPlaceHolder.Line (X, Y)-(X + 13&, Y + 13&), lColor, BF
+            lColor = lColor Xor lMask
+        Next
+        lColor = lColor Xor lMask
+    Next
+    Set imgPlaceHolder.Picture = imgPlaceHolder.Image
+    RefreshImage
+    
+End Sub
+

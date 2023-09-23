@@ -1,0 +1,1313 @@
+VERSION 5.00
+Begin VB.PropertyPage ppgCustom 
+   Caption         =   "Key Image  Properties"
+   ClientHeight    =   3600
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   4800
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LockControls    =   -1  'True
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   3600
+   ScaleWidth      =   4800
+   Begin VB.ComboBox cboLoadType 
+      Height          =   315
+      Left            =   135
+      Style           =   2  'Dropdown List
+      TabIndex        =   0
+      Top             =   1395
+      Width           =   1500
+   End
+   Begin VB.CheckBox chkAnimate 
+      Caption         =   "Animate Test"
+      Height          =   315
+      Left            =   3090
+      TabIndex        =   10
+      Top             =   975
+      Width           =   1635
+   End
+   Begin VB.CheckBox chkBkgImg 
+      Caption         =   "Set Bkg Image"
+      Height          =   270
+      Left            =   165
+      TabIndex        =   3
+      Top             =   2085
+      Width           =   1545
+   End
+   Begin VB.PictureBox picCtrls 
+      BorderStyle     =   0  'None
+      Height          =   2295
+      Left            =   1845
+      ScaleHeight     =   2295
+      ScaleWidth      =   3075
+      TabIndex        =   24
+      TabStop         =   0   'False
+      Top             =   1320
+      Width           =   3075
+      Begin VB.ComboBox cboGray 
+         Height          =   315
+         Left            =   1260
+         Style           =   2  'Dropdown List
+         TabIndex        =   11
+         Top             =   15
+         Width           =   1665
+      End
+      Begin VB.ComboBox cboMirror 
+         Height          =   315
+         Left            =   1260
+         Style           =   2  'Dropdown List
+         TabIndex        =   15
+         Top             =   1275
+         Width           =   1665
+      End
+      Begin VB.TextBox txtDuration 
+         Alignment       =   2  'Center
+         Height          =   315
+         Index           =   0
+         Left            =   1830
+         MaxLength       =   5
+         TabIndex        =   16
+         ToolTipText     =   "Minimal Frame Delay"
+         Top             =   1620
+         Width           =   1035
+      End
+      Begin VB.HScrollBar HScrollAttr 
+         Height          =   255
+         Index           =   0
+         LargeChange     =   10
+         Left            =   1245
+         Max             =   100
+         TabIndex        =   12
+         Top             =   375
+         Width           =   1185
+      End
+      Begin VB.HScrollBar HScrollAttr 
+         Height          =   255
+         Index           =   1
+         LargeChange     =   10
+         Left            =   1245
+         Max             =   100
+         Min             =   -100
+         TabIndex        =   13
+         Top             =   675
+         Width           =   1185
+      End
+      Begin VB.HScrollBar HScrollAttr 
+         Height          =   255
+         Index           =   2
+         LargeChange     =   10
+         Left            =   1245
+         Max             =   360
+         Min             =   -360
+         TabIndex        =   14
+         Top             =   990
+         Width           =   1185
+      End
+      Begin VB.TextBox txtAttr 
+         Alignment       =   2  'Center
+         Height          =   285
+         Index           =   0
+         Left            =   2445
+         Locked          =   -1  'True
+         TabIndex        =   27
+         TabStop         =   0   'False
+         ToolTipText     =   "Double click to reset"
+         Top             =   375
+         Width           =   450
+      End
+      Begin VB.TextBox txtAttr 
+         Alignment       =   2  'Center
+         Height          =   285
+         Index           =   1
+         Left            =   2445
+         Locked          =   -1  'True
+         TabIndex        =   26
+         TabStop         =   0   'False
+         ToolTipText     =   "Double click to reset"
+         Top             =   690
+         Width           =   450
+      End
+      Begin VB.TextBox txtAttr 
+         Alignment       =   2  'Center
+         Height          =   285
+         Index           =   2
+         Left            =   2445
+         Locked          =   -1  'True
+         TabIndex        =   25
+         TabStop         =   0   'False
+         ToolTipText     =   "Double click to reset"
+         Top             =   990
+         Width           =   450
+      End
+      Begin VB.TextBox txtDuration 
+         Alignment       =   2  'Center
+         Height          =   315
+         Index           =   1
+         Left            =   1830
+         MaxLength       =   4
+         TabIndex        =   17
+         ToolTipText     =   "Maximum Frame Delay"
+         Top             =   1935
+         Width           =   1035
+      End
+      Begin VB.Label lblInfo 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Rotation"
+         Height          =   300
+         Index           =   8
+         Left            =   0
+         TabIndex        =   33
+         Top             =   1035
+         Width           =   1545
+      End
+      Begin VB.Label lblInfo 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Gray Scaling"
+         Height          =   300
+         Index           =   4
+         Left            =   0
+         TabIndex        =   32
+         Top             =   45
+         Width           =   1425
+      End
+      Begin VB.Label lblInfo 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Transparency %"
+         Height          =   300
+         Index           =   5
+         Left            =   0
+         TabIndex        =   31
+         Top             =   390
+         Width           =   1830
+      End
+      Begin VB.Label lblInfo 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Lightness %"
+         Height          =   300
+         Index           =   6
+         Left            =   0
+         TabIndex        =   30
+         Top             =   705
+         Width           =   1695
+      End
+      Begin VB.Label lblInfo 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Mirroring"
+         Height          =   300
+         Index           =   7
+         Left            =   0
+         TabIndex        =   29
+         Top             =   1335
+         Width           =   1425
+      End
+      Begin VB.Label lblInfo 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Min/Max Frame Interval for Animation"
+         Height          =   660
+         Index           =   9
+         Left            =   0
+         TabIndex        =   28
+         Top             =   1725
+         Width           =   1650
+      End
+   End
+   Begin VB.ComboBox cboGroup 
+      Height          =   315
+      Left            =   2235
+      Style           =   2  'Dropdown List
+      TabIndex        =   7
+      ToolTipText     =   "Animated Cursor Groups or DLL Groups"
+      Top             =   405
+      Width           =   1215
+   End
+   Begin VB.CommandButton cmdDelete 
+      Caption         =   "X"
+      Height          =   330
+      Left            =   135
+      TabIndex        =   2
+      ToolTipText     =   "Remove Image"
+      Top             =   1740
+      Width           =   375
+   End
+   Begin VB.Frame frmSegment 
+      Caption         =   "Segment Image"
+      Height          =   1095
+      Left            =   90
+      TabIndex        =   4
+      Top             =   2385
+      Width           =   1575
+      Begin VB.TextBox txtSegment 
+         Alignment       =   2  'Center
+         Height          =   330
+         Index           =   1
+         Left            =   780
+         TabIndex        =   6
+         Top             =   660
+         Width           =   645
+      End
+      Begin VB.TextBox txtSegment 
+         Alignment       =   2  'Center
+         Height          =   330
+         Index           =   0
+         Left            =   780
+         TabIndex        =   5
+         Top             =   285
+         Width           =   645
+      End
+      Begin VB.Label lblInfo 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Columns"
+         Height          =   300
+         Index           =   3
+         Left            =   60
+         TabIndex        =   22
+         Top             =   705
+         Width           =   795
+      End
+      Begin VB.Label lblInfo 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Rows"
+         Height          =   300
+         Index           =   2
+         Left            =   105
+         TabIndex        =   21
+         Top             =   330
+         Width           =   795
+      End
+   End
+   Begin VB.ComboBox cboFrame 
+      Height          =   315
+      Left            =   3510
+      Style           =   2  'Dropdown List
+      TabIndex        =   8
+      Top             =   405
+      Width           =   1215
+   End
+   Begin VB.PictureBox imgPlaceHolder 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   1305
+      Left            =   135
+      OLEDropMode     =   1  'Manual
+      ScaleHeight     =   85
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   96
+      TabIndex        =   20
+      TabStop         =   0   'False
+      ToolTipText     =   "Accepts dragged files"
+      Top             =   75
+      Width           =   1470
+   End
+   Begin VB.CommandButton cmdBrowse 
+      Caption         =   "Browse ..."
+      Height          =   330
+      Left            =   525
+      TabIndex        =   1
+      Top             =   1740
+      Width           =   1095
+   End
+   Begin VB.CheckBox chkIndex 
+      Caption         =   "Set Group && Index for Display"
+      Height          =   390
+      Left            =   2250
+      TabIndex        =   9
+      ToolTipText     =   "Image at index will be on displayed in the control"
+      Top             =   675
+      Width           =   2505
+   End
+   Begin VB.CheckBox chkBkgStretch 
+      Caption         =   "Stretch Image to Control Size"
+      Height          =   255
+      Left            =   165
+      TabIndex        =   18
+      Top             =   2460
+      Visible         =   0   'False
+      Width           =   2520
+   End
+   Begin VB.Label lblBinaries 
+      BackColor       =   &H00C0C0FF&
+      Height          =   2175
+      Left            =   1890
+      TabIndex        =   34
+      Top             =   1350
+      Visible         =   0   'False
+      Width           =   2805
+   End
+   Begin VB.Label lblLoop 
+      Height          =   375
+      Left            =   1680
+      TabIndex        =   23
+      Top             =   510
+      Width           =   3045
+   End
+   Begin VB.Label lblInfo 
+      BackColor       =   &H80000008&
+      BackStyle       =   0  'Transparent
+      Height          =   315
+      Index           =   0
+      Left            =   1695
+      TabIndex        =   19
+      Top             =   90
+      Width           =   3045
+   End
+End
+Attribute VB_Name = "ppgCustom"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+' allow menus on the property page
+Private Declare Function CreatePopupMenu Lib "user32.dll" () As Long
+Private Declare Function AppendMenu Lib "user32.dll" Alias "AppendMenuA" (ByVal hMenu As Long, ByVal wFlags As Long, ByVal wIDNewItem As Long, ByVal lpNewItem As Any) As Long
+Private Declare Function DestroyMenu Lib "user32.dll" (ByVal hMenu As Long) As Long
+Private Declare Function TrackPopupMenu Lib "user32.dll" (ByVal hMenu As Long, ByVal wFlags As Long, ByVal X As Long, ByVal Y As Long, ByVal nReserved As Long, ByVal hWnd As Long, ByRef lprc As RECTI) As Long
+Private Const TPM_LEFTALIGN As Long = &H0&
+Private Const TPM_NOANIMATION As Long = &H4000&
+Private Const TPM_RETURNCMD As Long = &H100&
+Private Const TPM_TOPALIGN As Long = &H0&
+Private Const MF_STRING As Long = &H0&
+Private Const MF_SEPARATOR As Long = &H800&
+Private Const MF_CHECKED As Long = &H8&
+Private Const MF_GRAYED As Long = &H1&
+Private Const MF_DISABLED As Long = &H2& Or MF_GRAYED
+Private Declare Function GetCursorPos Lib "user32.dll" (ByRef lpPoint As POINTAPI) As Long
+
+Private Type ImageReference
+    Image As GDIpImage
+    Frame As Long
+    Group As Long
+    Index As Long
+    Changed As Boolean
+End Type
+
+Private mImgRef(0 To 1) As ImageReference
+Private mActiveIndex As Long
+Private bSetup As Boolean, bIndexLocked As Boolean
+Private bAssocIcon As Boolean, bScaleUp As Boolean
+Private WithEvents cImage As GDIpImage
+Attribute cImage.VB_VarHelpID = -1
+Private WithEvents cBkgImage As GDIpImage
+Attribute cBkgImage.VB_VarHelpID = -1
+Private WithEvents cFX As GDIpEffects
+Attribute cFX.VB_VarHelpID = -1
+Private cBrowser As UnicodeFileDialog
+Private WithEvents cAniClass As Animator
+Attribute cAniClass.VB_VarHelpID = -1
+Private m_Token As cGDIpToken
+
+Private Sub cAniClass_AnimationFinished()
+    chkAnimate.Value = vbUnchecked
+End Sub
+
+Private Sub cAniClass_Looped(Count As Long)
+    lblLoop.Caption = "Sample Loops: " & Count
+End Sub
+
+Private Sub cboGray_Click()
+    If bSetup = False Then
+        cFX.GrayScale = cboGray.ItemData(cboGray.ListIndex)
+        Changed = True
+    End If
+End Sub
+
+Private Sub cboFrame_Click()
+    bIndexLocked = True
+    chkIndex.Value = Abs(cboFrame.ListIndex = mImgRef(mActiveIndex).Frame And cboGroup.ListIndex = mImgRef(mActiveIndex).Group)
+    'chkIndex.Value = Abs((cboFrame.ListIndex Or cboGroup.ListIndex * &H10000) = Val(chkIndex.Tag))
+    bIndexLocked = False
+    If bSetup = False Then
+        mImgRef(mActiveIndex).Image.ImageIndex = cboFrame.ListIndex + 1
+        'cImage.ImageIndex = cboFrame.ListIndex + 1
+        ShowAttributes False
+        Call RefreshImage
+    End If
+End Sub
+
+Private Sub cboGroup_Click()
+    Dim X As Long
+    bIndexLocked = True
+    chkIndex.Value = Abs(cboFrame.ListIndex = mImgRef(mActiveIndex).Frame And cboGroup.ListIndex = mImgRef(mActiveIndex).Group)
+    'chkIndex.Value = Abs((cboFrame.ListIndex Or cboGroup.ListIndex * &H10000) = Val(chkIndex.Tag))
+    bIndexLocked = False
+    If bSetup = False Then
+        mImgRef(mActiveIndex).Image.ImageGroup = cboGroup.ListIndex + 1
+        'cImage.ImageGroup = cboGroup.ListIndex + 1
+        If mImgRef(mActiveIndex).Image.ImageCount <> cboFrame.ListCount Then
+            cboFrame.Clear
+            For X = 1 To mImgRef(mActiveIndex).Image.ImageCount
+                cboFrame.AddItem "Img #" & CStr(X)
+            Next
+            bSetup = True
+            cboFrame.ListIndex = 0
+            bSetup = False
+        End If
+        ShowAttributes False
+        RefreshImage
+        PropertyPage.Changed = True
+    End If
+End Sub
+
+Private Sub cboMirror_Click()
+    If bSetup = False Then
+        RefreshImage
+        PropertyPage.Changed = True
+    End If
+End Sub
+
+Private Sub cFX_Changed(PropertyName As String)
+    If bSetup = False Then RefreshImage
+End Sub
+
+Private Sub chkAnimate_Click()
+    If bSetup = False Then
+        If chkAnimate.Value = vbChecked Then
+            cboFrame.Enabled = False: chkIndex.Enabled = False: cboGroup.Enabled = False
+            If cImage.IsExecutableResource Then
+                lblBinaries.Caption = "Though a binary resource may contain AVIs and animated cursors/icons, " & _
+                    " you cannot animate them from this view." & vbCrLf & _
+                    "To see the animation, select the desired resource as your control's image. " & _
+                    "Then view the properties again and you will be able to animate" & vbCrLf & vbCrLf & _
+                    "Uncheck the animation option to return to normal view"
+                lblBinaries.Visible = True
+                picCtrls.Visible = False
+            Else
+                txtSegment(0).Enabled = False: txtSegment(1).Enabled = False
+                bIndexLocked = True
+                Set g_NewImageData = New cGDIpMultiImage
+                g_NewImageData.CacheSourceInfo cImage, PropertyPage.hWnd, 0&, False, False
+                Set cAniClass = New Animator
+                cAniClass.DefaultMinimumDuration = Val(txtDuration(0).Text)
+                cAniClass.DefaultMaximumDuration = Val(txtDuration(1).Text)
+                cAniClass.LoopCount = 20
+                cAniClass.EndLoopOnFirstFrame = True
+            End If
+            cboFrame.Visible = False: cboGroup.Visible = False: chkIndex.Visible = False
+            If cImage.IsExecutableResource Then
+                lblBinaries.Visible = True
+            Else
+                lblLoop.Caption = "Sample Loops: 20": lblLoop.Visible = True
+                cAniClass.StartAnimation
+            End If
+        Else
+            If cImage.IsExecutableResource = False Then Set cAniClass = Nothing
+            cboFrame.Enabled = (cboFrame.ListCount > 1)
+            chkIndex.Enabled = True
+            cboGroup.Enabled = (cboGroup.ListCount > 1)
+            chkIndex.Enabled = cboFrame.Enabled
+            lblLoop.Visible = False
+            cboFrame.Visible = True: cboGroup.Visible = True: chkIndex.Visible = True
+            txtSegment(0).Enabled = True: txtSegment(1).Enabled = True
+            If cImage.IsExecutableResource Then
+                picCtrls.Visible = True
+                lblBinaries.Caption = vbNullString
+                lblBinaries.Visible = False
+            Else
+                bIndexLocked = False
+            End If
+        End If
+    End If
+End Sub
+
+Private Sub chkBkgImg_Click()
+    chkAnimate.Value = vbUnchecked
+    If chkBkgImg.Value = vbChecked Then mActiveIndex = 1 Else mActiveIndex = 0
+    picCtrls.Visible = CBool(mActiveIndex - 1&)
+    chkAnimate.Visible = picCtrls.Visible
+    chkBkgStretch.Visible = Not picCtrls.Visible
+    cboLoadType.ListIndex = 0
+    cboLoadType.Enabled = picCtrls.Visible
+    If Not bSetup Then
+        ShowAttributes True
+        RefreshImage
+    End If
+End Sub
+
+Private Sub chkBkgStretch_Click()
+    If bSetup = False Then Changed = True
+End Sub
+
+Private Sub chkIndex_Click()
+    If bSetup = False Then
+        If Not bIndexLocked Then
+            If chkIndex.Value = vbChecked Then
+                mImgRef(mActiveIndex).Frame = cboFrame.ListIndex
+                mImgRef(mActiveIndex).Group = cboGroup.ListIndex
+            Else
+                mImgRef(mActiveIndex).Frame = 0
+                mImgRef(mActiveIndex).Group = 0
+            End If
+            PropertyPage.Changed = True
+        End If
+    End If
+End Sub
+
+Private Sub cImage_ImageChanged(FrameIndex As Long)
+    If cboFrame.ListCount Then
+        If Not bSetup Then cboFrame.ListIndex = FrameIndex - 1&
+    End If
+End Sub
+Private Sub cBkgImage_ImageChanged(FrameIndex As Long)
+    If cboFrame.ListCount Then
+        If Not bSetup Then cboFrame.ListIndex = FrameIndex - 1&
+    End If
+End Sub
+
+Private Sub cmdBrowse_Click()
+    
+    Dim lPIDL As Long
+    
+    Select Case cboLoadType.ListIndex
+    Case 0, 1
+        With cBrowser
+            If cboLoadType.ListIndex = 0 Then
+                .Filter = "All Files|*.*|" & _
+                    "Supported Formats|*.bmp;*.cur;*.ani;*.avi;*.gif;*.ico;*.jpg;*.jpeg;*.emf;*.wmf;*.mp3;*.wma;*.pcx;*.png;*.pam;*.pnm;*.pgm;*.pbm;*.ppm;*.apng;*.tga;*.tif;*.tiff;*.exe;*.dll;*.ocx|" & _
+                    "Audio Video Interleave (AVI)|*.avi|Bitmap|*.bmp|Cursor|*.cur;*.ani|Executables (dll,exe,ocx)|*.exe;*.dll;*.ocx|GIF|*.gif|Icon|*.ico|JPEG|*.jpg;*.jpeg|" & _
+                    "Metafiles|*.emf;*.wmf|Music (MP3 WMA)|*.mp3;*.wma|PC Paintbrush (PCX)|*.pcx|PNG|*.png;*.apng|Portable Bitmap|*.pnm;*.pbm;*.pgm;*.ppm;*.pam|" & _
+                    "Targa (TGA)|*.tga|TIFF|*.tif;*.tiff"
+                .FilterIndex = 2
+                .DialogTitle = "Select Image"
+            Else
+                .Filter = "All Files|*.*|Executables|*.exe;*.ocx"
+                .FilterIndex = 2
+                .DialogTitle = "Select Desired File"
+            End If
+            .flags = OFN_EXPLORER Or OFN_FILEMUSTEXIST
+        End With
+        If cBrowser.ShowOpen(PropertyPage.hWnd) Then
+            DoEvents
+            LoadSampleImage cBrowser.FileName, True
+        End If
+    Case 2
+        Dim cFolderBrowser As New UnicodeBrowseFolders
+        With cFolderBrowser
+            .DialogTitle = "Select file for associated icon"
+            .flags = BIF_NEWDIALOGSTYLE Or BIF_NONEWFOLDERBUTTON
+            .ShowBrowseForFolder PropertyPage.hWnd, False
+            DoEvents
+            If .PIDL_ReturnValue Then
+                LoadSampleImage .PIDL_ReturnValue, True
+                .DestroyPIDL .PIDL_ReturnValue
+            End If
+        End With
+    Case 3
+        LoadSampleImage "*.exe", True
+    Case 4
+        LoadSampleImage "?", True
+    End Select
+End Sub
+
+Private Sub cmdDelete_Click()
+    chkAnimate.Value = vbUnchecked
+    Set mImgRef(mActiveIndex).Image = New GDIpImage
+    mImgRef(mActiveIndex).Frame = 0
+    mImgRef(mActiveIndex).Group = 0
+    mImgRef(mActiveIndex).Index = 0
+    If mActiveIndex = 0 Then Set cImage = mImgRef(mActiveIndex).Image Else Set cBkgImage = mImgRef(mActiveIndex).Image
+    mImgRef(mActiveIndex).Changed = False
+    
+    cboGroup.Enabled = False: cboFrame.Enabled = False
+    chkAnimate.Enabled = False: chkIndex.Enabled = False
+    imgPlaceHolder.Cls
+    lblInfo(0).Caption = "No Image Loaded"
+    bAssocIcon = False
+    Changed = True
+End Sub
+
+Private Sub HScrollAttr_Change(Index As Integer)
+    Select Case Index
+    Case 0: cFX.GlobalTransparencyPct = HScrollAttr(Index).Value
+    Case 1: cFX.LightnessPct = HScrollAttr(Index).Value
+    Case 2:
+        If bSetup = False Then RefreshImage
+    End Select
+    txtAttr(Index) = HScrollAttr(Index).Value
+    Changed = True
+End Sub
+
+Private Sub HScrollAttr_Scroll(Index As Integer)
+    Call HScrollAttr_Change(Index)
+End Sub
+
+Private Sub imgPlaceHolder_KeyUp(KeyCode As Integer, Shift As Integer)
+    If KeyCode = vbKeyV Then
+        If Shift = vbCtrlMask Then
+            
+            Dim sText As String, colFiles As Collection
+            If cboLoadType.ListIndex = 0 Then
+                LoadSampleImage Clipboard
+            ElseIf cboLoadType.ListIndex > 2 Then
+                cmdBrowse.Value = True
+            Else
+                If Clipboard.GetFormat(vbCFText) Or Clipboard.GetFormat(CF_UNICODE) Then
+                    Call modCommon.GetPastedFileData(Nothing, vbCFText, Nothing, , sText)
+                ElseIf modCommon.GetPastedFileData(colFiles, vbCFFiles, Nothing) Then
+                    sText = colFiles.Item(1)
+                    Set colFiles = Nothing
+                End If
+                If Len(sText) = 0& Then
+                    Beep
+                ElseIf cboLoadType.ListIndex = 2 Then
+                    Shift = InStrRev(sText, "\")
+                    If Shift Then
+                        LoadSampleImage Left$(sText, Shift), True
+                    Else
+                        LoadSampleImage sText, True
+                    End If
+                Else
+                    LoadSampleImage sText, True
+                End If
+            End If
+        
+        
+        End If
+    End If
+End Sub
+
+Private Sub imgPlaceHolder_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    
+    If Button = vbRightButton Then
+            
+        Dim mPt As POINTAPI, mRect As RECTI, hMenu As Long, m_Flags As Long
+        
+        Const mnuPaste As Long = 75&
+        Const mnuChkBd As Long = 90&
+        Const mnuExport As Long = 65&
+        Const mnuScale As Long = 45&
+        Const mnuBkColorBase As Long = 100&
+        Const GRAY As Long = 210&
+        
+        ' setup the popup menu
+        GetCursorPos mPt
+        hMenu = CreatePopupMenu
+        If imgPlaceHolder.BackColor = vbButtonFace Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, mnuChkBd, ByVal "Checkboard BackStyle"
+        If imgPlaceHolder.BackColor = vbWhite Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, mnuBkColorBase + 255&, ByVal "White Background"
+        If imgPlaceHolder.BackColor = vbBlack Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, mnuBkColorBase, ByVal "Black Background"
+        If imgPlaceHolder.BackColor = RGB(GRAY, GRAY, GRAY) Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, mnuBkColorBase + GRAY, ByVal "Gray Background"
+        AppendMenu hMenu, MF_SEPARATOR Or MF_DISABLED Or MF_GRAYED, 57&, ByVal 0&
+        If bScaleUp Then m_Flags = MF_CHECKED Else m_Flags = 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, mnuScale, ByVal "Scale up smaller images"
+        AppendMenu hMenu, MF_SEPARATOR Or MF_DISABLED Or MF_GRAYED, 55&, ByVal 0&
+        AppendMenu hMenu, MF_STRING, mnuPaste, ByVal "Paste Image/File"
+        If mImgRef(mActiveIndex).Image.Handle = 0& Then m_Flags = MF_DISABLED Or MF_GRAYED Else m_Flags = 0&
+        AppendMenu hMenu, MF_SEPARATOR Or MF_DISABLED Or MF_GRAYED, 56&, ByVal 0&
+        AppendMenu hMenu, MF_STRING Or m_Flags, mnuExport, ByVal "Export Source To File"
+        
+        ' show menu & get return
+        m_Flags = TrackPopupMenu(hMenu, TPM_LEFTALIGN Or TPM_NOANIMATION Or TPM_RETURNCMD Or TPM_TOPALIGN, mPt.X, mPt.Y, vbDefault, PropertyPage.hWnd, mRect)
+        DestroyMenu hMenu
+        DoEvents
+        If m_Flags = mnuPaste Then
+            Call imgPlaceHolder_KeyUp(vbKeyV, (vbCtrlMask))
+        ElseIf m_Flags = mnuChkBd Then
+            CreateCheckerBoard
+        ElseIf m_Flags = mnuExport Then
+            ExportDataToFile
+        ElseIf m_Flags = mnuScale Then
+            bScaleUp = Not bScaleUp
+            RefreshImage
+        ElseIf m_Flags >= mnuBkColorBase Then
+            m_Flags = ((m_Flags - mnuBkColorBase) And 255&)
+            imgPlaceHolder.BackColor = RGB(m_Flags, m_Flags, m_Flags)
+            Set imgPlaceHolder.Picture = Nothing
+            RefreshImage
+        End If
+    End If
+    
+End Sub
+
+Private Sub imgPlaceHolder_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+    Dim sText As String
+    If cboLoadType.ListIndex = 0 Then
+        LoadSampleImage Data
+    ElseIf cboLoadType.ListIndex > 2 Then
+        cmdBrowse.Value = True
+    Else
+        If Data.GetFormat(vbCFText) Or Data.GetFormat(CF_UNICODE) Then
+            Call modCommon.GetDroppedFileNames(Data, vbCFText, sText, Nothing, False)
+        ElseIf Data.GetFormat(vbCFFiles) Then
+            sText = Data.Files(1)
+        End If
+        If Len(sText) = 0& Then
+            Beep
+        ElseIf cboLoadType.ListIndex = 2 Then
+            Shift = InStrRev(sText, "\")
+            If Shift Then
+                LoadSampleImage Left$(sText, Shift), True
+            Else
+                LoadSampleImage sText, True
+            End If
+        Else
+            LoadSampleImage sText, True
+        End If
+    End If
+    
+End Sub
+
+Private Sub LoadSampleImage(fromSource As Variant, Optional isBrowser As Boolean)
+
+    
+    Dim AI As ASSOCIATEDICON
+    Dim MIS As MULTIIMAGESAVESTRUCT
+    
+    Dim bData() As Byte, shilSizes(0 To 3) As Long
+    Dim lFolderIndex As Long, icSize As Long, maxSize As Long
+    
+    chkAnimate.Value = vbUnchecked
+    If isBrowser Then
+        If cboLoadType.ListIndex = 0 Then
+            ReDim MIS.Image(0 To 0)
+            Set MIS.Image(0).Picture = modCommon.LoadImage(fromSource, , True, True)
+        Else
+            ' a bit long winded, here. For icon associations of files, nothing major
+            ' however when getting associated folder icons or icons that are not files,
+            ' we will offer up to 4 sizes + up to 4 sizes of standard folder & standard opened folder
+            
+            AI.FileName = fromSource
+            ReDim MIS.Image(0 To 11)
+            MIS.Images = 12&
+            
+            shilSizes(0) = lvicSHIL_Small_16            ' want sizes in this order
+            shilSizes(1) = lvicSHIL_Large_32
+            shilSizes(2) = lvicSHIL_ExtraLarge_48
+            shilSizes(3) = lvicSHIL_Jumbo_256
+            maxSize = 3&                                ' max number of sizes: UBound(shilSizes)
+            Select Case cboLoadType.ListIndex
+                Case 1: AI.IconType = lvicAssocActualIcon
+                Case 2: AI.IconType = lvicAssocActualIcon Or lvicAssocIconPIDL
+                Case 3, 4: AI.IconType = lvicAssocGenericIcon
+            End Select
+            AI.DesiredSize = lvicSHIL_Small_16          ' start with 16x16
+            Set MIS.Image(0).Picture = modCommon.LoadImage(AI, , True, True)
+            If MIS.Image(0).Picture.Handle Then                    ' if not successful; abort
+                lFolderIndex = AI.IndexReturned         ' keep track of which index returned for 16x16
+                MIS.Image(3).IconEmbeddedAsPNG = True
+                For icSize = 1& To maxSize              ' load up to 3 more sizes
+                    AI.DesiredSize = shilSizes(icSize)
+                    Set MIS.Image(icSize).Picture = modCommon.LoadImage(AI, , True, True)
+                    If MIS.Image(icSize).Picture.Width <= MIS.Image(icSize - 1&).Picture.Width Then
+                        maxSize = icSize - 1&           ' if returned same width as previous; abort
+                        Set MIS.Image(icSize).Picture = Nothing    ' because we are not getting any larger sizes from the O/S
+                        Exit For
+                    End If
+                Next
+                If cboLoadType.ListIndex = 2 Then       ' folders? If so, get standard/generic icons too
+                    AI.FileName = "C:\LaVolpe\"         ' create any folder structure
+                    AI.IconType = lvicAssocGenericIcon  ' set properties & get 16x16 first
+                    AI.DesiredSize = lvicSHIL_Small_16
+                    Set MIS.Image(4).Picture = modCommon.LoadImage(AI, , True, True)
+                    If MIS.Image(4).Picture.Handle Then            ' if same as previous 16x16; we're done with this loop
+                        If AI.IndexReturned = lFolderIndex Then
+                            Set MIS.Image(4).Picture = Nothing
+                        Else
+                            MIS.Image(7).IconEmbeddedAsPNG = True
+                            For icSize = 1& To maxSize  ' get up to 3 more sizes for generic folder icon
+                                AI.DesiredSize = shilSizes(icSize)
+                                Set MIS.Image(icSize + 4&).Picture = modCommon.LoadImage(AI, , True, True)
+                            Next
+                        End If                          ' repeat but for generic 'opened' folder icon
+                        AI.IconType = AI.IconType Or lvicAssocIconOpened
+                        AI.DesiredSize = lvicSHIL_Small_16
+                        Set MIS.Image(8).Picture = modCommon.LoadImage(AI, , True, True)
+                        If AI.IndexReturned = lFolderIndex Then
+                            Set MIS.Image(8).Picture = Nothing
+                        Else
+                            MIS.Image(11).IconEmbeddedAsPNG = True
+                            For icSize = 1& To maxSize
+                                AI.DesiredSize = shilSizes(icSize)
+                                Set MIS.Image(8& + icSize).Picture = modCommon.LoadImage(AI, , True, True)
+                            Next
+                        End If
+                    End If
+                End If
+                Call modCommon.SaveImage(Nothing, MIS.Image(0).Picture, lvicSaveAsIcon, MIS)
+            End If
+        End If
+    Else
+        ReDim MIS.Image(0 To 0)
+        Set MIS.Image(0).Picture = modCommon.LoadImage(fromSource, , True, True)
+    End If
+    If MIS.Image(0).Picture.Handle Then
+        With mImgRef(mActiveIndex)
+            Set .Image = MIS.Image(0).Picture
+            Erase MIS.Image()
+            If mActiveIndex = 0 Then Set cImage = .Image Else Set cBkgImage = .Image
+            .Frame = .Image.ImageIndex - 1&
+            .Group = .Image.ImageGroup - 1&
+            .Changed = True
+        End With
+        Call RefreshImage
+        ShowAttributes True
+        chkIndex.Value = vbChecked
+        PropertyPage.Changed = True
+        bAssocIcon = (cboLoadType.ListIndex > 0&)
+    Else
+        Beep
+    End If
+
+End Sub
+
+Private Sub PropertyPage_Initialize()
+    
+    If g_TokenClass Is Nothing Then Set g_TokenClass = New cGDIpToken
+    Set m_Token = g_TokenClass
+    m_Token.AddRef
+    
+    Set cBrowser = New UnicodeFileDialog
+    Set cImage = New GDIpImage
+    Set cBkgImage = New GDIpImage
+    Set mImgRef(0).Image = cImage
+    Set mImgRef(1).Image = cBkgImage
+    
+    With cboGray
+        .AddItem "None"
+        .AddItem "Black & White": .ItemData(1) = 10
+        .AddItem "NTSC\PAL": .ItemData(2) = 1
+        .AddItem "CCIR709": .ItemData(3) = 2
+        .AddItem "Simple Average": .ItemData(4) = 3
+        .AddItem "Red Mask": .ItemData(5) = 4
+        .AddItem "Green Mask": .ItemData(6) = 5
+        .AddItem "Blue Mask": .ItemData(7) = 6
+        .AddItem "Red-Green Mask": .ItemData(8) = 7
+        .AddItem "Blue-Green Mask": .ItemData(9) = 8
+        .AddItem "Sepia": .ItemData(10) = 9
+    End With
+    With cboMirror
+        .AddItem "None"
+        .AddItem "Horizontally"
+        .AddItem "Vertically"
+        .AddItem "Both Directions"
+    End With
+    With cboLoadType
+        .AddItem "Image Files"
+        .AddItem "Icon - File"
+        .AddItem "Icon - Folder"
+        .AddItem "Icon - Any Exe"
+        .AddItem "Icon - Unknown"
+    End With
+    
+    With imgPlaceHolder
+        .AutoRedraw = True
+        .ScaleMode = vbPixels
+        .ToolTipText = "Right click for background options"
+        .OLEDropMode = vbOLEDropManual
+    End With
+    
+    CreateCheckerBoard
+    lblInfo(0).Caption = "No Image Loaded"
+    frmSegment.Enabled = False
+    
+    If m_Token.Token = 0& Then
+        cmdBrowse.Enabled = False
+        cmdDelete.Enabled = False
+    End If
+    bAssocIcon = False
+    cboLoadType.ListIndex = 0
+    
+End Sub
+
+Private Sub RefreshImage()
+    
+    Dim Cx As Long, Cy As Long
+    
+    imgPlaceHolder.Cls
+    If mImgRef(mActiveIndex).Image.Handle Then
+        Cx = imgPlaceHolder.ScaleWidth
+        Cy = imgPlaceHolder.ScaleHeight
+        If mActiveIndex = 0 Then
+            If bScaleUp Then
+                If Cx > cImage.Width * 2 Then Cx = cImage.Width * 2 Else Cx = cImage.Width
+                If Cy > cImage.Height * 2 Then Cy = cImage.Height * 2 Else Cy = cImage.Height
+            End If
+            Call modCommon.GetScaledImageSizes(cImage.Width, cImage.Height, Cx - 2&, Cy - 2&, Cx, Cy, HScrollAttr(2).Value, bScaleUp, False)
+            If (Cx > 0& And Cy > 0&) Then
+                Select Case cboMirror.ListIndex
+                    Case lvicMirrorBoth: Cx = -Cx: Cy = -Cy
+                    Case lvicMirrorHorizontal: Cx = -Cx
+                    Case lvicMirrorVertical: Cy = -Cy
+                End Select
+                cImage.Render imgPlaceHolder.hDC, (imgPlaceHolder.ScaleWidth - Abs(Cx)) \ 2, (imgPlaceHolder.ScaleHeight - Abs(Cy)) \ 2, Cx, Cy, , , , , HScrollAttr(2).Value, cFX.AttributesHandle
+            End If
+        Else
+            If bScaleUp Then
+                If Cx > cBkgImage.Width * 2 Then Cx = cBkgImage.Width * 2 Else Cx = cBkgImage.Width
+                If Cy > cBkgImage.Height * 2 Then Cy = cBkgImage.Height * 2 Else Cy = cBkgImage.Height
+            End If
+            Call modCommon.GetScaledImageSizes(cBkgImage.Width, cBkgImage.Height, Cx - 2&, Cy - 2&, Cx, Cy, , bScaleUp, False)
+            cBkgImage.Render imgPlaceHolder.hDC, (imgPlaceHolder.ScaleWidth - Abs(Cx)) \ 2, (imgPlaceHolder.ScaleHeight - Abs(Cy)) \ 2, Cx, Cy
+        End If
+    End If
+    imgPlaceHolder.Refresh
+        
+End Sub
+
+Private Sub ShowAttributes(bPopulateFrames As Boolean)
+
+    Dim sInfo As String, f As Long, sPrefx As String
+    bSetup = True
+    
+    If bPopulateFrames Then
+        cboGroup.Clear
+        cboFrame.Clear
+        For f = 1 To mImgRef(mActiveIndex).Image.ImageGroups
+            cboGroup.AddItem "Grp #" & CStr(f)
+        Next
+        For f = 1 To mImgRef(mActiveIndex).Image.ImageCount
+            cboFrame.AddItem "Img #" & CStr(f)
+        Next
+        cboGroup.ListIndex = mImgRef(mActiveIndex).Image.ImageGroup - 1&
+        cboFrame.ListIndex = mImgRef(mActiveIndex).Image.ImageIndex - 1&
+        
+        If mActiveIndex = 0 Then
+            frmSegment.Visible = True
+            If mImgRef(mActiveIndex).Image.Segmented Then
+                frmSegment.Enabled = True
+                chkAnimate.Enabled = True
+            Else
+                frmSegment.Enabled = (cboFrame.ListCount = 1)
+                chkAnimate.Enabled = Not frmSegment.Enabled
+                txtSegment(0).Text = 0: txtSegment(1).Text = 0
+            End If
+            If chkAnimate.Enabled = False Then chkAnimate.Value = vbUnchecked
+        Else
+            frmSegment.Visible = False
+        End If
+        cboFrame.Enabled = (cboFrame.ListCount > 1)
+        cboGroup.Enabled = (cboGroup.ListCount > 1)
+        chkIndex.Enabled = cboFrame.Enabled
+    End If
+    bSetup = False
+    
+    If mImgRef(mActiveIndex).Image.Handle = 0& Then
+        lblInfo(0).Caption = "No Image Loaded"
+    Else
+        Select Case mImgRef(mActiveIndex).Image.ImageFormat
+            Case lvicPicTypeBitmap: sInfo = "Bitmap"
+            Case lvicPicTypeCursor: sInfo = "Cursor"
+            Case lvicPicTypeAnimatedCursor: sInfo = "Animated Cursor"
+            Case lvicPicTypeEMetafile: sInfo = "Extended Metafile"
+            Case lvicPicTypeGIF
+                If mImgRef(mActiveIndex).Image.ImageCount > 1& Then sInfo = "Animated GIF" Else sInfo = "GIF"
+            Case lvicPicTypeIcon: sInfo = "Icon"
+            Case lvicPicTypeJPEG: sInfo = "JPEG"
+            Case lvicPicTypePNG: sInfo = "PNG"
+            Case lvicPicTypeTGA: sInfo = "TGA"
+            Case lvicPicTypePCX: sInfo = "PCX"
+            Case lvicPicTypeTIFF
+                If mImgRef(mActiveIndex).Image.ImageCount > 1& Then sInfo = "Multi-page TIFF" Else sInfo = "TIFF"
+            Case lvicPicTypeMetafile: sInfo = "Metafile"
+            Case lvicPicTypePNM
+                Select Case mImgRef(mActiveIndex).Image.BitDepth
+                Case 1: sInfo = "PBM"
+                Case 8: sInfo = "PGM"
+                Case Else: sInfo = "PPM"
+                End Select
+            Case lvicPicTypePAM: sInfo = "PAM"
+            Case lvicPicTypeAVI
+                sInfo = "AVI"
+            Case Else: sInfo = "Unknown "
+        End Select
+         sInfo = sInfo & " " & CStr(mImgRef(mActiveIndex).Image.Width) & "x" & CStr(mImgRef(mActiveIndex).Image.Height)
+         lblInfo(0).Caption = sInfo & " " & CStr(mImgRef(mActiveIndex).Image.BitDepth) & " bit"
+    End If
+    
+End Sub
+
+Private Sub PropertyPage_SelectionChanged()
+
+    With SelectedControls(0)
+        bSetup = True
+        chkBkgImg.Value = vbUnchecked
+        chkAnimate.Value = vbUnchecked
+        Set cImage = Nothing
+        Set cBkgImage = Nothing
+        Erase mImgRef()
+        
+        txtAttr(0).Text = "0": txtAttr(1).Text = "0": txtAttr(2).Text = "0"
+        Set cFX = New GDIpEffects
+        cFX.BlendColor = .Effects.BlendColor
+        cFX.BlendPct = .Effects.BlendPct
+        cFX.GlobalTransparencyPct = .Effects.GlobalTransparencyPct
+        cFX.GrayScale = .Effects.GrayScale
+        cFX.LightnessPct = .Effects.LightnessPct
+        If cFX.TransparentColorUsed = True Then
+            cFX.TransparentColor = .Effects.TransparentColor
+            cFX.TransparentColorUsed = True
+        End If
+        cboMirror.ListIndex = .Mirror
+        If cFX.GrayScale = lvicBlackWhite Then
+            cboGray.ListIndex = 1
+        ElseIf cFX.GrayScale = lvicNoGrayScale Then
+            cboGray.ListIndex = 0
+        Else
+            cboGray.ListIndex = cFX.GrayScale + 1
+        End If
+        HScrollAttr(0).Value = cFX.GlobalTransparencyPct
+        HScrollAttr(1).Value = cFX.LightnessPct
+        HScrollAttr(2).Value = .Rotation
+        txtDuration(0).Text = .Animate(lvicAniCmdGetMinDuration)
+        txtDuration(1).Text = .Animate(lvicAniCmdGetMaxDuration)
+        
+        Set cImage = modCommon.LoadImage(.Picture, , True, True)
+        If cImage.Handle Then
+            If .IsSegmented Then
+                txtSegment(0).Text = cImage.Height \ .Picture.Height
+                txtSegment(1).Text = cImage.Width \ .Picture.Width
+                cImage.SegmentImage Val(txtSegment(1).Text), Val(txtSegment(0).Text)
+            End If
+            cImage.ImageGroup = .Picture.ImageGroup
+            cImage.ImageIndex = .Picture.ImageIndex
+            mImgRef(0).Frame = cImage.ImageIndex - 1
+            mImgRef(0).Group = cImage.ImageGroup - 1
+        End If
+        
+        Set cBkgImage = modCommon.LoadImage(.BkgImage, , True, True)
+        If cBkgImage.Handle Then
+            cBkgImage.ImageGroup = .BkgImage.ImageGroup
+            cBkgImage.ImageIndex = .BkgImage.ImageIndex
+            mImgRef(1).Frame = cBkgImage.ImageIndex - 1
+            mImgRef(1).Group = cBkgImage.ImageGroup - 1
+        End If
+        chkBkgStretch.Value = Abs(.BkgImageStretch)
+        Set mImgRef(1).Image = cBkgImage
+        Set mImgRef(0).Image = cImage
+        ShowAttributes True
+        bSetup = False
+        RefreshImage
+    End With
+    PropertyPage.Changed = False
+
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+
+    Dim lAutoSize As Long, bData() As Byte, tImage As GDIpImage
+    Dim lOffset As Long, lIconSize As Long
+    
+    With SelectedControls(0)
+        bSetup = True
+        .SetRedraw = False
+        If cBkgImage.Handle Then
+            cBkgImage.ExtractImageData bData()
+            Set tImage = modCommon.LoadImage(bData(), True, True, True)
+            tImage.ImageGroup = mImgRef(1).Group + 1
+            tImage.ImageIndex = mImgRef(1).Frame + 1
+            Set .BkgImage = tImage
+        Else
+            Set .BkgImage = Nothing
+        End If
+        .BkgImageStretch = CBool(chkBkgStretch.Value)
+        
+        .Effects.GrayScale = cFX.GrayScale
+        .Effects.GlobalTransparencyPct = cFX.GlobalTransparencyPct
+        .Effects.LightnessPct = cFX.LightnessPct
+        .Rotation = HScrollAttr(2).Value
+        .Mirror = cboMirror.ListIndex
+        If cImage.Handle = 0& Then
+            .ImageGroup = 1
+            .ImageIndex = 1
+            .SetRedraw = True
+            Set .Picture = Nothing
+        Else
+            cImage.ExtractImageData bData()
+            If bAssocIcon Then
+                CopyMemory bData(6), bData(mImgRef(0).Frame * 16& + 6&), 16&
+                CopyMemory lIconSize, bData(14), 4&
+                CopyMemory lOffset, bData(18), 4&
+                bData(4) = 1
+                CopyMemory bData(22), bData(lOffset), lIconSize
+                CopyMemory bData(18), 22&, 4&
+                ReDim Preserve bData(0 To lIconSize + 21&)
+                bAssocIcon = False
+            End If
+            Set tImage = modCommon.LoadImage(bData(), True, True, True)
+            tImage.ImageGroup = mImgRef(0).Group + 1
+            If cImage.Segmented Then
+                tImage.SegmentImage Val(txtSegment(1).Text), Val(txtSegment(0).Text)
+            End If
+            tImage.ImageIndex = mImgRef(0).Frame + 1
+            .ImageGroup = tImage.ImageGroup
+            .ImageIndex = tImage.ImageIndex
+            .SetRedraw = True
+            Set .Picture = tImage
+        End If
+         If mImgRef(0).Changed = True And cImage.Handle <> 0& Then
+            If .Aspect = lvicActualSize Then
+                lAutoSize = .AutoSize
+                .AutoSize = lvicSingleAngle
+                .AutoSize = lAutoSize
+            End If
+        End If
+        Call .Animate(lvicAniCmdSetMinDuration, Val(txtDuration(0).Text))
+        Call .Animate(lvicAniCmdSetMaxDuration, Val(txtDuration(1).Text))
+        bSetup = False
+    End With
+    Changed = False
+End Sub
+
+Private Sub PropertyPage_Terminate()
+    Set cAniClass = Nothing
+    Set cFX = Nothing
+    Set cImage = Nothing
+    Set cBkgImage = Nothing
+    Erase mImgRef()
+    m_Token.RemoveRef
+    Set m_Token = Nothing
+End Sub
+
+Private Sub txtAttr_DblClick(Index As Integer)
+    HScrollAttr(Index).Value = 0
+End Sub
+
+Private Sub txtDuration_Change(Index As Integer)
+    If bSetup = False Then
+        If chkAnimate.Value = vbChecked Then
+            If Index = 0 Then
+                cAniClass.DefaultMinimumDuration = Val(txtDuration(Index).Text)
+            Else
+                cAniClass.DefaultMaximumDuration = Val(txtDuration(Index).Text)
+            End If
+        End If
+        Changed = True
+    End If
+End Sub
+
+Private Sub txtDuration_GotFocus(Index As Integer)
+    SelectText txtDuration(Index)
+End Sub
+
+Private Sub txtSegment_GotFocus(Index As Integer)
+    SelectText txtSegment(Index)
+End Sub
+Private Sub txtSegment_Change(Index As Integer)
+    If bSetup = False Then
+        Dim bRefresh As Boolean
+        If (Val(txtSegment(0).Text) = 0 Or Val(txtSegment(1).Text) = 0) Then
+            If cImage.Segmented Then
+                cImage.SegmentImage 0&, 0&
+                bRefresh = True
+            End If
+        Else
+            cImage.SegmentImage Val(txtSegment(1).Text), Val(txtSegment(0).Text)
+            bRefresh = True
+        End If
+        If bRefresh Then
+            RefreshImage
+            ShowAttributes True
+            PropertyPage.Changed = True
+        End If
+    End If
+        
+End Sub
+
+Private Sub SelectText(theTextBox As TextBox)
+    With theTextBox
+        .SelStart = 0
+        .SelLength = Len(.Text)
+    End With
+End Sub
+Private Sub CreateCheckerBoard()
+
+    Dim X As Long, Y As Long, lColor As Long, lMask As Long
+    
+    imgPlaceHolder.BackColor = vbButtonFace
+    lColor = vbWhite: lMask = RGB(240, 240, 240) Xor lColor
+    For Y = 0& To imgPlaceHolder.ScaleHeight - 1& Step 14&
+        For X = 0& To imgPlaceHolder.ScaleWidth - 1& Step 14&
+            imgPlaceHolder.Line (X, Y)-(X + 13&, Y + 13&), lColor, BF
+            lColor = lColor Xor lMask
+        Next
+    Next
+    Set imgPlaceHolder.Picture = imgPlaceHolder.Image
+    RefreshImage
+    
+End Sub
+
+Private Sub ExportDataToFile()
+    
+    Dim cSaveBrowser As UnicodeFileDialog
+    Dim bData() As Byte, lValue As Long, hFile As Long
+    Dim sFilter As String
+    
+    If mImgRef(mActiveIndex).Image.ExtractImageData(bData(), lValue) Then
+        Select Case lValue
+            Case lvicPicTypeAnimatedCursor
+                sFilter = "All Files|*.*|Animated Cursor|*.ani"
+            Case lvicPicTypeBitmap
+                sFilter = "All Files|*.*|Bitmap|*.bmp"
+            Case lvicPicTypeCursor
+                sFilter = "All Files|*.*|Cursor|*.cur"
+            Case lvicPicTypeEMetafile
+                sFilter = "All Files|*.*|Extended Metafile|*.emf"
+            Case lvicPicTypeGIF
+                sFilter = "All Files|*.*|GIF|*.gif"
+            Case lvicPicTypeIcon
+                sFilter = "All Files|*.*|Icon|*.ico"
+            Case lvicPicTypeJPEG
+                sFilter = "All Files|*.*|JPEG|*.jpeg;*.jpg"
+            Case lvicPicTypeMetafile
+                sFilter = "All Files|*.*|Windows Metafile|*.wmf"
+            Case lvicPicTypePNG
+                sFilter = "All Files|*.*|PNG|*.apng;*.png"
+            Case lvicPicTypeTGA
+                sFilter = "All Files|*.*|Targa (tga)|*.tga"
+            Case lvicPicTypePCX
+                sFilter = "All Files|*.*|PC Paintbrush (pcx)|*.pcx"
+            Case lvicPicTypeTIFF
+                sFilter = "All Files|*.*|TIFF|*.tiff;*.tif"
+            Case lvicPicTypePNM
+                Select Case mImgRef(mActiveIndex).Image.BitDepth
+                Case 1: sFilter = "All Files|*.*|Portable Bit Map (pbm)|*.pnm;*.pbm"
+                Case 8: sFilter = "All Files|*.*|Portable Gray Map (pgm)|*.pnm;*.pgm"
+                Case Else: sFilter = "All Files|*.*|Portable Pixel Map (ppm)|*.pnm;*.ppm"
+                End Select
+            Case lvicPicTypePAM
+                sFilter = "All Files|*.*|Portable Arbitrary Bitmap (pam)|*.pnm;*.pam"
+            Case lvicPicTypeAVI
+                sFilter = "All Files|*.*|Audio Video Interleave (avi)|*.avi"
+            Case Else
+                Beep
+                Exit Sub
+        End Select
+            
+        Set cSaveBrowser = New UnicodeFileDialog
+        With cSaveBrowser
+            .flags = OFN_PATHMUSTEXIST Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER Or OFN_CREATEPROMPT Or OFN_NOCHANGEDIR
+            .DefaultExt = Right$(sFilter, 3)
+            .DialogTitle = "Save image to where?"
+            .FileName = "Image_" & Format(Time, "hhnnss") & "." & .DefaultExt
+            .Filter = sFilter
+            .FilterIndex = 2
+        End With
+        If cSaveBrowser.ShowSave(PropertyPage.hWnd) Then
+            hFile = modCommon.GetFileHandle(cSaveBrowser.FileName, True)
+            If hFile <> INVALID_HANDLE_VALUE Then
+                WriteFile hFile, bData(0), UBound(bData) + 1&, lValue, ByVal 0&
+                CloseHandle hFile
+                If Not lValue > UBound(bData) Then
+                    modCommon.DeleteFileEx cSaveBrowser.FileName
+                    Beep
+                End If
+            End If
+        End If
+    Else
+        Beep
+    End If
+
+End Sub

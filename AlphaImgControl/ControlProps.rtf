@@ -1,0 +1,348 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Arial;}{\f1\fswiss\fcharset0 Arial;}}
+{\colortbl ;\red128\green128\blue128;\red0\green0\blue128;\red0\green128\blue0;}
+{\*\generator Msftedit 5.41.15.1515;}\viewkind4\uc1\pard\nowidctlpar\ul\b\f0\fs20 Control Properties/Methods Overview\par
+\cf1\ulnone For best viewing, use WordPad & set left and right margins to 1/2 inch each or less, no word-wrapping.\par
+\par
+\cf2\ul Color Usage\cf0\ulnone . \b0 About colors sent to functions and/or properties\par
+\cf1\b\par
+\pard\nowidctlpar\tx450\tx990\tx1440\cf0\b0\tab VB colors are referred to as RGB within the project\par
+\tab\tab - Uses 3 bytes to express individual R,G,B components \par
+\tab\tab - The alpha channel is not used or ignored\par
+\tab\tab - VB system colors, i.e., vbButtonFace, are always accepted in place of a standard VB color\par
+\tab\tab - The color Red as a VB color would be: RGB(255,0,0)\par
+\tab GDI+ colors are referred to as ARGB within the project\par
+\tab\tab - Uses 3 bytes for the R,G,B components\par
+\tab\tab - The alpha channel (4th byte) is always used\par
+\tab\tab - The color Red as a GDI+ color would be: RGB(0,0,255) Or &HFF000000\par
+\pard\nowidctlpar\tx450\tx990\tx1530\tx1980\par
+\tab The following properties/methods use VB color values\par
+\tab\tab Control Properties: BackColor, BlendColor, BorderColor, GradientForeColor, TransparentColor\par
+\tab\tab GDIpEffects class (also the control's Effects property): BlendColor, TransparentColor \par
+\par
+\tab The following Global methods use color values and the color format may be VB or GDI+\par
+\tab\tab ConvertARGBtoRGB function accepts GDI+ colors only & returns a VB color\par
+\tab\tab ConvertRGBtoARGB function accepts VB colors only & returns a GDI+ color\par
+\tab\tab GetPixelGDIplus returns a VB color\par
+\tab\tab SetPixelGDIplus accepts a VB color only\par
+\par
+\tab The RENDERSTYLESTRUCT2 structure's FillColorARGB member accepts GDI+ colors only\par
+\par
+\par
+\cf2\par
+\pard\tx450\tx990\tx1440\tx1890\ul\b Control Properties and Methods\cf0\ulnone\b0 . The source code may have simple examples and will have similar descriptions\par
+\f1\par
+\tab\b About\b0 . Displays a message box that returns the current version of the control\par
+\par
+\tab\b AlignCenter\b0 . By default the image within the control is centered. Setting this property to False aligns the image\par
+to the top/left corner of the control. \par
+\par
+\tab\b Animate\b0 . Obsolete method used to manage automation of multi-frame images\par
+\par
+\tab\b Animate2\b0 . Read-Only property that exposes a class used for managing automation of multi-frame images. \par
+Supersedes the Animate method\par
+\par
+\tab\b AnimateOnLoad\b0 . When the control contains an image that has multiple images/frames, this property will begin \par
+animation once the image is loaded. Property has no effect if the image is single-frame only. To determine if an image\par
+has more than one frame, check the ImageCount property.\par
+\par
+\tab\b Aspect\b0 . Determines how the image is scaled within the control's physical dimensions. There are 6 possible settings:\par
+\tab\tab\cf3\i lvicActualSize\cf0\i0 . The image will not be scaled. The control's size determines how much of image is rendered\par
+\tab\tab\cf3\i lvicStretch\cf0\i0 . The image will be stretched vertically/horizontally to the control's dimensions\par
+\tab\tab\cf3\i lvicScaled\cf0\i0 . The image will be stretched proportionally, vertically/horizontally to the control's dimensions\par
+\tab\tab\cf3\i lvicScaleDownOnly\cf0\i0 . The image will not be rendered at a size greater than its actual size. If the control's size\par
+is too small to display the entire image, then image will be stretched proportionally to the control's dimensions\par
+\tab\tab\cf3\i lvicFixedSize\cf0\i0 . The current size of the control becomes the bounds the image will be rendered to. The image\par
+is always stretched proportionally. If the control is later resized, the original bounds that were in effect before the resizing\par
+are not affected.\par
+\tab\tab\cf3\i lvicFixedSizeStretched\cf0\i0 . Same as lvicFixedSize except that the image is always stretched, not proportionally\par
+\par
+\tab\b AutoSize\b0 . Defines how the control will resize itself. There are 3 possible settings\par
+\tab\tab\cf3\i lvicNoAutoSize\cf0\i0 . The control will never automatically adjust its size\par
+\tab\tab\cf3\i lvicSingleAngle\cf0\i0 . The control will adjust its size based on the Aspect & Rotation properties to allow image to \par
+be fully rendered at the current angle of rotation. Changing the Aspect and/or Rotation properties can result in sizing\par
+\tab\tab\cf3\i lvicMultiAngle\cf0\i0 . Similar to lvicSingleAngle, except that the control adjusts itself to a size that would enable the\par
+image to be rendered at any angle.\par
+\par
+\tab\b BackColor\b0 . Dependent upon the BackStyleOpaque property. If BackStyleOpaque is false, then  this property is \par
+ignored. If BackStyleOpaque is True, then the image will be rendered over a solid fill of this color. This property is also\par
+used with the GradientForeColor when both the BackStyleOpaque & GradientStyle properties are non-default.\par
+\par
+\tab\b BackStyleOpaque\b0 . Determines if the BackColor or GradientForeColor properties are used or not\par
+\par
+\tab\b BkgImage\b0 . Assigns an image to be used for the control's background. When the control is rendered, the control \par
+will be first filled with solid or gradient colors depending on the BackStyleOpaque property. The the BkgImage will be \par
+rendered and finally the control's image will be rendered. During design-time, this is only available via the property page\par
+\par
+\tab\b BkgImageStretch\b0 . Determines the appearance of the BkgImage property. If set to true, then the BkgImage will be \par
+stretched to the dimensions of the control. Otherwise the BkgImage will be rendered actual size which may result in \par
+clipping by the control's bounds.\par
+\par
+\tab\b BlendColor\b0 . Determines the RGB color that is blended into the control's image. Dependent on the BlendColorPct \par
+property. Can also be accessed via the .Effects property: .Effects.BlendColor\par
+\par
+\tab\b BlendPct\b0 . Determines how much of the BlendColor value will be blended into the control's image. A value of zero will \par
+result in the BlendColor property being ignored. Can also be accessed via the .Effects property: .Effects.BlendPct\par
+\par
+\tab\b Border\b0 . Determines if a one pixel border will be applied to the control. This property will result in the control resizing itself.\par
+A setting of false results in the BorderColor property being ignored and the BorderShape property being reset to lvicNoBorder\par
+\par
+\tab\b BorderColor\b0 . Determines the RGB color that is used for a border. Dependent on the Border property.\par
+\par
+\tab\b BorderShape\b0 . Determines the physical appearance of the border. Dependent on the Border property. \par
+There are 5 possible settings:\par
+\tab\tab\cf3\i lvicNoBorder\cf0\i0 . The Border property will reset to False. No border is drawn\par
+\tab\tab\cf3\i lvicRectangular\cf0\i0 . The Border property will be set to True & a 1-pixel border applied, with sharp 90 degree corners\par
+\tab\tab\cf3\i lvicRoundedCorners\cf0\i0 . The Border property will be set to True & a 1-pixel border applied with blended rounded corners\par
+\tab\tab\cf3\i lvicRoundedCornersRough\cf0\i0 . The Border property will be set to True & a 1-pixel border applied with rough rounded corners\par
+\tab\tab\cf3\i lvicUserDefinedBorder\cf0\i0 . The Border property will be set to True & a 1-pixel transparent border applied. The PostPaint event\par
+should be monitored and the user must apply the border. During PrePaint event, a clipping region can be assigned before rendering\par
+\par
+\tab\b DataField\b0 . For data-bound controls, this is the field within the data source's table the control is linked to\par
+\par
+\tab\b DataFormat\b0 . This property is ignored and provided by the control's container, not the control itself\par
+\par
+\tab\b DataMember\b0 . This property identifies which member of a multiple data-set source will be used for binding\par
+\par
+\tab\b DataSource\b0 . During design-time a valid ADO data control (Adodc) that defines the table used to bind the control. During runtime, \par
+this can be set to a Adodc, an ADODB recordset, or any other ADO-supported data control. DAO sources are not supported\par
+\par
+\tab\b Effect\b0 . Determines which GDI+ v1.1 effect to apply to the image. If GDI+ v1.1 is not applicable, this property is ignored\par
+\par
+\tab\b Effects\b0 . Read-only property that exposes the GDIpEffects class that the control uses\par
+\par
+\tab\b Enabled\b0 . Determines whether control responds to mouse events\par
+\par
+\tab\b FastRedraw\b0 . Caches a copy of the rendered image for faster repaints. The background of the image is never cached. Setting\par
+this property to true uses additional system resources: bitmap and device context. Should not be used on small images, i.e., \par
+256 x 256 and smaller. Small images render very quickly, regardless of image attributes/effects\par
+\par
+\tab\b GradientForeColor\b0 . Dependent upon the BackStyleOpaque property. If BackStyleOpaque is false, then  this property is \par
+ignored. If BackStyleOpaque is True, then the image will be rendered over a gradient fill color that moves from this property's value\par
+to the value of the BackColor property. The direction of the gradient is defined by the GradientStyle property\par
+\par
+\tab\b GradientStyle\b0 . Defines the direction of a gradient background. There are 5 possible settings. To reverse gradient directions,\par
+swap the GradientForeColor and BackColor properties.\par
+\tab\tab\cf3\i lvicNoGradient\cf0\i0 . The GradientForeColor property is ignored. Solid color back fill will be applied if applicable\par
+\tab\tab\cf3\i lvicGradientHorizontal\cf0\i0 . Gradient moves from left to right\par
+\tab\tab\cf3\i lvicGradientVertical\cf0\i0 . Gradient moves from top to bottom\par
+\tab\tab\cf3\i lvicGradientDiagonalDown\cf0\i0 . Gradient moves from top/left to bottom/right\par
+\tab\tab\cf3\i lvicGradientDiagonalUp\cf0\i0 . Gradient moves from bottom/left to top/right\par
+\par
+\tab\b GrayScale\b0 . Determines various color filters that can be applied to the image. There are 11 possible settings\par
+Can also be accessed via the .Effects property: .Effects.GrayScale\par
+\tab\tab\cf3\i lvicNoGrayScale\cf0\i0 . No special color filter applied\par
+\tab\tab\cf3\i lvicNTSCPAL\cf0\i0 . Applies weighted filter of R*0.299, G*0.587, B*0.114\par
+\tab\tab\cf3\i lvicCCIR709\cf0\i0 . Applies weighted filter of R*0.213, G*0.715, B*0.072\par
+\tab\tab\cf3\i lvicSimpleAverage\cf0\i0 . Applies weight filter where R,G,B are the average of their sums\par
+\tab\tab\cf3\i lvicRedMask\cf0\i0 . Applies weighted filter where R,G,B are the red component's value\par
+\tab\tab\cf3\i lvicGreenMask\cf0\i0 . Applies weighted filter where R,G,B are the green component's value\par
+\tab\tab\cf3\i lvicBlueMask\cf0\i0 . Applies weighted filter where R,G,B are the blue component's value\par
+\tab\tab\cf3\i lvicRedGreenMask\cf0\i0 . Applies weighted filter R,G,B are half of the sum of red & green components\par
+\tab\tab\cf3\i lvicBlueGreenMask\cf0\i0 . Applies weighted filter R,G,B are half of the sum of blue & green components\par
+\tab\tab\cf3\i lvicSepia\cf0\i0 . Applies a weighted filter for a dark brown/grey sepia appearance\par
+\tab\tab\cf3\i lvicBlackWhite\cf0\i0 . Applies a luminance filter to force any color to either pure black or pure white\par
+\par
+\tab\b HitTest\b0 . Determines the area of the control that will respond to mouse movements. Ignored if Enabled is false.\par
+There are 4 possible settings\par
+\tab\tab\cf3\i lvicPerimeter\cf0\i0 . The entire control is subject to mouse events\par
+\tab\tab\cf3\i lvicEntirelImage\cf0\i0 . The image bounds, not the control bounds, are subject to mouse events\par
+\tab\tab\cf3\i lvicTrimmedImage\cf0\i0 . The area subject to mouse events will be defined by a tight rectangle drawn around the image.\par
+This rectangle will enclose the left, top, right & bottom most non-transparent pixels of the image. All pixels within the recangle\par
+will respond to mouse events, whether those pixels are transparent or not\par
+\tab\tab\cf3\i lvicRunTimeRegion\cf0\i0 . During runtime, you can create your own region and apply it to the control. When applied, the\par
+region affects the entire control, not just the image. The control will take ownership of the region and you must not destroy the \par
+passed region. This region will always be passed during the PrePaint event. It does not affect the rendering of the control.\par
+\par
+\tab\b ImageCount\b0 . Read-only property that indicates how many images/frames the current image consists of. Multiple image \par
+formats can be animated. Can also be accessed via the .Picture property: .Picture.ImageCount\par
+\par
+\tab\b ImageGroup\b0 . Determines which group the control's image will be selected from. The only image format that may contain\par
+groups are animated cursors and executables (dll, exe, ocx). Can also be accessed via the .Picture property: .Picture.ImageGroup.\par
+\par
+\tab\b ImageGroupCount\b0 . Read-only property that indicates how many images groups the current image consists of. Can also be \par
+accessed via the .Picture property: .Picture.GroupCount. Some animated cursors and resources from executables can contain groups\par
+\par
+\tab\b ImageIndex\b0 . Determines which image of the current group will be displayed. For images that contain single frames only, the \par
+ImageGroup property will always be one. Setting is between one and ImageCount\par
+\par
+\tab\b Interpolation\b0 . Determines quality of rendered image when sizing or rotation is involved. There are 6 possible settings, listed\par
+in order of best quality.\par
+\tab\tab\cf3\i lvicAutoInterpolate\cf0\i0 . If sizing or rotation are used, setting will be lvicHighQualityBicubic else lvicNearestNeighbor\par
+\tab\tab\cf3\i lvicNearestNeighbor\cf0\i0 . Very fast but does not blend edges and will produce 'jaggies' when rotation is used\par
+\tab\tab\cf3\i lvicBilinear\cf0\i0 . Not suitable for shrinking an image below 50 percent of its original size\par
+\tab\tab\cf3\i lvicBicubic\cf0\i0 . Not suitable for shrinking an image below 25 percent of its original size\par
+\tab\tab\cf3\i lvicHiqhQualityBilinear\cf0\i0 . Uses pre-filtering to produce a smoother scaled image\par
+\tab\tab\cf3\i lvicHighQualityBicubic\cf0\i0 . Uses pre-filtering to produce a smoother scaled image\par
+\par
+\tab\b Inverted\b0 . Determines if the image will be rendered with complimentary colors, similar to a photo negative. Can also be \par
+accessed via the .Effects property: .Effects.Invert\par
+\par
+\tab\b IsSegmented\b0 . Read-only property that indicates if the image is currently segmented, split into a grid\par
+\par
+\tab\b LightnessPct\b0 . A value between -100 and 100 that determines amount of lightness or darkness added to the image. \par
+Can also be accessed via the .Effects property: .Effects.LightnessPct\par
+\par
+\tab\b Mirror\b0 . Determines whether the image is mirrored during rendering. There are 4 possible values\par
+\tab\tab\cf3\i lvicMirrorNone\cf0\i0 . No mirroring is applied\par
+\tab\tab\cf3\i lvicMirrorHorizontal\cf0\i0 . Image is mirrored (flipped) about the Y axis\par
+\tab\tab\cf3\i lvicMirrorVertical\cf0\i0 . Image is mirrored (flipped) about the X axis\par
+\tab\tab\cf3\i lvicMirrorBoth\cf0\i0 . Image is mirrored about the X and Y axis\par
+\par
+\tab\b MouseIcon\b0 . Sets custom cursor to be displayed when the mouse is over the control as defined by the HitTest property.\par
+The MousePointer property must be vbCustom to use your custom cursor. VB-supported image formats only.\par
+\par
+\tab\b MousePointer\b0 . Sets one of many cursort shapes to be used when the mouse is over the control as defined by the HitTest\par
+property. The vbCustom option will use the MouseIcon property\par
+\par
+\tab\b OLEDrag\b0 . Begins a manual OLE drag event\par
+\par
+\tab\b OLEDragMode\b0 . Determines if moving the mouse while button is down will activate an OLE drag event\par
+\par
+\tab\b OLEDropMode\b0 . Determines if objects dropped on the control will be allowed and, if so, whether the control will \par
+automatically load images from the dropped source or if the user will dictate whether anything is loaded\par
+\par
+\tab\b PaintControlAsDrawnToHDC\b0 . Renders the control, as it is currently shown, to a destination device context. The control\par
+must be completely visible\par
+\par
+\tab\b PaintImageAsDrawnToHDC\b0 . Renders the image, along with any of its attributes/effects, to a destination device context.\par
+Neither the control nor the image need to be visible. The image will not be clipped even if it appears clipped in the control\par
+\par
+\tab\b Picture\b0 . Determines what image will be displayed the control. The .Picture property is a GDIpImage class. The image, itself,\par
+may contain multiple frames/images, each of which can be displayed individually. See ImageIndex & GroupIndex properties. This\par
+property is assigned during runtime from a call to LoadPictureGDIplus. In design-time, the property page assigns the image\par
+\par
+\tab\b Refresh\b0 . Forces the control to redraw itself, in its entirety. This method will also change SetRedraw to true\par
+\par
+\tab\b Rotation\b0 . Determines the angle the image will be rendered at. A range of -360 to 360 is valid and positive values produce\par
+clockwise rotation while negative values produce counterclockwise rotation\par
+\par
+\tab\b SaveControlAsDrawnToGDIpImage\b0 . Renders the control, as it is currently shown, to a destination GDIpImage class. \par
+The control must be completely visible\par
+\par
+\tab\b SaveImageAsDrawnToGDIpImage\b0 . Renders the image, along with any of its attributes/effects, to a destination GDIpImage\par
+class. Neither the control nor the image need to be visible. The image will not be clipped even if it appears clipped in the control\par
+\par
+\tab\b ScaleHeight\b0 . Read-only property that returns the height of the control, in pixels, less space used for an active border\par
+\par
+\tab\b ScaleLeft\b0 . Read-only property that returns the left edge of the control, in pixels, less space used for an active border\par
+\par
+\tab\b ScaleTop\b0 . Read-only property that returns the top edge of the control, in pixels, less space used for an active border\par
+\par
+\tab\b ScaleWidth\b0 . Read-only property that returns the width of the control, in pixels, less space used for an active border\par
+\par
+\tab\b SegmentImage\b0 . Method creates a segmented image or removes segmentation. Segmentation separates the image into a\par
+grid where each grid cell can be viewed independently. Segmentation is allowed only with images where ImageCount is one\par
+\par
+\tab\b SetClipRect\b0 . Method defines an area of the control that will not be rendered. Borders, if any, are excluded from clipping\par
+\par
+\tab\b SetFixedSizeAspect\b0 . Method allows runtime assignment of a fixed size aspect ratio. See the Aspect property\par
+\par
+\tab\b SetGradientOptions\b0 . Method allows setting the gradient colors and directions with a single call\par
+\par
+\tab\b SetOffsets\b0 . Method allows setting the XOffset and YOffset properties with a single call\par
+\par
+\tab\b SetRedraw\b0 . Determines whether property changes will cause immediate refreshes or not. When set to False, most property\par
+setting changes will be cached until either this property is set to True or Refresh is called\par
+\par
+\tab\b SinkImageData\b0 . A hidden property that should never be called. This is dedicated for data-bound controls\par
+\par
+\tab\b TransparencyPct\b0 . Defines the percentage of transparency of the rendered image. The BackColor, GradientForeColor and \par
+BkgImage are not subject to this property. Valid values are in the range  of 0 to 100. Can also be accessed via the .Effects \par
+property: .Effects.GlobalTransparencyPct\par
+\par
+\tab\b TransparentColor\b0 . Dependent on the TransparentColorMode property. When valid, this opaque color will be made \par
+transparent throughout the image. Can also be accessed via the .Effects property: .Effects.TransparentColor and \par
+Effects.TransparentColorUsed\par
+\par
+\tab\b TransparentColorMode\b0 . Determines whether the TransparentColor property or a pre-defined pixel within the image will be\par
+made transparent throughout the image. There are 6 possible settings\par
+\tab\tab\cf3\i lvicNoTransparentColor\cf0\i0 . The TransparentColor property is not used\par
+\tab\tab\cf3\i lvicTransparentTopLeft\cf0\i0 . The top left pixel color will be made transparent. Pixel must be fully opaque\par
+\tab\tab\cf3\i lvicTransparentTopRight\cf0\i0 . The top right pixel color will be made transparent. Pixel must be fully opaque\par
+\tab\tab\cf3\i lvicTransparentBottomRight\cf0\i0 . The bottom right pixel color will be made transparent. Pixel must be fully opaque\par
+\tab\tab\cf3\i lvicTransparentBottomLeft\cf0\i0 . The bottom left pixel color will be made transparent. Pixel must be fully opaque\par
+\tab\tab\cf3\i lvicUseTransparentColor\cf0\i0 . The TransparentColor property value will be made transparent\par
+\par
+\tab\b WantMouseEvents\b0 . Determines whether MouseMove, MouseEnter, MouseExit, MouseUp and MouseDown events are \par
+exposed by the control. By default this is True. Click and double click events are always forwarded. No mouse events are\par
+ever forwarded for disabled controls. Setting this property to true will use additional system resources: timers\par
+\par
+\tab\b WantPrePostEvents\b0 . Determines whether PrePaint and PostPaint events will be exposed by the control. The PrePaint\par
+and PostPaint events allow the control to be modified before, during and after rendering. Setting this to true will use additional\par
+system resources: bitmap and device context\par
+\par
+\tab\b XOffset\b0 . Determines additonal horizontal offset for rendering the control. Negative values shift the image more to the left \par
+while positive values shift the image more to the right. Also see SetOffsets method\par
+\par
+\tab\b YOffset\b0 . Determines additonal vertical offset for rendering the control. Negative values shift the image more upwards while \par
+positive values shift the image more downwards. Also see SetOffsets method\par
+\par
+\par
+\par
+\cf2\ul\b\f0 Control Events\cf0\ulnone\b0 . The source code may have simple examples and will have similar descriptions. Non-standard VB events are described here\par
+\par
+\tab\b AnimationLoopsFinished\b0 . Occurs whenever animation terminates due to number of loops being exhausted\par
+\par
+\tab\b AnimationFrameChanged\b0 . Occurs whenever a new frame is being displayed during animation\par
+\tab\tab\cf3\b Frame \cf0\b0 parameter will identify the current 1-bound frame index\par
+\par
+\tab\b AsyncDownloadDone\b0 . Occurs whenever an image is being loaded asynchronously via a URL and indicates success or failure\par
+\tab\tab\cf3\b Success \cf0\b0 parameter is True if image downloaded ok\par
+\tab\tab\cf3\b ErrorCode \cf0\b0 parameter will either be a AsyncDownloadStatusEnum enumeration value or a valid HTTP error as defined \par
+by http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html\par
+\par
+\tab\b AsyncDownloadDoneBkgImg\b0 . Same as the AsyncDownloadDone event but applies only to the BkgImage property\par
+\tab\tab\cf3\b Success \cf0\b0 parameter is True if image downloaded ok\par
+\tab\tab\cf3\b ErrorCode \cf0\b0 parameter will either be a AsyncDownloadStatusEnum enumeration value or a valid HTTP error as defined \par
+by http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html\par
+\par
+\tab\b Changed\b0 . Occurs whenever the source image has been changed or replaced\par
+\par
+\tab\b Click\b0 , \b DblClick\b0 . \f1 These are standard VB events. Events are always raised regardless of the WantMouseEvents setting\f0\par
+\par
+\f1\tab\b MouseEnter\b0 . Occurs whenever the mouse first enters the HitTest area of the control. Disabled controls do not receive this event.\par
+WantMouseEvents property must be true to receive this event\par
+\par
+\tab\b MouseExit\b0 . Occurs whenever the mouse exits the HitTest area of the control. Disabled controls do not receive this event.\par
+WantMouseEvents property must be true to receive this event\par
+\par
+\tab\b MouseMove\b0 , \b MouseDown\b0 , \b MouseUp\b0 . These are standard VB events. WantMouseEvents property must be true\par
+\par
+\tab\b OLEDragDrop\b0 . Even occurs every time an object is dropped onto the control while the OLEDropMode property value is not default\par
+\tab\tab\cf3\b Data \cf0\b0 parameter will be a VB data object that contains the dropped object(s)\par
+\tab\tab\cf3\b Effect \cf0\b0 parameter identifies the requested action the source of the dropped object should take\par
+\tab\tab\cf3\b Button \cf0\b0 parameter identifies which mouse button(s) are pressed\par
+\tab\tab\cf3\b Shift \cf0\b0 parameter identifies whether the shift, control or Alt keys are pressed\par
+\tab\tab\cf3\b X \cf0\b0 parameter identifies the X coordinate that the object was dropped at\par
+\tab\tab\cf3\b Y \cf0\b0 parameter identifies the Y coordinate that the object was dropped at\par
+\tab\tab\cf3\b Cancel \cf0\b0 parameter determines whether or not the dropped object should replace the control's image\par
+\par
+\tab\b OLEDragOver\b0 , \b OLECompleteDrag\b0 . \b OLEGiveFeedback\b0 , \b OLESetData\b0 , \b OLEStartDrag\b0 . These are standard VB events and \par
+dependent upon the OLEDragMode and OLEDropMode property settings\par
+\par
+\f0\tab\b PrePaint\b0 . Occurs just prior to the image being rendered onto the control and after any background graphics have been drawn.\par
+WantPrePostEvents property must be true to receive this event\par
+\tab\tab\cf3\b hDC \cf0\b0 parameter is the GDI device context you may draw upon\par
+\tab\tab\cf3\b Left \cf0\b0 parameter indicates the left edge of the invalidated area of the control\par
+\tab\tab\cf3\b Top \cf0\b0 parameter indicates the top edge of the invalidated area of the control\par
+\tab\tab\cf3\b Width \cf0\b0 parameter indicates the width of the invalidated area of the control\par
+\tab\tab\cf3\b Height \cf0\b0 parameter indicates the height of the invalidated area of the control\par
+\tab\tab\cf3\b HitTestRgn \cf0\b0 parameter contains the user-defined run-time HitTest region, if any\par
+\tab\tab\cf3\b Cancel \cf0\b0 parameter must be set to True to prevent the control from drawing its image\par
+\par
+\tab\b PostPaint\b0 . Occurs after the PrePaint event and immediately after the control's image is rendered, if applicable. Any border \par
+applied to the control will not be drawn until after this event is called. WantPrePostEvents property must be true to receive this event\par
+\tab\tab\cf3\b hDC \cf0\b0 parameter is the GDI device context you may draw upon\par
+\tab\tab\cf3\b Left \cf0\b0 parameter indicates the left edge of the invalidated area of the control\par
+\tab\tab\cf3\b Top \cf0\b0 parameter indicates the top edge of the invalidated area of the control\par
+\tab\tab\cf3\b Width \cf0\b0 parameter indicates the width of the invalidated area of the control\par
+\tab\tab\cf3\b Height \cf0\b0 parameter indicates the height of the invalidated area of the control\par
+\tab\tab\cf3\b HitTestRgn \cf0\b0 parameter contains the user-defined run-time HitTest region, if any\par
+\f1\par
+\f0\tab\b UpdateDataboundImage\b0 . Occurs just before the control attempts to update the database table/field which it is bound to. You\par
+can use this event to modify what will be saved to the database.\par
+\tab\tab\cf3\b theImage \cf0\b0 parameter can be replaced with any valid image via LoadPictureGDIplus or SavePictureGDIplus\par
+\par
+\f1\par
+}
+ 

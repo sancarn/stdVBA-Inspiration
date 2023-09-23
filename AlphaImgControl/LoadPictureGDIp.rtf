@@ -1,0 +1,463 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033\deflangfe1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Arial;}}
+{\colortbl ;\red128\green128\blue128;}
+{\*\generator Msftedit 5.41.15.1515;}\viewkind4\uc1\pard\nowidctlpar\ul\b\f0\fs20 Loading images with LoadPictureGDIplus\par
+\cf1\ulnone For best viewing, use WordPad & set left and right margins to 1/2 inch each or less no word-wrapping.\par
+\cf0\b0\par
+\b Section I. Supported Image Formats\b0\par
+   The following image formats and color depths are supported\par
+\par
+\pard\nowidctlpar\tx180\tx1350\tx2520\tx3690\tab\ul Format\tab Paletted\tab True-color\tab 32bpp-Alpha\ulnone\par
+\tab AVI*\tab supported\tab supported\tab supported\par
+\tab BMP\tab supported\tab supported\tab supported \par
+\tab CUR/ANI\tab supported\tab supported\tab supported \par
+\tab GIF\tab supported\tab n/a\tab n/a\par
+\tab JPG\tab supported\tab supported\tab n/a\par
+\tab ICO\tab supported\tab supported\tab supported\par
+\tab PAM\tab supported\tab supported\tab supported\par
+\tab PCX\tab supported\tab supported\tab supported\par
+\tab PNG\tab supported\tab supported\tab supported\par
+\tab PNM**\tab supported\tab supported\tab n/a\par
+\tab TGA\tab supported\tab supported\tab supported\par
+\tab TIF\tab supported\tab supported\tab supported\par
+\tab WMF/EMF\tab n/a\tab supported\tab supported\par
+\tab (*) Applicable installed codec is required to read AVI files\par
+\tab (**) PNM (portable any map): includes file extensions: PGM, PBM, PPM, PNM\par
+\pard\nowidctlpar\par
+\b Section II. Loading images into the control\b0\par
+The LoadPictureGDIplus function is always used with one exception. Several image sources are supported\par
+\par
+\pard\nowidctlpar\tx270\tx630\tx900\ul\b During Runtime\ulnone\b0\par
+\par
+\tab a. \b File name\b0 . The file name must include the path and unicode file names are supported.\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus("C:\\myLogo.png")\par
+\tab\tab Example Set AlphaImgCtl1.Picture = LoadPictureGDIplus("\\\\AppsServer\\Images\\Logo.gif")\par
+\par
+\tab b. \b Array\b0 . The array must contain the complete image format, not just the pixel data.\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(myByteArray())\par
+\par
+\tab c. \b VB standard picture object or picture property\b0\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(PIcture1.Picture)\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(ImageList1.ListImages(1).Picture)\par
+\par
+\tab d. \b VB LoadResData() & LoadResPicture() functions\b0\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(LoadResData(101, "Custom"))\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(LoadResPicture(101, vbResBitmap))\par
+\par
+\tab e. \b URL\b0 . The URL must be complete, including the HTTP, HTTPS, FTP prefix. Unicode is supported\par
+\tab\tab The downloads may be performed asyncrhonously. See Section V below.\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus("http;\\\\www.somesite.com\\image123.jpg")\par
+\par
+\tab f. \b Clipboard\b0 . Common clipboard formats are supported: files, bitmap, DIB, WMF, EMF\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(Clipboard)\par
+\tab\tab Note the order of precedence if more than one clipboard format exists\par
+\tab\tab\tab (1) This control's custom format. GDIpImage.CF_AlphaImageCtl property\par
+\tab\tab\tab (2) Files -- only 1st file is used if multiple files were placed in clipboard\par
+\tab\tab\tab (3) Image formats in this order: EMF, WMF, BMP, DIB\par
+\tab\tab\tab (4) Text that contains: full file path & name, full URL, or complete Base64 encoding\par
+\par
+\tab g. \b Data Object\b0 . The data object is passed during an object's OLEStartDrag or OLEDragDrop events\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(Data)\par
+\par
+\tab h. \b Windows Handle\b0 . Bitmap, icon and cursors are supported\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(hBitmap)\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(Me.Icon.Handle)\par
+\par
+\tab i. \b MP3 & WMA music files\b0 . These files can be loaded by file name or an array containing the entire file. These files can \par
+\tab\tab contain embedded images or several embedded images. If a single image is found and extracted successfully, the\par
+\tab\tab original image format is returned. If multiple images were extracted, then each image is created as a TIFF\par
+\tab\tab page and the returned format will be a multiple page TIFF.\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus("C:\\My Music\\WhiteSnake.mp3")\par
+\par
+\tab k. \b Binaries\b0 . Binaries such as exe, dll and ocx can contain bitmaps, icons, cursors & AVIs. If attempting to load one\par
+\tab\tab of these, it can be loaded by file name only. The binary can contain 1,000s of images. When such a file is\par
+\tab\tab loaded during design time, only the currently displayed image is saved, not the entire file, not all images. \par
+\tab\tab Only 32 bit binaries will be processed. Selecting a 64 bit binary will abort. Also note that when such a file is\par
+\tab\tab being viewed in the property page, no animation can be performed until the image has been selected and\par
+\tab\tab the property page 'Apply' button has been clicked.\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus("C:\\Windows\\System32\\abc.dll")\par
+\tab\tab Set the ImageGroup and ImageIndex properties. See Section IV\par
+\par
+\tab l. \b GDIpImage Class\b0 . The class must be initialized/instantiated\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(tmpImg). tmpImg is declared as GDIpImage\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(AlphaImgCtl2.Picture)\par
+\tab\tab Example of Sharing (see Section VI): AlphaImgCtl2.Picture = AlphaImgCtl1.Picture\par
+\par
+\tab m. \b Screen\b0 . Pass simply Screen to create a screen capture in a 24 bpp bitmap  \b\par
+\b0\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(Screen)\par
+\b\par
+\b0\tab n. \b Base64 Encoded String\b0 . The string must be properly formatted. Cannot pass an array; must be String\par
+\tab\tab Example: Dim strBase64 As String : strBase64 = [some function to fill strBase64]\par
+\tab\tab\tab\tab Set AlphaImgCtl1.Picture = LoadPictureGDIplus(strBase64)\par
+\par
+\tab o. \b Database\b0 . The control can be bound to a specific field within any database that supports ADO. The field\par
+\tab\tab must contain image data in same format as a file would.\par
+\tab\tab Example: See Section VIII below for more\par
+\par
+\tab p. \b Nothing, 0, "", vbNullString, or Empty\b0 . Using any of these values removes the image from the control\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(Nothing)\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(Empty)\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus("")\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(vbNullString)\par
+\tab\tab Example: Set AlphaImgCtl1.Picture = LoadPictureGDIplus(0)\par
+\par
+\tab q. \b Associated Icons\b0 . Pass a filled ASSOCIATEDICON structure\par
+\tab\tab The ASSOCIATEDICON structure defined\par
+\tab\tab\tab .FileName: depending on icon desired: full path/filename, extension (i.e., .txt), folder, drive, PIDL, icon index\par
+\tab\tab\tab\tab folder paths should terminate with a backslash\par
+\tab\tab\tab\tab if icon index, then the .DesiredIconSize determines which system image list to use\par
+\tab\tab\tab\tab to return a generic "unknown" file type icon, pass a blank string as .FileName\par
+\tab\tab\tab\tab to return a generic "folder" icon, pass any folder format, i.e., "C:\\123\\"\par
+\tab\tab\tab\tab What is a PIDL? http://ccrp.mvps.org/index.html?support/faqs/faqbrowse.htm\par
+\tab\tab\tab .DesiredSize. If operating system doesn't support size, defaults to largest supported size\par
+\tab\tab\tab\tab lvicSHIL_Small_16: 16x16 icon\par
+\tab\tab\tab\tab lvicSHIL_Large_32: 32x32 icon\par
+\tab\tab\tab\tab lvicSHIL_ExtraLarge_48: typically 48x48 & may be adjusted based on DPI (XP+)\par
+\tab\tab\tab\tab lvicSHIL_Jumbo_256: typically 256x256 & may be adjusted based on DPI (Vista+)\par
+\tab\tab\tab .IconType. Identifies what icon type you want and must be one or more of the following\par
+\tab\tab\tab\tab lvicAssocActualIcon: use actual icon, not one based on file type alone\par
+\tab\tab\tab\tab lvicAssocGenericIcon: use icon based on file type\par
+\tab\tab\tab\tab lvicAssocIconOpened: some icons have an opened/selected version\par
+\tab\tab\tab\tab lvicAssocIconPIDL: the .FileName is a PIDL\par
+\tab\tab\tab\tab lvicAssocIconIndex: the .FileName is an actual system image list icon index\par
+\tab\tab\tab . IndexReturned. Indicates which system image list and icon index were used for the returned icon\par
+\tab\tab\tab\tab to get the icon index: (.IndexReturned And &HFFFFFF)\par
+\tab\tab\tab\tab to get size of system image list as a SHILIconSizeEnum value: .IndexReturned \\ &H10000000\par
+\tab\tab Example to retrieve the icon related to a fixed drive\par
+\tab\tab\tab Dim AI As ASSOCIATEDICON\par
+\tab\tab\tab AI.FileName = "C:\\": AI.DesiredSize = lvicSHIL_Large_32\par
+\tab\tab\tab Set AlphaImgCtl1.Picture = LoadPictureGDIplus(AI)\par
+\par
+\tab Exceptions: \par
+\tab 1. To create a blank GDI+ bitmap within a GDIpImage class, see SavePictureGDIp.rtf, Section IX\par
+\pard\nowidctlpar\b\par
+\ul During Design Time\ulnone\par
+\par
+\pard\nowidctlpar\tx270\tx630\tx900\b0\tab Right click on the AlphaImgCtl object and select "Properties" or select the AlphaImgCtl object and \par
+\tab\tab double click on the "Custom" property sheet item.\par
+\par
+\tab The following apply to both the control's main image and the background image. \par
+\tab\tab To choose image for the background, you must select the "Set Bkg Image" checkbox\par
+\tab\tab Associated icons are not offered for background images\par
+\par
+\tab a. Browse Button. The "Browse" button on the property page allows you to select files\par
+\tab\tab Select the desired source option from the combo box provided\par
+\tab\tab\tab Image Files. Offers a filtered open file dialog to choose images from\par
+\tab\tab\tab Icon - File. Offers an unfiltered open file dialog to choose associated icon from files \par
+\tab\tab\tab Icon - Folder. Offers a folder browsing dialog to choose associated icon from folders\par
+\tab\tab\tab Icon - Any Exe. Will display a standard exe associated icon when Browse is clicked \par
+\tab\tab\tab Icon - Unknown. Will display a standard "unknown" icon when Browse is clicked \par
+\tab\tab Note: When choosing associated icons, the property page may offer several sized icons to choose from\par
+\tab\tab Only the selected icon will be saved when you apply the changes\par
+\par
+\tab b. Drag & Drop or Paste. The display area in the property page accepts drag & drop and pasted items.\par
+\tab\tab -- You can drag and drop a file or a URL\par
+\tab\tab -- You can paste a file, URL, Base64 text, clipboard image. Right click and select "Paste Image/File"\par
+\par
+\tab c. Deleting Image. Click the "X" button to remove the image from the AlphaImgCtl object\par
+\pard\nowidctlpar\b\par
+Section III. Multi-frame image formats and how they are accessed\par
+\par
+\pard\nowidctlpar\tx270\b0 Icons, cursors, GIFs, TIFFs, and even PNGs can have several images (frames) embedded within the image data.\par
+When loading these formats, you can display any one of the individual frames. A few properties are used to select\par
+which image frame you want displayed. If the ImageCount property is greater than 1, multiple frames exist\par
+\par
+\pard\nowidctlpar\tx270\tx630\tab a. GIF. The ImageCount property will return the number of GIF frames. The ImageIndex will contain the currently \par
+\tab\tab displayed frame, values are between 1 and ImageCount\par
+\par
+\tab b. TIF. The ImageCount property will return the number of TIF pages. The ImageIndex will contain the currently \par
+\tab\tab displayed page, values are between 1 and ImageCount\par
+\par
+\tab c. Animated Cursors (.ani). The ImageCount property will return the number of frames. The ImageIndex will contain \par
+\tab\tab the currently displayed frame, values are between 1 and ImageCount. Windows 7 can group animated cursors so \par
+\tab\tab that one group may be of a certain size. If the cursors have groups, then the ImageGroupCount property will return \par
+\tab\tab a value greater than 1.\par
+\par
+\tab d. Icons and Cursors (.ico & .cur). The ImageCount property will return the number of frames. The ImageIndex will \par
+\tab\tab contain the currently displayed frame, values are between 1 and ImageCount.\par
+\par
+\tab e. PNG. A specially formatted PNG file can contain multiple frames. See www.animatedpng.com\par
+\tab\tab The ImageCount property will return the number of PNG frames. The ImageIndex will contain the currently displayed \par
+\tab\tab frame, values are between 1 and ImageCount\par
+\tab\tab\par
+\tab f. Binaries. Binaries are always separated into groups. The ImageGroup property will allow you to select which\par
+\tab\tab group you want to display. The groups will be separated into bitmaps, icons, cursors, or AVIs depending on which\par
+\tab\tab groups were found within the binaries. The ImageGroupFormat property within the GDIpImage class will let you\par
+\tab\tab know which image format each group is. Binaries, as multiple frame images, are only accessible during runtime \par
+\tab\tab and also, initially, in design-time via the property page only. The ImageGroupCount property will return the number\par
+\tab\tab of groups and will be a value between 1 and 4. The GDIpImage class has a IsExecutableResource property that will\par
+\tab\tab be True whenever such a file is being loaded/viewed.\par
+\par
+\tab g. Audio Video Interleave (AVI). These files are always written to disc when accessed. The control uses a windows DLL\par
+\tab\tab to play the AVIs and extract frame data/information. That DLL is limited to loading AVIs from file name. Some notes\par
+\tab\tab about AVIs. Just because Windows Media Player can play an AVI doesn't mean this control can load and display\par
+\tab\tab the same AVI. Each AVI requires a specific codec to be installed on the users computer. Codecs can exist for\par
+\tab\tab both Windows Media Player (DirectShow) and the windows AVI dll, or can exist for just one of those. If the codec\par
+\tab\tab wasn't found, the AVI will fail to load. If the image appears poor quality, then downloading a better codec is a good\par
+\tab\tab solution. To determine which codec is required for any AVI, you can open the AVI in NotePad. Search for these 4\par
+\tab\tab characters: VIDS. The following 4 characters, known as the FourCC, will be the codec type needed. You can find\par
+\tab\tab codecs on internet from sites like www.fourcc.org. I am not promoting that site; it's just an example and you should\par
+\tab\tab use caution before downloading and installing any codecs. Storing AVIs in the AlphaImgCtl is not advisable since\par
+\tab\tab viewing the image on a different computer will require the codec exists. A different option can be to save the AVI\par
+\tab\tab to an animated GIF or animated PNG and then use that for the control's image source. See SavePictureGDIp.rtf\par
+\par
+\tab h. Segmented images. Segmentation is the process of breaking an image into a grid of smaller images. The grid can\par
+\tab\tab be one or two dimensional. This is done manually by you via the GDIpImage class' SegmentImage method. This \par
+\tab\tab method cannot be used on images that contain multiple frames. The GDIpImage class' Segmented property will\par
+\tab\tab return true or false to indicate whether the current image is segmented or not.\par
+\par
+\tab Other properties in the control and the control's GDIpImage class allow you to maneuver between image frames\par
+\tab and groups within the image. The GDIpImage class can be accessed directly from the control's Picture property.\par
+\par
+\tab ImageIndex property returns or sets which image to be displayed within the currently selected group\par
+\tab ImageCount property returns the number of frames within the image or within the ImageGroup\par
+\tab ImageGroup property returns or sets which group is displayed. Groups apply only to binaries and animated cursors\par
+\tab ImageGroupCount property returns the number of image groups\par
+\par
+\tab The following properties are only accessible via the GDIpImage class:\par
+\par
+\tab AnimationLoops returns the number of loops provided by a GIF/APNG format only. This is embedded into a GIF/APNG format\par
+\tab BitDepth property can return the image bit depth of any ImageIndex without selecting the index\par
+\tab FrameDuration property can return the frame interval of any ImageIndex without selecting the index\par
+\tab Height property can return the image height of any ImageIndex without selecting the index\par
+\tab ImageFormat property returns the image format of any currently selected index\par
+\tab ImageGroupFormat property returns the image format of the group: icon, cursor, bitmap, animated cursor\par
+\tab\tab This property can be called on an image group without selecting the group\par
+\tab IsExecutableResource returns whether the class is accessing an executable: dll, exe, ocx, etc\par
+\tab Width property can return the image width of any ImageIndex without selecting the index\par
+(*) APNG: Animated PNG format\par
+\par
+\pard\nowidctlpar\par
+\b Section IV. The KeepOriginalFormat property\b0\par
+\pard\nowidctlpar\tx270\tx630 This property is available as an optional parameter within the LoadPictureGDIplus method. When set to True (default), the \par
+original image data is always cached and can be extracted via the GDIpImage class' ExtractImageData method. An exception \par
+is bitmaps; their original format is never cached simply because it can be easily retrieved without having it cached. This \par
+property is also available via the GDIpImage class and can be set to False in the class only. When set to false, the cached data \par
+is permanently destroyed. If the image format is bitmap, the image format will remain bitmap and any extracted data will be in \par
+bitmap format. For all other image formats, the image format will always be returned as PNG and any extracted image data will \par
+be in PNG format. If an MP3/WMA file is loaded and contains multiple images, then the original data is never maintained, rather the \par
+TIF file data used to create the TIF is maintained. See Section II above. If binaries are loaded, only the currently selected image \par
+data is maintained, never the entire binary. \par
+\par
+Note that this property is always True when images are loaded during design-time. This allows the control to cache the original \par
+image data into its property bag so the image can be re-loaded as needed. Since this original data takes up memory to have it \par
+cached, you may opt to destroy that cached data during runtime. If so, set the KeepOriginalFormat property within the GDIpImage \par
+class to False during your form's Load event. Remember that destroying the original image data prevents that original format from \par
+being extracted later during runtime, if the original format is important. Example of releasing that cache: \par
+AlphaImgCtl1.Picutre.KeepOriginalFormat = False. Also note that any image can be saved to any format. \par
+See the SavePictureGDIp.rtf document for more details.\par
+\par
+\par
+\b Section V. The Prevent_FileLock_AsyncDownload parameter of LoadPictureGDIplus\par
+\b0 This parameter is only applicable when loading an image by file name or URL. \par
+Following comments apply to:  the GDIpImage class and the user control's Picture & BkgImage properties\par
+\par
+a. File names: If set to True (default), the file is opened and its data is read into an array and the file is never referenced again. \par
+The array is cached if KeepOriginalFormat is also true. If Prevent_FileLock_AsyncDownload parameter is False, then GDI+ will lock \par
+the file so it cannot be manipulated until the image is destroyed and the file is no longer needed by GDI+. If GDI+ cannot lock the file, \par
+the file may fail to load. If KeepOriginalFormat is True and Prevent_FileLock_AsyncDownload is False, the file name is cached and \par
+when any data is extracted, the file is opened and the contents of the file are returned. During design time, this parameter is always \par
+set to True internally. Many image formats ignore this parameter and treat the parameter as being passed as true. Those formats are \par
+ones not supported by GDI+ or that prevent GDI+ from processing them; they are MP3, WMA, PCX, TGA, ICO, CUR, ANI, animated \par
+PNG, GIF, and bitmaps that use the alpha channel. See next section for more information.\par
+\par
+b. URLs. If set to True (default). Images are downloaded synchronously. This means your code will wait for the image to be \par
+completely downloaded & processed before the code continues. By setting the Prevent_FileLock_AsyncDownload parameter to False, \par
+images will be downloaded asyncrhonously and your code will continue immediately. Asynchronous downloads are only available for \par
+HTTP and HTTPS protocols. When assigning the return value of LoadPictureGDIplus to a GDIpImage object, you should declare that \par
+object with the WithEvents keyword. The GDIpImage object and Alpha Image Control have an AsyncDownloadDone event that will be \par
+triggered when the download either succedes or fails. It will not be fired if you set the object to Nothing.\par
+\par
+(1) Asynchronous downloads may not be supported on all operating systems or PCs. The method relies on a very common Microsoft \par
+DLL that may, for whatever reasons, not be installed on the target machine. You should query the global AsyncDownloadEnabled method \par
+to determine its availability. In any case, should the method not be enabled or you find the method not returning images, you should \par
+provide your own download routines and simply pass the downloaded image data to LoadPictureGDIplus vs. attempting a download via this \par
+control.\par
+\par
+(2) To cancel a specific async download: Simply set the GDIpImage object or Alpha Image Control's .Picture property \par
+(whichever applies) to Nothing. You can also abort all downloads with a call to the AsyncAbortDownloads method.\par
+\par
+(3) To determine when download succedes/fails:\par
+\par
+\tab (a) If using a GDIpImage object: Monitor its AsyncDownloadDone event. You may also query its \par
+AsyncDownloadStatus property. That property will return either lvicAsync_Ok if successful or lvicAsync_Invalid if failure; \par
+any other values indicates a state of progress\par
+\par
+\tab (b) If using an Alpha Image Control. Monitor its AsyncDownloadDone event. You may also query its \par
+.Picture.AsyncDownloadStatus property. That property will return either lvicAsync_Ok if successful or lvicAsync_Invalid if failure; \par
+any other values indicates a state of progress\par
+\par
+\tab (c) You may want to query how many async downloads are still occurring at any given time. Call the AsyncGetDownloadStates method.\par
+\par
+(4) AsyncDownloadDone event of the GDIpImage class and Alpha Image Control: The event will return either Success or Failure and either \par
+a AsyncDownloadStatusEnum value or a standard HTTP status code. The status codes are standard HTTP constants that can be found at \par
+the following website. http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html\par
+Note that when assigning the user control's BkgImage to a class that is asynchronously downloading a file, the control's \par
+AsyncDownloadDoneBkgImg event will trigger\par
+\par
+(5) AsyncDownloadStatus property of the GDIpImage class: This property will return either a standard HTTP status code or one of the following\par
+    lvicAsync_WaitingOnReply\tab sent request, but no answer yet (may time out, may not)\par
+    lvicAsync_Queued \tab\tab download is queued, max downloads are taking place\par
+    lvicAsync_Downloading \tab download is in progress, not finished nor aborted\par
+    lvicAsync_Invalid \tab\tab no async download taking place, no picture assigned\par
+    lvicAsync_NoImage \tab\tab downloaded information did not result in image creation\par
+    lvicAsync_Processing \tab download was successful & image is being processed\par
+    lvicAsync_Ok \tab\tab http status code of 200 (OK) & image was created OK\par
+\par
+(6) A maximum of 10 simultaneous asyncrhonous downloads are allowed. Any additional async download requests \par
+will be queued and activated when an open slot becomes available.\par
+\par
+(7) Known issues when displaying a modal window while asynchronous downloads are occurring. These issues are only \par
+applicable while your project is uncompiled. VB will block events within an uncompiled project while modal windows are \par
+displayed (i.e., MsgBox, CommonDialog, etc). This has an unwanted effect of potentially not allowing the downloaded data \par
+to be processed and/or not firing the AsyncDownloadDone event(s). If the control is not compiled to an ocx and the download \par
+is completed, it will be prevented from raising event that begins processing that data. The AsyncDownloadDone  will not be \par
+fired. If the ocx is compiled and the same scenario occurs, the data will be processed but your uncompiled project will not \par
+receive the AsyncDownloadDone event(s). Once your project is compiled, these issues go away. So, a workaround has been \par
+added to the control. Should you be running async downloads while a modal window is being displayed, after that window is \par
+closed, you can immediately call the AsyncDownloadStatus property of the GDIpImage class or AlphaImgCtl.Picture property. \par
+The result is dependent on whether the control is compiled to an OCX or not. Recommendation is to use synchronous downloads \par
+while project is uncompiled or to ensure no modal dialog windows are displayed while async downloads are in progress. If \par
+working around this problem, and you want to test a specific control or image class, call the AsyncDownloadStatus property of \par
+that class. If you want to test \ul all\ulnone  classes, call the AsyncGetDownloadStates method. That method does call every active class' \par
+AsyncDownloadStatus property.\par
+\par
+\tab (a) Compiled to an OCX but project itself is not compiled: The AsyncDownloadStatus property will return one of 3 values: \par
+lvicAsync_Ok indicating image was processed and accepted, lvicAsync_Invalid indicating image was processed but invalid data, \par
+or any other value indicating download is still active. Any missing AsyncDownloadDone event will not be fired. Any downloaded data \par
+will be processed regardless of the dialog window being open or closed.\par
+\par
+\tab (b) Uncompiled OCX. The AsyncDownloadStatus property will return the same values as mentioned previously. In addition, any \par
+missing AsyncDownloadDone event will be re-sent. Any download that finished while the dialog window was open may contain data \par
+that is waiting to be processed. That data will never be processed until the AsyncDownloadDone property or the \par
+AsyncGetDownloadStates method is called. \par
+Asyncrhonous downloads + uncompiled control + dialog windows = potential headache\par
+\pard\nowidctlpar\par
+\par
+\b Section VI. Sharing Images, Reducing Memory Usage\b0\par
+When more than one image control will display the same basic image, it is more efficient to share that image vs. creating separate \par
+copies of the image. Sharing images is easy and in some scenarios not desirable\par
+\par
+To share an image, simply set one .Picture instance to another: AlphaImgCtl2.Picture = AlphaImgCtl1.Picture \par
+The controls that share the image can render it with different attributes. One control, for example, can draw the \par
+image grayscaled at 256x256 while another control can draw the same image at 48x48 using inverted colors.\par
+\par
+If the shared image contains multiple frames or groups, changing the frame/group index affects all controls that share \par
+the image. If animating the shared image, all controls will show the same animation. If sharing animated images among  \par
+multiple controls, only animate one control. Animating multiple controls sharing the same image will cause unexpected \par
+results as each control tries to manipulate the current and/or next frames of the animation.\par
+\par
+Note that the control's BkgImage property applies also. It is easier on system resources to share that image\par
+\b\par
+\par
+Section VII. Special cases and how the control manages them\b0\par
+\par
+\pard\nowidctlpar\tx270\tx630 GDI+ has many issues with some image formats and does not support all images formats.\par
+\par
+1. PCX, PNM, TGA, animated cursor formats, binaries, and MP3/WMA files are not supported by GDI+. These are processed manually.\par
+As mentioned above, MP3/WMA images may be returned in either original image format or TIF multi-page format\par
+\par
+2. PNGs with multiple frames (animated PNGs) are processed manually. GDI+ does not support animated PNG\par
+There are some PNGs that GDI+ will not load correctly, rare but possible. No workarounds provided in this case.\par
+\par
+3. All GIFs, icons, and cursors are processed manually. GDI+ has several issues with these formats.\par
+\par
+4. WMF, EMF are converted internally to bitmap. WMF, EMF cannot be rendered with any image attributes or effects\par
+by GDI+. We overcome this by converting the metafiles to bitmap. However, in doing so, the metafile is no longer used\par
+for resizing. This can result in slight differences when compared to an actual metafile that is being resized.\par
+\par
+5. Non-placeable WMFs. When these are detected, they are also converted to bitmap same as WMF, EMF. However, \par
+since their image size is not defined, the control treats all of these as if they are 256x256. The control will use that \par
+assumption and scale 256x256 dimensions to your actual screen size height/width ratio. If this becomes an issue for\par
+you, you will have to include a placeable header for the WMF. That 22 byte header is rather easy to create, For details,\par
+view this link, among others... http://wvware.sourceforge.net/caolan/ora-wmf.html\par
+\par
+6. Bitmaps. If loading a bitmap contained in a VB standard picture object or picture property or via VB's LoadResPicture \par
+method, the bitmap will always be processed to ignore the alpha channel, whether it is used or not. Alpha bitmaps are \par
+rarely if ever loaded into standard picture objects. But if they are and you want the standard picture object processed \par
+so that the alpha channel is honored, then pass the standard picture's handle to LoadPictureGDIplus, not the standard \par
+picture object itself. See Section II h above.\par
+\par
+7. AVIs. When they are selected by file name, the actual file is used for displaying the AVIs. If an AVI is saved to a control, \par
+the contents of the file are copied to an array. When the control is later re-displayed, the contents of the control are then \par
+saved to the "Temp" path or user's "My Documents" folder and the AVI is run/displayed from that file. The file will be destroyed\par
+when the control is eventually destroyed or closed.\par
+\par
+\par
+\pard\nowidctlpar\b Section VIII. Data-bound image control\b0\par
+\par
+The control can bound to a field within any database that supports ADO. This control is not compatible with binding to a\par
+VB data control (i.e., Data1). It is compatible with the VB ADO data control (i.e., Adodc1) and ADO recordsets. The control \par
+can be bound during design time or run-time. Note that should you change the picture property of the control while the image \par
+is bound to a database, the change will be written to the database unless the data source is read-only. Moving from one record \par
+to another does not create an update event based solely on the move action. Any pending updates are performed when moving \par
+to a different record or by manually performing an explicit udpate command on the data source the control is bound to.\par
+\par
+The control always writes binary data to whatever field it is bound to. Ensure you bind the control to the correct field. \par
+Binding it to an incorrect field can delete that field's data permanently. For example, let's say you accidentally bound \par
+this image control to a database field that contains the company's name, as a text field, instead of the company's logo. \par
+If changes occur to the current record and the control is asked to update the database, it will attempt to write binary data \par
+to the company's name field. This, of course, will fail since that field expects text not binary data. Your database may raise \par
+an error each time the control is asked to update the database. Additionally, if the control has no image, then there is no\par
+binary data to update, so that field will then be nulled, losing whatever value that field contained. Bottom line: when using \par
+databound controls, always ensure you bind them to the correct field.\par
+\par
+1. Design-time binding.\par
+\pard\nowidctlpar\tx270\tx720\tx1170\tx1620\par
+\tab a. Add an ADO Data Control (ADODC) control to your form\par
+\tab b. Open its properties window and configure it to connect to your database. Test the connection\par
+\tab c. With the Alpha Image Control, set the DataSource property to the ADODC\par
+\tab d. Set the image control's DataField to the field within the table that contains your image data\par
+\par
+2. Run-time binding. You can set up an ADODC ahead of time if you choose. Or you can dynamically create recordsets.\par
+\par
+\tab a. ADODC control. You cannot directly access the image control's DataSource property during run-time.\par
+\tab Change the source using the control's DataBindings collection:\par
+\par
+\tab     With AlphaImgCtl1.DataBindings\par
+    \tab\tab .Item(0).DataField = ""\tab\tab\tab\tab ' clear this field first\par
+\tab\tab Set .Item(0).DataSource = Me.Adodc1\tab\tab ' set your ADODC reference\par
+\tab        .Item(0).DataField = "Logo"\tab\tab\tab ' set your table's field name\par
+\tab     End With\par
+\par
+\tab b. ADO recordset. Similar approach as to the ADODC control\par
+\tab\tab (1) Create a database connection object and an ADO recordset that includes the image data field\par
+\tab\tab (2) Ensure that connection and recordset do not close, otherwise, your bindings will be invalid\par
+\tab\tab (3) Apply that recordset\par
+\par
+\tab     With AlphaImgCtl1.DataBindings\par
+    \tab\tab .Item(0).DataField = ""\tab\tab\tab\tab ' clear this field first\par
+\tab\tab Set .Item(0).DataSource = myRecordSet\tab\tab ' set your ADO recordset reference\par
+\tab        .Item(0).DataField = "Logo"\tab\tab\tab ' set your table's field name\par
+\tab     End With\par
+\b\par
+\b0\tab c. To remove binding during run-time....\b\par
+\b0\par
+\tab     With AlphaImgCtl1.DataBindings\par
+    \tab\tab .Item(0).DataField = ""\tab\tab\tab\tab ' clear this field first\par
+\tab\tab Set .Item(0).DataSource = Nothing\tab\tab ' unreference any source\par
+\tab     End With\par
+\par
+3. If the image changes and the database will be updated, the control will trigger an UpdateDataboundImage event. This\par
+event passes a GDIpImage class that contains what will be saved to the database. At this point, you can change that \par
+image to influence what will be written to the database. For example, you can change the size of the image, you can\par
+change the format say from bitmap to png for example. In order to modify the image, a call to SavePictureGDIplus\par
+should be made and pass a SAVESTRUCT to change any image attributes. Alternatively, you may want to save the\par
+image as drawn in the control and you can set the passed image to the control's SaveImageAsDrawnToGDIpImage.\par
+\par
+\tab a. To change the size of the image to 64x64 (scaled) and also ensure it is saved as PNG\par
+\tab\tab Private Sub AlphaImgCtl1_UpdateDataboundImage(theImage As GDIpImage)\par
+\tab\tab     Dim SS As SAVESTRUCT, Cx As Long, Cy As Long\par
+\tab\tab     With AlphaImgCtl1\par
+\tab\tab         GetScaledImageSize .Picture.Width, .Picture.Height, 64, 64, Cx, Cy\par
+\tab\tab         SS.Width = Cx: SS.Height = Cy\par
+\tab\tab         SavePictureGDIplus .Picture, theImage, lvicSaveAsPNG, SS\par
+\tab\tab     End With\par
+\tab\tab End Sub\par
+\par
+\tab b. To save the image sized, rotated, grayscaled, etc, etc, as drawn on the control\par
+\tab\tab Private Sub AlphaImgCtl1_UpdateDataboundImage(theImage As GDIpImage)\par
+\tab\tab     Set theImage = AlphaImgCtl1.SaveImageAsDrawnToGDIpImage\par
+\tab\tab End Sub\par
+\par
+}
+ 

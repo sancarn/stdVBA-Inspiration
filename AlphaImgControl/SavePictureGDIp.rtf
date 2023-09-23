@@ -1,0 +1,575 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033\deflangfe1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Arial;}}
+{\colortbl ;\red128\green128\blue128;\red0\green0\blue255;\red0\green0\blue0;\red0\green128\blue0;}
+{\stylesheet{ Normal;}{\s1 heading 1;}}
+{\*\generator Msftedit 5.41.15.1515;}\viewkind4\uc1\pard\nowidctlpar\ul\b\f0\fs20 Saving images with SavePictureGDIplus\par
+\cf1\ulnone For best viewing, use WordPad & set left and right margins to 1/2 inch each or less, no word-wrapping.\par
+\cf0\b0\par
+Throughout this document, \b RSS \b0 will be used as an abbreviation for the RENDERINGSTYLESTRUCT2 structure\par
+\b SS\b0  will be used as an abbreviation for the SAVESTRUCT\par
+\b MIS\b0  will be used as an abbreviation for the MULTIIMAGESAVESTRUCT\par
+\b MPTS \b0 will be used as an abbreviation for the MULTIPAGETIFFSTRUCT (superseded by the MULTIIMAGESAVESTRUCT)\par
+The terms "saving" and "converting" are used interchangeably\par
+\par
+The optional SaveOptions parameter of SavePictureGDIplus can accept one of these:\par
+-- Optional parameter not passed. No special saving or rendering options desired\par
+-- SAVESTRUCT. Defines special saving/rendering options for a single-image result.\par
+-- MULTIPAGETIFFSTRUCT. Saved result will be a multiple page TIFF. See Section VII\par
+-- MULTIIMAGESAVESTRUCT. Saved result will be a multi-image icon/cursor/gif/tiff/png. See Section VIII\par
+\par
+\b SECTION I. Supported formats and conversion\par
+\b0    Note that all formats can be saved to destination types of 2 & 3 but those, not specifically identified in the table \par
+below to support types 1 & 2, will be converted to bitmap and/or metafile. Destination types 1 & 2 do not support \par
+most image formats. Any multi-frame formats when saved to destination types 1 & 2 will only save the current frame\par
+\tab\par
+   Destination Types:\par
+\pard\nowidctlpar\tx180\tx1710\tx3510\tx3690\tab (1) Can save to file, byte array, GDIpImage class\par
+\tab (2) Can save to stdPicture object\par
+\tab (3) Can save to Clipboard, Data object\par
+\tab (4) Icon, Cursor or Bitmap standard Windows handle\par
+\par
+\tab Note that a special case exists for destination type 3. All formats can be saved to the Clipboard and Data object, \par
+including all frames of multi-frame formats, as a special clipboard format. That format will be recognized by the \par
+Alpha Image Control but not by VB's stdPicture object. So, if saving to this destination and expecting to load the \par
+image from this destination, VB controls cannot but the Alpha Image Control can. That special format is exposed\par
+in the global CF_AlphaImageCtl property and can be queried with VB:\par
+\tab Example: If Clipboard.GetFormat(CF_AlphaImageCtl) = True Then ...\par
+\tab Example: If Data.GetFormat(CF_AlphaImageCtl) = True Then ...\par
+\pard\nowidctlpar\par
+\pard\nowidctlpar\tx180\tx1710\tx3960\tab\ul Source Format\tab Destinations Supported\tab Conversion To Format\ulnone\par
+\pard\nowidctlpar\tx180\tx2250\tx4590\tab AVI*\tab 1\tab no\par
+\tab ANI\tab 1\tab no\par
+\tab BMP\tab 1, 2, 3, 4\tab yes\par
+\tab CUR***\tab 1, 2, 4\tab yes\par
+\tab GIF**\tab 1\tab yes\par
+\tab JPG\tab 1\tab yes\par
+\tab ICO***\tab 1, 2, 4\tab yes\par
+\tab PAM\tab 1\tab yes\par
+\tab PCX\tab 1\tab yes\par
+\tab PNG**\tab 1\tab yes\par
+\tab PNM****\tab 1\tab yes\par
+\tab TGA\tab 1\tab yes\tab\par
+\tab TIF\tab 1\tab yes\par
+\tab WMF/EMF\tab 1, 2, 3\tab yes\par
+\tab WMF non-placeable\tab 1\tab yes\par
+\pard\nowidctlpar\tx180\tx1710\tx3510\tx3690\tab (*) Applicable installed codec is required to read AVI files\par
+\tab (**) Includes animated varieties\par
+\tab (***) stdPicture objects do not support 32 bpp. Conversion to 24 bpp or lower is automatic\par
+\tab (****) PNM (portable any map): includes file extensions: PGM, PBM, PPM, PNM\par
+\par
+\pard\nowidctlpar\b   \ul\b0 Samples of saving to various destinations\ulnone\b\par
+\b0\par
+\pard\nowidctlpar\tx180\tx540\tab The examples here assume you are saving the image in the current image format. If choosing to save/convert to a\par
+different format, the 3rd parameter of the examples would be changed approrpriately. Additionally, the optional 4th \par
+parameter may need to be provided as a SS, MIS or MPTS structure. Further sections of this document describe those.\par
+\par
+\tab a. \b To File\b0 . The file name must inlcude the full path. Unicode is supported. User must have write access to the folder\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, "C:\\Logos\\myComanyLogo.png", lvicSaveAsCurrentFormat\par
+\par
+\tab b. \b To a byte array\b0 . The array will be filled with the entire format, not just pixel data. It will be zero bound.\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, myByteArray(), lvicSaveAsCurrentFormat\par
+\tab\tab If you do not desire any image format conversion, you may retrieve the data with a call like this:\par
+\tab\tab Example: AlphaImgCtl2.Picture.ExtractImageData myByteArray()\par
+\par
+\tab c. \b To GDIpImage class. \b0 The class must be first initialized, i.e., Set myImage = New GDIpImage\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, myImage, lvicSaveAsCurrentFormat\par
+\par
+\tab d. \b To stdPicture object. \b0 The object must first be initialized, i.e., Set tmpPicture = New stdPicture\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, tmpPicture, lvicSaveAsCurrentFormat\par
+\tab\tab Notes: Not all formats are compatible with stdPicture. \par
+\tab\tab Saving formats to stdPicture that are not supported will be converted to bitmap\par
+\par
+\tab e. \b To the Clipboard. \b0 You should clear the clipboard beforehand: Clipboard.Clear\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, Clipboard, lvicSaveAsCurrentFormat\par
+\tab\tab Notes: Not all formats are compatible with the Clipboard. \par
+\tab\tab Saving formats to the Clipboard that are not supported will be converted to bitmap\par
+\par
+\tab f. \b To a Data object. \b0 The Data object is available during VB OLEStartDrag or OLESetData events and should be cleared\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, Data, lvicSaveAsCurrentFormat\par
+\tab\tab Notes: Not all formats are compatible with a Data object. \par
+\tab\tab Saving formats to a Data object that are not supported will be converted to bitmap\par
+\par
+\tab g. \b To a GDI handle. \b0 The hBitmap, hIcon & hCursor variables below would be Long variable types\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, hBitmap, lvicSaveAs_HBITMAP\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, hIcon, lvicSaveAs_HICON\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl2.Picture, hCursor, lvicSaveAs_HCURSOR\par
+\tab\tab Note that to specify the cursor's hot spot, you should pass a SS structure in the 4th parameter\par
+\par
+\pard\nowidctlpar\par
+\b SECTION II. Multi-image formats and how they are affected when saving\par
+\par
+\pard\nowidctlpar\tx270\b0 Icons, cursors, GIFs, TIFFs, and even PNGs can have several images (frames) embedded within the image data.\par
+When saving these formats, it is possible that only the currently displayed frame will be saved.  Here are those\par
+scenarios if \ul NOT\ulnone  not passing \b MIS \b0 or \b MPTS \b0 in the SaveOption parameter of the SavePictureGDIplus method.  \par
+\par
+\pard\nowidctlpar\tx270\tx630\tab a. If saving from one format to a different format (i.e., GIF to TIFF), only the current frame will be saved.\par
+\tab\tab Exception: If saving GIF with multiple frames to PNG, result may be an animated PNG. See Section VIII\par
+\par
+\tab b. If the SAVESTRUCT structure is passed and any of the following members are other than default values, then \par
+\tab\tab only the current frame will be saved. Those members are: The \cf2 ColorDepth\cf0 , \cf2 ExtractCurrentFrameOnly\cf0 , \par
+\tab\tab\cf2 Width\cf0 ,\cf2  Height \cf0 members and its \b RSS\b0  members. The saving process does not apply image modifications to \par
+\tab\tab all  frames, only to the current frame. \par
+\tab\tab Exception: If saving GIF with multiple frames to PNG, passing SAVESTRUCT will always use the current frame\par
+\par
+\tab c. If saving without any image modifications and to the same format, then the entire image, all frames, will be saved. \par
+\tab\tab If you wish to extract a specific  frame and save that to the same format without modifications, then you should \par
+\tab\tab use the SAVESTRUCT and set its \cf2 ExtractCurrentFrameOnly\cf0  member to True and ensure the desired frame is\par
+\tab\tab selected in the control or GDIpImage class.  See Section III below. The exception to this rule is that if saving any\par
+\tab\tab images to a multi-image format (animated GIF, multi-page TIFF, multi-image icon/cursor), only the first image\par
+\tab\tab of the source will be used.\par
+\par
+\tab d. If saving a multi-frame format to the clipboard, a drag/drop data object, an array, to file, or another GDIpImage\par
+\tab\tab class, then the entire image and all of its frames are saved, unless image modification is performed or the \par
+\tab\tab\cf2 ExtractCurrentFrameOnly\cf0  member of the SAVESTRUCT is True. Though the clipboard and data object will not \par
+\tab\tab support all image formats, a special format is also placed on the clipboard or data object that is recognized by \par
+\tab\tab these classes and control. That special format will include all frames. The VB-compatible object placed on the\par
+\tab\tab clipboard or data object will be a stdPicture object in the format of bitmap, extended metafile or metafile. \par
+\par
+\tab e. If saving a multi-frame format to a VB stdPicture object, then only the current frame will be saved. VB does not\par
+\tab\tab support multi-frame formats in its stdPicture object.  Note. That isn\rquote t exactly true, but VB will never display any\par
+\tab\tab frame other than the 1\super st\nosupersub  frame.\par
+\pard\nowidctlpar\tx270\par
+To reiterate. The control and its classes are not a multi-frame editor. However they do support saving to multiple page TIFF, \par
+animated GIF, animated PNG, and multi-image icon/cursor formats which can include embedded PNG formatting.\par
+\par
+See Section VII below for saving several images to a multi-page TIFF format (section VIII supersedes this section)\par
+See Section VIII below for saving several images to multi-image Icon/Cursor/GIF/TIFF/PNG formats.\par
+See Sectoin VIII below for saving the AlphaImgCtl, as drawn.\par
+\pard\nowidctlpar\b\par
+SECTION III. The SAVESTRUCT structure and its RSS member, in a nutshell\par
+\par
+\pard\nowidctlpar\tx450\tab The SS structure (SAVESTRUCT). Passed to SavePictureGDIplus as the SaveOptions parameter\par
+\pard\nowidctlpar\tx450\tx810\b0\tab\cf2 AlphaTolerancePct\cf0 . Value that determines level of complex to simple transparency conversion. See\par
+\tab\tab Section IV and Section V below for more details\par
+\tab\cf2 ColorDepth\cf0 . Enumeration value that determines the depth an image will be converted to\par
+\tab\cf2 CursorHotSpotX\cf0 . When saving to cursor or HCURSOR, the cursor's horizontal hot spot\par
+\tab\cf2 CursorHotSpotY\cf0 . When saving to cursor or HCURSOR, the cursor's vertical hot spot\par
+\tab\cf2 ExtractCurrentFrameOnly. \cf0 Ensures only the current frame of multi-frame image is saved. See Section II\par
+\tab\tab Ignored if this SS structure is part of the MIS structure. See Section VIII below\par
+\pard\nowidctlpar\tx450\tab\cf2 Height\cf0 . The desired height of the image. Some formats are restricted. ICO,CUR cannot exceed 256\par
+\tab\tab When set to zero, then the original image size is used\par
+\tab\cf2 CompressionJPGQuality\cf0 . Determines compressed state or JPG quality during save procedure.\par
+\pard\nowidctlpar\tx810\tx1080\tab For JPG only. Valid values are one of the enumeration items or any value between 1 and 100 percent.\par
+\tab\tab Default quality value for JPG is 80%. Any invalid values passed will result in the default value.\par
+\tab For PCX, PNM, TGA, TIF. Any value other than lvicFormatUncompressed will result in compressed image\par
+\tab\tab Default for those image formats is compressed. Not all viewers will accept uncompressed PCX.\par
+\tab\tab Uncompressed PNM equates to ASCII text file (very large). See Section V for PNM definition\par
+\pard\nowidctlpar\tx450\tx810\tab\cf2 PaletteType\cf0 . Enumeration value for the palette used when converting to 16 or 256 colors. See Section VI\par
+\tab\cf2 Palette_Handle\cf0 . A handle created from CreatePalette API if \cf2 PaletteType \cf0 is lvicPaletteUserDefined\par
+\tab\cf2 RotatingCanGrowImage\cf0 . Determines if rotated image will be restrained to \b SS\b0 .\cf2 Width \cf0 & \b SS\b0 .\cf2 Height \cf0\par
+\tab\tab members or whether the \b SS\b0 .\cf2 Width \cf0 & \b SS\b0 .\cf2 Height \cf0 members can be increased to ensure image \par
+\tab\tab is rendered at \b SS\b0 .\cf2 Width \cf0 & \b SS\b0 .\cf2 Height\cf3 . \cf0 Any image size restrictions still apply. If the RSS.\cf2 Angle\cf0  value\par
+\tab\tab is zero or an even multiple of 180, then this member is ignored.\par
+\pard\nowidctlpar\tx450\tab\cf2 RSS\cf0 . An RENDERINGSTYLESTRUCT2 structure defined below\par
+\tab\cf2 Width\cf0 . The desired width of the image. Some formats are restricted. ICO,CUR cannot exceed 256\par
+\tab\tab When set to zero, then the original image size is used\par
+\b\tab\cf2\b0 reserved1\cf0 . Internal use and added for future expansion as needed. Ignored when set by you\par
+\b\tab\cf2\b0 reserved2\cf0 . Internal use and added for future expansion as needed. Ignored when set by you\b\par
+\par
+\tab The SS.RSS member (RENDERINGSTYLESTRUCT2)\par
+\pard\nowidctlpar\tx450\tx810\b0\tab\cf2 Angle\cf0 . Value that determines rotation of image\par
+\tab\cf2 Effects\cf0 . An instantiated GDIpEffects class that contains optional effects like grayscaling, inversion and more.\par
+\tab\tab This member is optional and no GDIpEffects class needs to be created if not used\par
+\tab\cf2 EffectsType\cf0 . Enumeration value which identifies which v1.1 GDI+ effects object is applied from the \cf2 Effects \cf0 class\par
+\tab\cf2 FillBrushGDIplus_Handle\cf0 . A handle of a brush created with GDI+. You are responsible for destroying the brush\par
+\cf2\tab FillColorARGB\cf0 . Color to be used for filling the image before rendering. Must be created with call to\par
+\tab\tab ConvertRGBtoARGB. This color will always be applied to image formats or destination objects that do not \par
+\tab\tab support transparency. ConvertRGBtoARGB function accepts VB system colors and variable levels of opacity\par
+\tab\cf2 FillColorUsed\cf0 . Determines whether the \cf2 FillColorARGB \cf0 value is to be applied, whether or not it is required.\par
+\tab\tab Setting this value to true and using an opaque \cf2 FillColorARGB \cf0 value will force opaque images at 32bpp or lower\par
+\tab\cf2 Mirrored\cf0 . Enumeration value that determines whether image is mirrored horizontally, vertically, or both or none\par
+\tab\cf2 Quality\cf0 . Enumeration for stretch/re-size interpolation. Higher level interpolation can produce semi-transparency\par
+\tab\tab  around the edges of the image\b\par
+\pard\nowidctlpar\par
+\pard\nowidctlpar\tx450\tab\b0 Note that the MULTIPAGETIFFSTRUCT or MULTIIMAGESAVESTRUCT can be passed  in the SaveOptions \par
+\tab parameter when saving to multi-image formats. Each of those structures has a SAVESTRUCT \tab member as part \par
+\tab of their structures. \b\par
+\pard\nowidctlpar\par
+SECTION IV. Styles of Transparency\b0\par
+\par
+1. Simple transparency. This transparency consists of pixels that are either 100% opaque or 100% transparent. \par
+2. Complex transparency. This transparency consists of pixels that can have variable levels of transparency.\par
+3. No transparency. Pixels are always 100% opaque\par
+\par
+Not all image formats support complex transparency. Most support simple transparency. If saving an image\par
+that contains complex transparency to an image format that does not support complex transparency, then\par
+the image will be processed to convert complex to simple.\par
+\par
+\pard\nowidctlpar\tx450\tx810\tab a. When applying optional rotation at angles other than 0,180,360, transparency is naturally introduced\par
+\tab\tab if it didn't exist already. Color depth is increased to 32bpp if image format supports it.\par
+\tab b. When applying optional \b SS\b0 .RSS.Effects.\cf2 GlobalTransparencyPct \cf0 or setting a color to be made \par
+\tab\tab transparent, transparency is naturally introduced if it didn't exist already. Color depth is increased to \par
+\tab\tab 32bpp if image\tab format supports it.\par
+\tab c. If the image already contains transparency, then depth will be 32bpp else it will remain at current value, unless\par
+\tab\tab the \b SS\b0 .RSS.\cf2 FillColorARGB \cf0 is an opaque color and \b SS\b0 .RSS.\cf2 FillColorUsed \cf0 is True. Then the result\par
+\tab\tab will be a 24bpp opaque image or lower and all transparency is rendered onto the fill color.\par
+\par
+\pard\nowidctlpar The \b SS\b0 .\cf2 AlphaTolerancePct \cf0 value is default to zero and can contain a value between 0 and 100.\par
+It affects transparency when used. Its usage is either optional or automatic. When it is used, the result\par
+will be complex transparency reduced to simple transparency. The percentage is compared to the image's\par
+alpha/transparency levels (if any). If the alpha level is greater than the percentage, then the pixel will appear \par
+100% transparent else it will appear 100% opaque. A level of 100 will convert all alpha levels to 100% opaque.\par
+A level of 0 will convert all alpha levels to 100% transparent. A level of 25 produces good quality simple \par
+transparency for most image formats. See next section for image formats where complex to simple \par
+transparency is performed automatically.\par
+\par
+The \b SS\b0 .\cf2 ColorDepth \cf0 parameter of lvicApplyAlphaTolerance can be OR'd with any of the other\par
+\cf2 ColorDepth \cf0 members. In this case, the source image is first converted from complex to simple transparency\par
+and then processed with any other \b SS\b0 .RSS\cf2  \cf0 members. Use this option to reduce shadows or alphablending\par
+effects before rendering to a solid background or with other effects, as desired.\par
+\par
+\par
+\b SECTION V. Image formats and color depths they support\par
+\b0\par
+\pard\keepn\nowidctlpar\s1\tx2070\tx3960\tx6120\ul Format\tab Depth (bpp)\tab Transparency\tab Notes\par
+\pard\nowidctlpar\tx2070\tx3960\tx6120\ulnone avi\tab none\tab none\tab not supported for saving\par
+bmp\tab 1,4,8,16,24,32\tab 32bpp only\tab 1,4,6,12\par
+cur\tab 1,4,8,16,24,32\tab All depths\tab 1,6,9,11,13,14,15,19\par
+emf\tab 1,4,8,16,24,32\tab Simple only\tab 2,10\par
+gif\tab 1,4,8\tab Simple only\tab 3,5,8,10,13,18\par
+ico\tab 1,4,8,16,24,32\tab All depths\tab 1,6,9,11,13,14,15,19\par
+jpg\tab 1,4,8,16,24\tab None\tab 1,13\par
+pcx\tab 1,4,8,24,32\tab 32bpp only\tab 1,6,10,12,13\par
+png\tab 1,4,8,16,24,32\tab All depths but 24bpp\tab 1,7,9,12,13,20\par
+pnm*\tab 1,8,24\tab None\tab 13,21,22\par
+tga\tab 8,16,24,32\tab All depths but 24bpp\tab 1,3,4,5,7,9,12,13\par
+tiff\tab 1,4,8,16,24,32\tab All depths but 24bpp\tab 1,7,9,12,13\par
+wmf\tab 1,4,8,16,24,32\tab Simple only\tab 2,10\par
+wmf non-placeable\tab 1,4,8,16,24,32\tab Simple only\tab 2,10,16,17\par
+HBITMAP\tab 1,4,8,16,24,32\tab None\tab 1\par
+HCURSOR\tab 1,4,8,16,24,32\tab All depths\tab 1,6,9\par
+HICON\tab 1,4,8,16,24,32\tab All depths\tab 1,6,9\par
+(*) PNM (portable any map) includes file extensions: pnm, pbm (black & white), pgm (grayscale), ppm (true color)\par
+PNM is not a true format; however, pbm/pgm/ppm formats may have a pnm extension\par
+\pard\nowidctlpar\tx1440\tx3150\tx5040\par
+Notes:\par
+1) 16bpp is converted to 24bpp if saving image\par
+2) Only 24bpp or 32bpp is used when saving image\par
+3) Palette requires an entry for transparency color\par
+4) 32bpp pre-multiplied supported when saving to BMP,TGA only\par
+5) 8bpp is always used when saving for depths of 1,4,8 bpp\par
+6) Complex/simple transparency supported for 32bpp\par
+7) Complex transparency supported for all color depths\par
+8) Simple transparency supported for palettes only\par
+9) Simple transparency supported for all color depths\par
+10) Conversion from complex to simple transparency is automatic\par
+11) If saving to VB stdPicture object, depth is never greater than 24bpp\par
+12) If saving to VB stdPicture object, format will be bitmap without transparency\par
+13) If saving to Clipboard or Data Object VB compatible object will be BMP but custom format is saved format\par
+14) If saving to 24bpp or 32bpp RGB, complex to simple transparency conversion is performed automatically\par
+15) If saving to stdPicture and black and white, VB always renders as 32x32 stretched, regardless of actual size\par
+16) If saving to Clipboard, Data Object, VB compatible object will be placeable but custom format non-placeable\par
+17) If saving to stdPicture then WMF is always placeable\par
+18) Saving a GIF frame as a GIF, the action may result in color reduction. Any displayed frame, other than the \par
+1st frame can be a composite of 2 or more frames and contain more than 256 colors. When saved, the GIF \par
+format only supports 256 colors maximum.\par
+19) To save icon/cursor in PNG format you must pass a MULTIIMAGESAVESTRUCT as the SaveOptions parameter. See Section IX\par
+20) When saving to animated PNG format, the frames will always be 32bpp\par
+21) If saving to 4 or 8 bpp color, 24 bpp will be final depth. Exception: True grayscale will always be 8 bpp\par
+22) If saving as black and white, format is PBM. If saving in grayscale, format is PGM. All others will be PPM\par
+\par
+\par
+\pard\nowidctlpar\b SECTION VI. Understanding color depth reduction/conversion\b0\par
+Note that custom algorithms to reduce color to 2, 4, or 8 bpp may not be ideal in all situations. By extracting\par
+the image pixels, you can always apply your own algorithms. Use GDI+ GdipBitmapLockBits and \par
+GdipBitmapUnlockBits APIs to retrieve and set the pixel data.\par
+\par
+\b SS\b0 .\cf2 ColorDepth \cf0 contains one of these values\par
+\par
+1. No color depth conversion requested. If requested target image format does not support current color depth\par
+\pard\nowidctlpar\tx450\tab then the color depth may default to the maximum allowed to support the image format\par
+\pard\nowidctlpar\par
+\pard\nowidctlpar\tx450\tx810 2. Default color depth conversion requested. The image will be processed to see if it can be reduced to a lower \par
+\tab color depth without loss of any color and/or transparency. \par
+\par
+3. Black and white conversion requested. A custom algorithm is used. If the image contains transparency and\par
+\tab the target image format supports transparency, then the image will be saved as 4bpp instead of 1bpp if a palette\par
+\tab index for transparency is required. GIF,TGA will use 8bpp. ICO,CUR do not require palette indexes for transparency.\par
+\par
+4. Conversion to 16 or 256 color palette is requested. Three palette types are offered.\par
+\par
+\tab a. Default palette type consists of halftone colors. Nearest color match from the image to the palette\par
+\tab\tab entries is performed. Quality depends entirely on how close image colors are to the palette\par
+\par
+\tab b. Adaptive palette type processes the image to pick the "best" colors to use. Often provides far\par
+\tab\tab bettter results than the default palette type, but takes longer for the result\par
+\par
+\tab c. User-defined palette type requires the \b SS\b0 .\cf2  Palette_Handle\cf0  to be set with handle of a palette \par
+\tab\tab created by you, using the CreatePalette API. You are responsible for destroying that palette. \par
+\tab\tab Quality depends entirely on how close image colors are to the palette. If the handle is not provided\par
+\tab\tab or the handle is invalid, the default palette will be used. Note that the color depth is determined by the\par
+\tab\tab number of colors in the palette. Example: If palette consists of only 1 or 2 colors, color depth is 2 colors. If \par
+\tab\tab you want an 8bpp image, for example, but your palette will only contain 10 colors, supply at least 17 colors, \par
+\tab\tab duplicating an existing color as needed to ensure 8bpp. Otherwise, 3-16 colors will result in 4bpp images.\par
+\par
+\tab Note: Converting PNM to 16 or 256 colors will result in image written in 24 bpp. Exception. If the result is gray scale,\par
+\tab\tab then the image will be saved at 8 bpp or 1 bpp if it is black and white\par
+\par
+5. Conversion to 24bpp is requested. If target image format does not support 24bpp (i.e., GIF), image may be\par
+\tab converted to highest depth allowed. If a \b SS\b0 .RSS.\cf2 FillColorUsed \cf0 is True and the \cf2 FillColorARGB\cf0  is an \par
+\tab opaque color, then image will be drawn over that color and no transparency conversion is performed unless\par
+\tab requested by including the lvicApplyAlphaTolerance constant (See Section IV above). If format is ICO/CUR \par
+\pard\nowidctlpar\li450\tx450\tx810 and contains complex transparency, transparency will be converted to simple transparency if  \par
+\b SS\b0 .RSS.\cf2 FillColorUsed \cf0 is False or the \cf2 FillColorARGB\cf0  is not opaque\par
+\pard\nowidctlpar\tx450\tx810\par
+6. Conversion to 32bpp is requested. There are 3 types of 32bpp: RGB) does not support transparency, \par
+\tab ARGB) supports complex transparency, pARGB) pre-multiplied version of ARGB. If target image format \par
+\tab does not support 32bpp (i.e., GIF), image will be converted to highest depth allowed. If target image format\par
+\tab does not support complex or simple transparency and transparency exists, transparency is either removed\par
+\tab or reduced to simple transparency. If target format does not support pARGB, then ARGB will be used.\par
+\par
+\par
+\b SECTION VII. Saving to a multi-page TIFF\par
+\b0\par
+Note: The \b MPTS \b0 structue is still supported for backward compatibility. The \b MIS \b0 structure replaces the \b MPTS \b0 structure. \par
+See Section VIII \par
+\par
+The MULTIPAGETIFFSTRUCT (\b MPTS\b0 ) structure must be filled and supplied as the SaveOptions parameter of \par
+SavePictureGDIplus. This structure defines which images are to be saved and how they are to be rendered.\par
+\par
+If using an image, for any of the pages, that has multiple frames/pages (GIF, TIF, ICO, CUR), only the current image will be saved. \par
+Segmented images must be unsegmented in order to save the entire image.\par
+\par
+Pass Nothing for the Picture parameter of SavePictureGDIplus\par
+\par
+\tab\b The MULTIPAGETIFFSTRUCT and its members, in a nutshell\par
+\b0\tab\cf2 Pages\cf0 . The number of TPS members \par
+\tab\cf2 TPS()\cf0 . An array of TIFFPAGESTRUCT structures, one item for each page\par
+\par
+\tab\b The TPS member (TIFFPAGESTRUCT)\par
+\b0\tab\cf2 Picture\cf0 . The GDIpImage class to be saved. This can be an AlphaImgCtl.Picture property\par
+\tab\cf2 SS\cf0 . SAVESTRUCT structure that describes how .Picture will be saved. See Section III above\par
+\par
+\par
+\b Section VIII. Saving to an animated GIF, animated PNG, multi-page TIFF, multi-image icon or cursor\par
+\b0\par
+The MULTIIMAGESAVESTRUCT (\b MIS\b0 ) structure must be filled and supplied as the SaveOptions parameter of \par
+SavePictureGDIplus method. This structure defines which images are to be saved and how they are to be rendered.\par
+\par
+Pass Nothing for the Picture parameter of SavePictureGDIplus\par
+\par
+\tab\b The MULTIIMAGESAVESTRUCT and its members, in a nutshell\par
+\b0\tab\cf2 Images\cf0 . The number of Image members\par
+\tab\cf2 Image()\cf0 . An array of IMAGEINFOSTRUCTstructures, one item for each image\par
+\tab\cf2 GIFOverview.\cf0  A GIFOVERVIEWSTRUCT used only when saving images as an animated GIF/PNG\par
+\par
+\tab\b The GIFOverview member (GIFOVERVIEWSTRUCT). \b0 Only used if saving images as animated GIFs/PNGs\b\par
+\b0\tab\cf2 LoopCount\cf0 .  Number of loops to complete before animation stops. Use zero for infinite\par
+\tab\cf2 WindowWidth\cf0 . Overall width of the GIF/PNG. Leave zero for auto-calculation\par
+\tab\cf2 WindowHeight\cf0 . Overall height of GIF/PNG. Leave zero for auto-calculation\tab\par
+\par
+\tab\b The Image() member (IMAGEINFOSTRUCT)\par
+\b0\tab\cf2 Picture\cf0 . The GDIpImage class to be saved. This can be an AlphaImgCtl.Picture property\par
+\tab\cf2 GroupNumber.\cf0   If source image contains multiple images & groups (Win7 animated cursors), group index to use. \par
+\tab\cf2 FrameNumber\cf0 .  If source image contains multiple images, the frame/image index to use. Zero uses the current index\par
+\tab\tab The SS.ExtractCurrentFrameOnly parameter is ignored\par
+\tab\cf2 SS\cf0 . SAVESTRUCT structure that describes how .Picture will be saved. See Section III above\par
+\tab\cf2 GIFFrameInfo\cf0 . A GIFFRAMESTRUCT structure used only if saving images to an animated GIF/PNG\par
+\tab\cf2 IconEmbeddedAsPNG\cf0 . If saving as icon/cursor, flag saves th image in PNG format (usable on Vista and above)\par
+\par
+\tab\b The GIFFrameInfo member (GIFFRAMESTRUCT)\b0 . Used to describe individual GIF/PNG frames\b\par
+\b0     \tab\cf2 DelayTime. \cf0 Length of time, in milliseconds, the frame is displayed before moving to next frame\par
+    \tab\cf2 DisposalCode. A\cf0 n enumeration of one of these 4 values. GIF player is any application that renders animated GIFs\par
+\tab\tab\cf4 lvicGIF_NoAction\cf0 : No action by the GIF player. This code generally translated as lvicGIF_NoDiscard\par
+\tab\tab\cf4 lvicGIF_NoDiscard\cf0 . GIF player must leave current display as-is after frame is disposed\par
+\tab\tab\cf4 lvicGIF_Erase\cf0 . GIF player erases the current frame's area after that frame is disposed\par
+\tab\tab\cf4 lvicGIF_RestorePrevious\cf0 . GIF player caches display before frame is shown & restores cache after disposal\par
+\tab\tab For animated PNGs. Two additional flags are provided that can be OR'd with above flags\par
+\tab\tab See the following link for more details. \par
+\tab\tab      https://wiki.mozilla.org/APNG_Specification#.60fcTL.60:_The_Frame_Control_Chunk\par
+\tab\tab\cf4 lvicAPNG_BlendOpOver. \cf0 Frame is blended onto existing image else frame replaces existing pixels\cf4\par
+\tab\tab lvicAPNG_DefaultImage_NotAnimated. \cf0 Frame is not part of the animation; applies to 1st frame only\par
+    \tab\cf2 XOffset. \cf3 Determines horizontal offset frame is rendered within overall canvas. Use -1 to center frame horizontally\cf0\par
+    \tab\cf2 YOffset. \cf3 Determines vertical offset frame is rendered within overall canvas. Use -1 to center frame vertically\cf0\par
+\par
+1. \ul Animated GIF considerations\ulnone :\par
+\par
+\tab You must realize that GIF format cannot use true alpha-blended images for its frames. Transparency within a GIF is limited \par
+to either completely opaque or completely transparent. The control will change any alpha-blended pixels to meet this requirement. \par
+If using alpha-blended images, ensure you set the \b MIS\b0 .\b Image\b0 (n).\b SS\b0 .\cf2 AlphaTolerancePct \cf3 value for each such frame. See Section IV \par
+above for more information on how that property effects transparency reduction.\par
+\par
+\tab Limitations.  v1.0 of GDI+, by itself, cannot create animated GIFs. The control uses GDI+ to create each frame. Then it takes \par
+that frame data and organizes them into an animated GIF format. Each frame will have its own color table initially. The control will \par
+optimize that a bit. It will compare the color tables of all frames and promote the one used the most as the global color table. Global \par
+color tables are written just once, regardless how many times it is used. Knowing this, you can help optimize the final GIF size. By \par
+using a set palette for all or most frames, those frames will have the same color table, which will be written as the global color table. \par
+Each frame that doesn't use the global color table will have its color table written each time, which increases file size. To specify a \par
+palette for each/any frame, use one of these two options\par
+\tab\par
+\tab a. User-defined palette\par
+\tab\tab (1). Create a 256 color palette, or smaller, using the CreatePalette API. See Section VI also\par
+\tab\tab (2). In each \cf0\b MIS\cf3\b0 .\cf0\b Image\cf3\b0 (n).\b SS \b0 structure, supply the palette handle as the \cf2 Palette_Handle \cf3 property & for the \par
+\tab\tab\tab\cf2 PaletteType \cf3 property use: lvicPaletteUserDefined\par
+\tab b. Default half-tone palette\par
+\tab\tab (1). In each \cf0\b MIS\cf3\b0 .\cf0\b Image\cf3\b0 (n).\b SS \b0 structure, set the \cf2 ColorDepth\cf3  property to either \par
+\tab\tab\tab lvicConvert_16Colors or lvicConvert_256Colors\par
+\tab\tab (2). In each \cf0\b MIS\cf3\b0 .\cf0\b Image\cf3\b0 (n).\b SS \b0 structure, use lvicPaletteDefault for the \cf2 PaletteType \cf3 property \par
+\cf0\par
+2. \ul Animated PNG considerations\ulnone :\par
+\par
+\tab Limitations: Each frame of an animated PNG must all have the same bit depth, PNG color type, and use the same color palette if \par
+a palette is used. The control does not manually create PNG images, it uses GDI+ to create PNGs. There is no way to force GDI+ to \par
+create a PNG with user-defined options. Therefore, to overcome these issues, all PNG frames are created as 32 bit alpha images and \par
+compressed by GDI+. Another limitation is that the 1st image in an animated PNG must be of the same size as the entire animated PNG \par
+(all frame boundaries combined). That 1st image may or may not be part of the animation. To enforce this APNG restriction, any values you \par
+pass in the \b MIS\b0 .\b GIFOverview\b0 .\cf2 WindowWidth \cf0 or .\cf2 WindowHeight \cf0 members will be increased if necessary. Any PNG viewer will be able to \par
+display the 1st frame of an animated PNG, even if the viewer does not support/recognize the animated PNG format\par
+\par
+\tab There are two ways of creating animated PNGs\par
+\par
+\tab a. Using the MIS structure where every detail of the animated PNG is described; very similar to creating animated GIF\par
+\par
+\tab b. Converting an animated GIF to animated PNG automatically. \par
+\tab\tab To convert GIF to animated PNG, pass the following to the SavePictureGDIplus function\par
+\tab\tab - Pass a GDIpImage class that contains an animated GIF (a GIF with more than 1 frame)\par
+\tab\tab - Choose a destination object that is not a stdPicture; otherwise, only 1st GIF frame will be used\par
+\tab\tab - Select the destination image format as PNG\par
+\tab\tab - Do not pass a SaveStruct or MultiImageSaveStruct structure\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl1.Picture, "C:\\Animated.png", lvicSaveAsPNG\par
+\par
+3. \ul Multi-Page TIFF considerations\ulnone :\par
+\par
+\tab Each page of the TIFF can be saved using individual rendering options, bit dpeths and compression styles. Simply set the \par
+\b MIS\b0 .\b Image\b0 (n).\b SS \b0 members as needed\tab\tab\tab\par
+\par
+4. \ul Icon/Cursor considerations\ulnone :\par
+\par
+\tab When saving multiple icons/cursors, recommend you include one each of a 4, 8 and 32 bit versions in sizes of 16x16 and 32x32 \par
+to backward support older operating systems. You can dictate what bit depth each icon/cursor is saved to by filling in the \par
+\b MIS\b0 .\b Image\b0 (n).\b SS\b0 .\cf2 ColorDepth, .PaletteType & .Palette_Handle \cf3 properties as needed.\par
+\par
+\tab If saving as a cursor format, do not forget to set the \cf0\b MIS\b0 .\b Image\b0 (n).\b SS\b0 .\cf2 CursorHotSpotX & .CursorHotSpotY \cf3 properties\par
+\par
+\tab Saving large sized icons/cursors, those greater than say 48x48, as embedded PNGs can drastically reduce file size.\par
+\par
+\tab Note that saving a single icon in PNG format must use this option and set the \cf0  \b MIS\b0 .\b Image\b0 (n).\cf2 IconEmbeddedAsPNG \cf3 property to True. \par
+The SavePictureGDIplus function does not provide another way to save a single icon/cursor in PNG format.\par
+\cf0\par
+5. \ul AVI considerations\ulnone :\par
+\par
+\tab Though the control does not have the ability to save to the AVI format, it does have the ability to quickly convert an AVI to either\par
+an Animated GIF or Animated PNG. To do so:\par
+\b\par
+\b0\tab a. Converting an AVI to animated GIF automatically. \par
+\tab\tab To convert AVI to animated GIF, pass the following to the SavePictureGDIplus function\par
+\tab\tab - Pass a GDIpImage class that contains an AVI\par
+\tab\tab - Choose a destination object that is not a stdPicture; otherwise, only 1st AVI frame will be used\par
+\tab\tab - Select the destination image format as GIF\par
+\tab\tab - Do not pass a SaveStruct or MultiImageSaveStruct structure\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl1.Picture, "C:\\Animated.gif", lvicSaveAsGIF\par
+\tab\tab Color loss may occur if the AVI source frames use more than 256 colors\par
+\par
+\tab b. Converting an AVI to animated PNG automatically. \par
+\tab\tab To convert AVI to animated PNG, pass the following to the SavePictureGDIplus function\par
+\tab\tab - Pass a GDIpImage class that contains an AVI\par
+\tab\tab - Choose a destination object that is not a stdPicture; otherwise, only 1st AVI frame will be used\par
+\tab\tab - Select the destination image format as PNG\par
+\tab\tab - Do not pass a SaveStruct or MultiImageSaveStruct structure\par
+\tab\tab Example: SavePictureGDIplus AlphaImgCtl1.Picture, "C:\\Animated.png", lvicSaveAsPNG\par
+\b\par
+\b0\tab Note that many AVIs are created where the top left pixel color should be transparent throughout all frames.\par
+If you want that ability, here is the modification to the above steps\par
+\par
+\tab a. Declare a variable: Dim RSS as RENDERSTYLESTRUCT2 \par
+\tab b. To use the top left pixel color, do nothing else with the RSS\par
+\tab c. To supply your own color, set the RSS.Effects to a new GDIpEffects class then set the .TransparentColor\par
+member to a valid RGB color and the .TransparentColorUsed member to true\par
+\tab d. Pass the RSS as SavePictureGDIplus' SaveOptions parameter\b\par
+\b0\tab Example: SavePictureGDIplus AlphaImgCtl1.Picture, "C:\\Animated.png", lvicSaveAsPNG, RSS\par
+\b\par
+\par
+SECTION IX. Saving the AlphaImgCtl and/or the Image displayed by the control\par
+\b0\par
+\pard\nowidctlpar\tx450\tx720\tx810 1. Saving/Painting the AlphaImgCtl \ul Control\ulnone . The control has 2 functions that will allow you to save it as drawn, to a \par
+GDIpImage class or to another hDC. Note about the IncludeBackground parameter of both methods. If false, \par
+the image itself is used. If set to true, then the container's background and any control border will be included. \par
+The methods below use the entire control dimensions. So the size of the returned or rendered image will always \par
+be the size of the control. You are saving/rendering the control not necessarily the image.\par
+\par
+\tab The control \ul must be visible and must be viewable\ulnone  to use these two functions\par
+\par
+\tab a. To a GDIpImage class. Simply set a GDIpImage class to the call SaveControlAsDrawnToGDIpImage method\par
+\tab Example.\par
+\tab\tab Dim tImg As GDIpImage\par
+\tab\tab Set  tImg = AlphaImgCtl1.SaveControlAsDrawnToGDIpImage(False)\par
+\tab\tab ' You can apply this new image to an AlphaImgCtl or ...\par
+\tab\tab ' You can save the image to file, array, stdPicture by passing it to the SavePictureGDIplus function\par
+\par
+\tab b. To an HDC... AlphaImgCtl1.PaintControlAsDrawnToHDC Picture1.hDC, 0, 0, False\par
+\par
+2. Saving/Painting the \ul image\ulnone  displayed in the control. The control has 2 functions that will allow you to save it as drawn, to a \par
+GDIpImage class or to another hDC. You are saving the image, not the control. The control does not need to be visible or viewable \par
+to use these two functions\par
+\par
+\tab a. To a GDIpImage class. Simply set a GDIpImage class to the call SaveImageAsDrawnToGDIpImage method\par
+\tab Example.\par
+\tab\tab Dim tImg As GDIpImage\par
+\tab\tab Set  tImg = AlphaImgCtl1.SaveImageAsDrawnToGDIpImage\par
+\tab\tab ' You can apply this new image to an AlphaImgCtl or ...\par
+\tab\tab ' You can save the image to file, array, stdPicture by passing it to the SavePictureGDIplus function\par
+\par
+\tab b. To an HDC... AlphaImgCtl1.PaintImageAsDrawnToHDC Picture1.hDC, 0, 0\par
+\par
+3. Saving a Picturebox content that contains an AlphaImgCtl.  Let's say you are using one or more  AlphaImgCtl controls inside a \par
+picturebox to create some composite. And let's say you filled your Picturebox with some background graphics or picture and want \par
+to save the entire thing to file. How can you do that? The answer is not straightforward but relatively easy. Note that any windowed \par
+controls in the picturebox will not be drawn. This method only works for windowless controls within a container . The AlphaImgCtl is \par
+windowless as are VB labels, image, shape and line controls.\par
+\par
+\tab a. Use a separate working copy Picturebox. I'll call this picWorking\par
+\tab b. Use SendMessage API, LoadPictureGDIplus and SavePictureGDIplus\par
+\tab Example:\par
+\tab\tab ' assume Picture1 contains AlphaImgCtl controls, possibly labels, shapes &  other windowless controls\par
+\pard\nowidctlpar\tx450\tx810\tab\tab picWorking.Width = Picture1.Width\par
+\tab\tab picWorking.Height = Picture1.Height\par
+\tab\tab picWorking.AutoRedraw = True ' << picWorking does not have to be visible\par
+\par
+\tab\tab Dim tImg As GDIpImage\par
+\tab\tab SendMessage Picture1.hWnd, WM_PAINT,  picWorking.hDC, ByVal 0&\par
+\tab\tab Set picWorking.Picture = picWorking.Image\par
+\tab\tab Set tImg = LoadPictureGDIplus(picWorking.Picture)\par
+\tab\tab SavePictureGDIplus tImg, "C:\\MyComposite.png", lvicSaveAsPNG\par
+\tab\tab Set picWorking.Picture = Nothing\par
+\tab\par
+\tab Here are the API and constant declarations\par
+\tab Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, _\par
+\tab\tab ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long\par
+\tab Private Const WM_PAINT As Long = &HF&\par
+\par
+\par
+\b SECTION X. Creating a blank image within a GDIpImage class.\par
+\par
+\b0 If you need to have a blank bitmap you can use for rendering directly to, these are the simple steps to follow.\par
+The GdipGetImageGraphicsContext API will return an hGraphics object for 24 and 32 bpp images, not for\par
+paletted images nor meta files. That hGraphics object can be passed directly to the GDIpImage class' Render \par
+method and must later be destroyed with a call to the GdipDeleteGraphics API.\par
+\par
+1. Instantiate a new GDIpImage class: Dim myImage As GDIpImage: Set myImage = New GDIpImage\par
+2. Create a SAVESTRUCT structure: Dim SS As SAVESTRUCT\par
+3. Fill the structure's .Width and .Height members for the bitmap's dimensions\par
+4. Fill the structure's .ColorDepth member for the desired depth of the bitmap\par
+\tab lvicNoColorReduction & lvicDefaultReduction will default to lvicConvert_TrueColor32bpp_ARGB\par
+5. If the .ColorDepth member is lvicConvert_BlackWhite, lvicConvert_16Colors or lvicConvert_256Colors then\par
+\tab fill in the Palette_Handle with a palette created from the CreatePalette API. If the Palette_Handle is zero,\par
+\tab then a default halftone palette will be applied to the bitmap. FYI: Palettes can later be changed via GDI+ APIs\par
+6. If the .ColorDepth is 24 or 32 bpp, you can use the SS.RSS\cf3 .FillBrushGDIplus_Handle or both the .FillColorARGB and \par
+.FillColorUsed members to identify a fill color for the blank image. If supplying a brush, you are responsible for destruction.\par
+\cf0 7. Call SavePictureGDIplus. Example using sample declarations above: SavePictureGDIplus Nothing, myImage, [desired format], SS\par
+If the function returns true, then myImage will contain a blank image of the desired color depth & format\par
+\par
+Here is a real-world example. Let's say I wanted to create a 100% transparent icon for my form's icon property\par
+\par
+    Dim SS As SAVESTRUCT, tImg As GDIpImage, tPic As StdPicture\par
+\par
+    SS.Width = 32: SS.Height = 32\par
+    SS.ColorDepth = lvicConvert_TrueColor32bpp_ARGB\par
+    Set tImg = New GDIpImage\par
+    SavePictureGDIplus Nothing, tImg, lvicSaveAsIcon, SS\par
+\par
+    SS.ColorDepth = lvicConvert_16Colors ' change to less than 32bpp since stdPicture does  not support it\par
+    Set tPic= New stdPicture\par
+    SavePictureGDIplus tImg, tPic, , SS\par
+    Set Me.Icon = tPic\par
+\par
+}
+ 
