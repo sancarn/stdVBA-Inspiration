@@ -1,0 +1,75 @@
+<job>
+<reference object="wia.DeviceManager" />
+<object id="DevMan" progid="Wia.DeviceManager" />
+<script language="VBScript">
+Option Explicit
+
+Dim Command, Name, Description, Icon, EventID, DeviceID, i
+
+Command = wscript.fullname & " """ & wscript.scriptfullname & """ connect"
+Name = "PersistentTest"
+Description = "Quick Scripting Test"
+Icon = wscript.fullname & ", 0"
+EventID = wiaEventDeviceConnected
+DeviceID = "*"
+
+if wscript.arguments.count = 1 then
+	if UCase(wscript.arguments(0)) = "REGISTER" then
+		wscript.echo "Registering Event Handler"
+		DevMan.RegisterPersistentEvent Command, Name, Description, Icon, EventID, DeviceID
+		Wscript.quit
+	end if
+	if UCase(wscript.arguments(0)) = "UNREGISTER" then
+		wscript.echo "Unregistering Event Handler"
+		DevMan.UnregisterPersistentEvent Command, Name, Description, Icon, EventID, DeviceID
+		Wscript.quit
+	end if
+end if
+
+if wscript.arguments.count = 2 then
+	if UCase(wscript.arguments(0)) = "REGISTER" then
+		wscript.echo "Registering Event Handler"
+		DeviceID = wscript.arguments(1)
+		DevMan.RegisterPersistentEvent Command, Name, Description, Icon, EventID, DeviceID
+		Wscript.quit
+	end if
+	if UCase(wscript.arguments(0)) = "UNREGISTER" then
+		wscript.echo "Unregistering Event Handler"
+		DeviceID = wscript.arguments(1)
+		DevMan.UnregisterPersistentEvent Command, Name, Description, Icon, EventID, DeviceID
+		Wscript.quit
+	end if
+end if
+
+if wscript.arguments.count = 3 then
+	if UCase(wscript.arguments(0)) = "CONNECT" then
+		for i = 0 to wscript.arguments.count - 1 
+			wscript.echo wscript.arguments(i)
+		next
+		MsgBox "Connect"
+		Wscript.quit
+	end if
+end if
+
+wscript.echo "Usage:"
+wscript.echo ""
+wscript.echo "To register type:"
+wscript.echo ""
+wscript.echo "persist register"
+wscript.echo "...or..."
+wscript.echo "persist register DeviceID"
+wscript.echo ""
+wscript.echo "To unregister type:"
+wscript.echo ""
+wscript.echo "persist unregister"
+wscript.echo "...or..."
+wscript.echo "persist unregister DeviceID"
+wscript.echo ""
+wscript.echo "Available DeviceIDs:"
+wscript.echo ""
+
+for i = 1 to DevMan.DeviceInfos.Count
+	wscript.echo devman.deviceInfos(i).DeviceID
+next
+</script>
+</job>

@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<TABLE BORDER=1>
+<TR>
+<TD>
+<OBJECT id="VideoPreview" height=240 width=320 classid="clsid:0B5F2CC8-5E1E-44F9-899B-3B789705AFCA">
+</OBJECT>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER>
+<INPUT id=btnPause type=button value=Pause>
+</TD>
+</TR>
+</TABLE>
+
+<SCRIPT LANGUAGE="VBScript">
+
+Sub btnPause_OnClick()
+	If VideoPreview.Pause Then
+		VideoPreview.Pause = False
+		btnPause.value = "Pause"
+	Else
+		VideoPreview.Pause = True
+		btnPause.value = "Resume"
+	End If
+End Sub
+
+</SCRIPT>
+</BODY>
+</HTML>

@@ -1,0 +1,180 @@
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+<DIV id="PutTableHere">
+&nbsp;
+</DIV>
+
+<OBJECT id="DeviceMan" classid="clsid:E1C5D730-7E97-4D8A-9E42-BBAE87C2059F">
+Failed to Create WIA.DeviceManager
+</OBJECT>
+
+<SCRIPT LANGUAGE="VBScript">
+
+sub DeviceMan_OnEvent(EventID, DeviceID, ItemID)
+        RenderTable
+end sub
+
+Function PropType(id)
+    Select Case id
+    Case 1 'BooleanItemPropertyType
+        PropType = "Boolean"
+    Case 2 'ByteItemPropertyType
+        PropType = "Byte"
+    Case 16 'ClassIDItemPropertyType
+        PropType = "Class ID"
+    Case 12 'CurrencyItemPropertyType
+        PropType = "Currency"
+    Case 14 'DateItemPropertyType
+        PropType = "Date"
+    Case 13 'DecimalItemPropertyType
+        PropType = "Decimal"
+    Case 11 'DoubleItemPropertyType
+        PropType = "Double"
+    Case 7 'ErrorCodeItemPropertyType
+        PropType = "Error Code"
+    Case 15 'FileTimeItemPropertyType
+        PropType = "File Time"
+    Case 19 'HandleItemPropertyType
+        PropType = "Handle"
+    Case 3 'IntegerItemPropertyType
+        PropType = "Integer"
+    Case 8 'LargeIntegerItemPropertyType
+        PropType = "Large Integer"
+    Case 5 'LongItemPropertyType
+        PropType = "Long"
+    Case 18 'ObjectItemPropertyType
+        PropType = "Object"
+    Case 10 'SingleItemPropertyType
+        PropType = "Single"
+    Case 17 'StringItemPropertyType
+        PropType = "String"
+    Case 4 'UnsignedIntegerItemPropertyType
+        PropType = "Unsigned Integer"
+    Case 9 'UnsignedLargeIntegerItemPropertyType
+        PropType = "Unsigned Large Integer"
+    Case 6 'UnsignedLongItemPropertyType
+        PropType = "Unsigned Long"
+    Case 20 'VariantItemPropertyType
+        PropType = "Variant"
+    Case 101 'VectorOfBooleansItemPropertyType
+        PropType = "Vector Of Booleans"
+    Case 102 'VectorOfBytesItemPropertyType
+        PropType = "Vector Of Bytes"
+    Case 116 'VectorOfClassIDsItemPropertyType
+        PropType = "Vector Of Class IDs"
+    Case 112 'VectorOfCurrenciesItemPropertyType
+        PropType = "Vector Of Currencies"
+    Case 114 'VectorOfDatesItemPropertyType
+        PropType = "Vector Of Dates"
+    Case 111 'VectorOfDoublesItemPropertyType
+        PropType = "Vector Of Doubles"
+    Case 107 'VectorOfErrorCodesItemPropertyType
+        PropType = "Vector Of Error Codes"
+    Case 115 'VectorOfFileTimesItemPropertyType
+        PropType = "Vector Of File Times"
+    Case 103 'VectorOfIntegersItemPropertyType
+        PropType = "Vector Of Integers"
+    Case 108 'VectorOfLargeIntegersItemPropertyType
+        PropType = "Vector Of Large Integers"
+    Case 105 'VectorOfLongsItemPropertyType
+        PropType = "Vector Of Longs"
+    Case 110 'VectorOfSinglesItemPropertyType
+        PropType = "Vector Of Singles"
+    Case 117 'VectorOfStringsItemPropertyType
+        PropType = "Vector Of Strings"
+    Case 104 'VectorOfUnsignedIntegersItemPropertyType
+        PropType = "Vector Of Unsigned Integers"
+    Case 109 'VectorOfUnsignedLargeIntegersItemPropertyType
+        PropType = "Vector Of Unsigned Large Integers"
+    Case 106 'VectorOfUnsignedLongsItemPropertyType
+        PropType = "Vector Of Unsigned Longs"
+    Case 120 'VectorOfVariantsItemPropertyType
+        PropType = "Vector Of Variants"
+    Case Else
+        PropType = "Unsupported"
+    End Select
+End Function
+
+sub RenderTable
+	Dim table
+	Dim row
+	Dim cell
+	
+	Dim di
+	Dim p
+	Dim temp, v
+
+	set table = document.createElement("TABLE")
+	table.border = 1
+	
+	If DeviceMan.DeviceInfos.Count > 0 Then
+		For Each di In DeviceMan.DeviceInfos
+			set row = document.createElement("TR")
+			set cell = document.createElement("TD")
+			cell.colSpan = 4
+			cell.align = "center"
+			cell.innerHTML = "<H3>" & di.Properties("Name").Value & "</H3>"
+			row.appendChild cell
+			table.appendChild row
+		
+			For Each p In di.Properties
+				set row = document.createElement("TR")
+
+				set cell = document.createElement("TD")
+				cell.innerHTML = p.Name
+				row.appendChild cell
+	
+				set cell = document.createElement("TD")
+				cell.innerHTML = p.PropertyID
+				row.appendChild cell
+
+				set cell = document.createElement("TD")
+				cell.innerHTML = PropType(p.Type)
+				row.appendChild cell
+
+				temp = ""
+				If p.IsVector Then
+					Dim i
+					set v = p.Value
+					For i = 1 to v.Count
+						temp = temp & CStr(v(i))
+						If i <> v.Count Then
+							temp = temp & ", "
+						End If
+					Next
+				Else
+					temp = p.Value
+				End If
+				
+				set cell = document.createElement("TD")
+				cell.innerHTML = temp
+				row.appendChild cell
+
+				table.appendChild row
+			Next
+		Next
+	Else
+		set row = document.createElement("TR")
+		set cell = document.createElement("TD")
+		cell.colSpan = 4
+		cell.align = "center"
+		cell.innerHTML = "<H3>No Imaging Devices Connected</H3>"
+		row.appendChild cell
+		table.appendChild row
+	End If
+	
+	document.all("PutTableHere").innerHTML = table.outerHTML
+end sub
+
+DeviceMan.RegisterEvent "{A28BBADE-64B6-11D2-A231-00C04FA31809}"
+DeviceMan.RegisterEvent "{143E4E83-6497-11D2-A231-00C04FA31809}"
+RenderTable
+
+</SCRIPT>
+
+</BODY>
+</HTML>
